@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software HYPEX - Itens dos Fornecedores</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_estoque_do_galpao.css') }}">
+</head>
+
+<body>
+    <aside id="menu">
+        <div class="status-dots">
+            <span class="dot-red"></span>
+            <span class="dot-yellow"></span>
+            <span class="dot-green"></span>
+        </div>
+
+        <div class="perfil">
+            <img src="{{ url_for('static', filename='imagem/perfil.png') }}">
+            <h3>{{ empresa.nome if empresa else 'Empresa' }}</h3>
+        </div>
+
+        <nav>
+            <ul>
+                <li class="nav-menu">
+                    <a href="/dashboard"><i class="bi bi-bar-chart-fill"></i> DASHBOARD</a>
+                </li>
+                <li class="nav-menu">
+                    <a href="/galpao"><i class="bi bi-box-seam-fill"></i> ESTOQUE</a>
+                </li>
+                <li class="nav-menu selected">
+                    <a href="/fornecedores"><i class="bi bi-people-fill"></i> FORNECEDORES</a>
+                </li>
+                <li class="nav-menu">
+                    <a href="/pedidos"><i class="bi bi-basket2-fill"></i> PEDIDOS</a>
+                </li>
+                <li class="nav-menu">
+                    <a href="/clientes"><i class="bi bi-person-fill"></i> CLIENTES</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="menu-opcoes">
+            <a href="/config" class="opcoes-btn"><i class="bi bi-gear-fill"></i></a>
+            <button class="opcoes-btn selected-opcoes-btn"><i class="bi bi-circle-half"></i></button>
+            <a href="{{ url_for('logout') }}" class="opcoes-btn red-opcoes-btn" onclick="return confirmarLogout()">
+                <i class="bi bi-door-open-fill"></i>
+            </a>
+        </div>
+    </aside>
+
+    <main id="inventario-conteudo">
+
+        <header class="inventario-texto">
+            <div class="inventario-info">
+                <h1><i class="bi bi-box-seam-fill"></i> Itens por Fornecedor</h1>
+                <p>Gerencie o catálogo de produtos oferecidos pelos fornecedores parceiros</p>
+
+                <a href="/info_fornecedor/{{ fornecedor.id }}">
+                    <button class="btn btn-voltar">
+                        <i class="bi bi-eye-fill"></i>
+                        Visualizar Fornecedor
+                    </button>
+                </a>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for categoria, mensagem in messages %}
+            <div class="alert alert-{{ 'danger' if categoria == 'erro' else 'success' }}">
+                {{ mensagem }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <div id="add-produto">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#modalAdicionarProduto">
+                    <i class="bi bi-plus-lg"></i> Adicionar Produto
+                </button>
+
+                <!-- ===================== MODAL ADICIONAR PRODUTO ===================== -->
+                <div class="modal fade" id="modalAdicionarProduto" tabindex="-1"
+                    aria-labelledby="modalAdicionarProdutoLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+
+                        <!-- FIX: action aponta para a rota correta que cria o produto E vincula ao fornecedor -->
+                        <form method="POST"
+                            action="{{ url_for('salvar_item_fornecedor', fornecedor_id=fornecedor.id) }}"
+                            class="modal-content">
+
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="modalAdicionarProdutoLabel">
+                                    Adicionar Produto ao Fornecedor: <strong>{{ fornecedor.nome }}</strong>
+                                </h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Fechar"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <h6>Nome do Produto</h6>
+                                        <input type="text" name="nome" class="form-control" required>
+                                    </div>
+                                    <div class="col">
+                                        <h6>Descrição do Item</h6>
+                                        <input type="text" name="descricao" class="form-control">
+                                    </div>
+                                    <div class="col">
+                                        <h6>SKU Interno</h6>
+                                        <input type="text" name="sku" class="form-control" required>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <h6>Pedido Mínimo (Qtd)</h6>
+                                        <input type="number" name="pedido_minimo" class="form-control" min="1"
+                                            value="1">
+                                    </div>
+                                    <div class="col">
+                                        <h6>Tempo de Entrega (Dias Úteis)</h6>
+                                        <input type="number" name="tempo_entrega" class="form-control" min="0"
+                                            value="0">
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <h6>Preço de Compra (Custo)</h6>
+                                        <input type="number" step="0.01" name="preco_custo" class="form-control" min="0"
+                                            value="0.00">
+                                    </div>
+                                    <div class="col">
+                                        <h6>Unidade de Medida</h6>
+                                        <select class="form-control" name="unidade_medida">
+                                            <option value="un">Unidade (UN)</option>
+                                            <option value="cx">Caixa (CX)</option>
+                                            <option value="kg">Quilo (KG)</option>
+                                            <option value="pct">Pacote (PCT)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <h6>Código de Barras (EAN)</h6>
+                                        <input type="text" name="codigo_barras" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <h6>Categoria</h6>
+                                        <input type="text" name="categoria" class="form-control">
+                                    </div>
+                                    <div class="col">
+                                        <h6>Tipo de Produto</h6>
+                                        <select class="form-control" name="tipo">
+                                            <option value="leve">Leve</option>
+                                            <option value="medio">Médio</option>
+                                            <option value="pesado">Pesado</option>
+                                            <option value="fragil">Frágil</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <h6>Peso (kg)</h6>
+                                        <input type="number" step="0.01" name="peso" class="form-control" min="0"
+                                            value="0.00">
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-4">
+                                        <h6>Volume (m³)</h6>
+                                        <input type="number" step="0.01" name="volume" class="form-control" min="0"
+                                            value="0.00">
+                                    </div>
+                                    <div class="col-4">
+                                        <h6>Itens por Caixa</h6>
+                                        <input type="number" name="item_por_caixa" class="form-control" min="0"
+                                            value="0">
+                                    </div>
+                                </div>
+                            </div><!-- /modal-body -->
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-primary">Salvar</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div><!-- /modal -->
+            </div><!-- /add-produto -->
+        </header>
+
+        <section class="barra-pesquisa">
+            <div class="caixa-pesquisa">
+                <i class="bi bi-search"></i>
+                <input type="text" id="campoBusca" placeholder="Buscar por produto...">
+            </div>
+            <div class="pesquias-botao">
+                <button class="filtro-btn filter-btn"><i class="bi bi-funnel-fill"></i> Filtros</button>
+                <button class="filtro-btn export-btn"><i class="bi bi-cloud-arrow-down-fill"></i> Exportar</button>
+            </div>
+        </section>
+
+        <section class="inventario-lista">
+            <table id="tabelaProdutos">
+                <thead>
+                    <tr>
+                        <th>Produto / Fornecedor</th>
+                        <th>SKU</th>
+                        <th>Preço de Custo</th>
+                        <th>Desconto</th>
+                        <th>Qtd. Mínima</th>
+                        <th>Prazo de Entrega</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if fornecedores_produtos %}
+                    {% for item in fornecedores_produtos %}
+                    <tr>
+                        <td class="produto-info">
+                            <strong>{{ item.produto_nome }}</strong>
+                            <span class="fornecedor-nome">Fornecedor: {{ item.fornecedor_nome }}</span>
+                        </td>
+                        <td><span class="badge bg-light text-dark">{{ item.sku }}</span></td>
+                        <td>R$ {{ "{:,.2f}".format(item.preco_custo).replace(",", "X").replace(".", ",").replace("X",
+                            ".") }}</td>
+                        <td>{{ item.desconto }}%</td>
+                        <td>{{ item.quantidade_minima }} un</td>
+                        <td>{{ item.prazo_entrega_dias }} dias</td>
+                        <td>
+                            {% if item.ativo %}
+                            <span class="status-estoque status-disponivel">Ativo</span>
+                            {% else %}
+                            <span class="status-estoque status-indisponivel">Inativo</span>
+                            {% endif %}
+                        </td>
+                        <!-- FIX: substituído produto.id (inexistente) por item.produto_id -->
+                        <td class="acao-estoque">
+                            <a href="{{ url_for('editar_produto', id=item.produto_id) }}" class="acao-btn btn-editar"
+                                title="Editar">
+                                <i class="bi bi-pen-fill"></i>
+                            </a>
+                            <a href="{{ url_for('desativar_produto', id=item.produto_id) }}"
+                                class="acao-btn btn-desativar" title="Desativar"
+                                onclick="return confirm('Desativar este produto?')">
+                                <i class="bi bi-slash-circle-fill"></i>
+                            </a>
+                            <button type="button" class="acao-btn delete" title="Excluir" data-bs-toggle="modal"
+                                data-bs-target="#modalExcluir{{ item.produto_id }}">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
+                            <div class="modal fade" id="modalExcluir{{ item.produto_id }}" tabindex="-1"
+                                aria-labelledby="modalExcluirLabel{{ item.produto_id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalExcluirLabel{{ item.produto_id }}">Confirmar
+                                                Exclusão</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Tem certeza que deseja excluir o produto <strong>{{ item.produto_nome }}</strong>? <br>
+                                            <span class="text-danger"><small>Esta ação não poderá ser
+                                                    desfeita.</small></span>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Cancelar</button>
+                                            <a href="{{ url_for('excluir_produto', id=item.produto_id) }}"
+                                                class="btn btn-danger">Excluir</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-4 d-block mb-2"></i>
+                            Nenhum produto vinculado a este fornecedor ainda.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Busca em tempo real na tabela
+        document.getElementById('campoBusca').addEventListener('input', function () {
+            const termo = this.value.toLowerCase();
+            document.querySelectorAll('#tabelaProdutos tbody tr').forEach(function (linha) {
+                const texto = linha.textContent.toLowerCase();
+                linha.style.display = texto.includes(termo) ? '' : 'none';
+            });
+        });
+
+        function confirmarLogout() {
+            return confirm('Deseja realmente sair?');
+        }
+    </script>
+</body>
+
+</html>

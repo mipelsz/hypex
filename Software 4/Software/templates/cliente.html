@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes</title>
+
+    <!-- Bootstrap + Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_clientes.css') }}">
+</head>
+
+<body>
+
+    <!-- MENU -->
+    <aside id="menu">
+
+        <div class="status-dots">
+            <span class="dot-red"></span>
+            <span class="dot-yellow"></span>
+            <span class="dot-green"></span>
+        </div>
+
+        <div class="perfil">
+            <img src="{{ url_for('static', filename='imagem/perfil.png') }}" class="perfil-img">
+            <h3>Empresa</h3>
+        </div>
+
+
+
+        <nav>
+            <ul>
+                <li class="nav-menu">
+                    <a href="{{ url_for('dashboard') }}">
+                        <i class="bi bi-bar-chart-fill"></i> DASHBOARD
+                    </a>
+                </li>
+
+                <li class="nav-menu">
+                    <a href="{{ url_for('galpao') }}">
+                        <i class="bi bi-box-seam-fill"></i> ESTOQUE
+                    </a>
+                </li>
+
+                <li class="nav-menu">
+                    <a href="{{ url_for('fornecedores') }}">
+                        <i class="bi bi-people-fill"></i> FORNECEDORES
+                    </a>
+                </li>
+
+                <li class="nav-menu">
+                    <a href="{{ url_for('pedidos') }}">
+                        <i class="bi bi-basket2-fill"></i> PEDIDOS
+                    </a>
+                </li>
+
+                <li class="nav-menu selected">
+                    <a href="{{ url_for('cliente') }}">
+                        <i class="bi bi-person-fill"></i> CLIENTES
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="menu-opcoes">
+            <a href="/config" class="opcoes-btn">
+                <i class="bi-solid bi-gear-fill"></i>
+            </a>
+            <button class="opcoes-btn selected-opcoes-btn"><i class="bi-solid bi-circle-half"></i>
+            </button>
+            <a href="{{ url_for('logout') }}" class="opcoes-btn red-opcoes-btn" onclick="return confirmarLogout()">
+                <i class="bi bi-door-open-fill"></i>
+            </a>
+        </div>
+    </aside>
+
+    </aside>
+
+    <!-- CONTEÚDO -->
+    <main id="cliente-conteudo">
+
+        <header class="clientes">
+            <div class="cliente-texto">
+                <h1><i class="bi bi-person-fill"></i> CLIENTES</h1>
+                <p>Gerencie sua base de clientes</p>
+            </div>
+
+            <!-- BOTÃO -->
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                + Adicionar Cliente
+            </button>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for categoria, mensagem in messages %}
+        <div class="alert alert-{{ 'danger' if categoria == 'erro' else 'success' }}">
+            {{ mensagem }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="modal fade" id="exampleModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <form method="POST" action="{{ url_for('salvar_cliente') }}">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">Adicionar Cliente</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="row g-3">
+                                <div class="col">
+                                    <h6>Nome da Empresa </h6>
+                                    <input type="text" name="empresa" class="form-control" required>
+                                </div>
+
+                                <div class="col">
+                                    <h6>CPF ou CNPJ</h6>
+                                    <input type="text" name="cpf" class="form-control" required>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col">
+                                    <h6>E-mail</h6>
+                                    <input type="email" name="email" class="form-control">
+                                </div>
+
+                                <div class="col">
+                                    <h6>Nome do Contato</h6>
+                                    <input type="text" name="nome" class="form-control" required>
+                                </div>
+
+                                <div class="col">
+                                    <h6>Telefone</h6>
+                                    <input type="text" name="telefone" class="form-control">
+                                </div>
+                            </div>
+
+
+                            <div class="row mt-3">
+                                <div class="col">
+                                    <h6>Cidade</h6>
+                                    <input type="text" name="cidade" class="form-control">
+                                </div>
+                                <div class="col">
+                                    <h6>Cep</h6>
+                                    <input type="text" name="cep" class="form-control">
+                                </div>
+                                <div class="col">
+                                    <h6>Estado</h6>
+                                    <select name="estado" class="form-select">
+                                        <option value="">Selecione</option>
+                                        <option value="Sp">Sp</option>
+                                        <option value="Rj">Rj</option>
+                                        <option value="Mg">Mg</option>
+                                    </select>
+                                </div>
+
+                                <input type="hidden" name="ativo" value="ativo">
+                                </input>
+
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- BARRA DE PESQUISA -->
+        <section class="barra-pesquisa">
+            <div class="caixa-pesquisa">
+                <i class="bi-solid bi-search"></i>
+                <input type="text" placeholder="Buscar pedidos...">
+            </div>
+            <div class="pesquias-botao">
+                <button class="action-btn filter-btn"><i class="bi-solid bi-funnel-fill"></i> Filtros</button>
+                <button class="action-btn export-btn"><i class="bi-solid bi-cloud-arrow-down-fill"></i>Exportar</button>
+            </div>
+        </section>
+
+        <section class="clientes-cards">
+            {% if clientes %}
+            {% for cliente in clientes %}
+            <a href="/pedidos_cliente/{{ cliente.id }}" class="card-link">
+                <div class="clientes-card {% if cliente.ativo != 'ativo' %}inactive{% endif %}">
+
+                    <div class="clientes-texto">
+                        <div
+                            class="clientes-icone {% if cliente.ativo == 'ativo' %}green-bg-icon{% else %}gray-bg-icon{% endif %}">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+
+                        <div class="clientes-titulo">
+                            <h2 class="cliente-nome">{{ cliente.empresa }}</h2>
+                            <p class="contato-pessoa">{{ cliente.nome }}</p>
+                        </div>
+
+                        <span
+                            class="status-cliente {% if cliente.ativo == 'ativo' %}status-ativo{% else %}status-inativo{% endif %}">
+                            {{ cliente.ativo }}
+                        </span>
+                    </div>
+
+                    <div class="cards-info-clientes">
+                        <p class="contact-detail"><i class="bi bi-envelope-fill"></i> {{ cliente.email }}</p>
+                        <p class="contact-detail"><i class="bi bi-phone-fill"></i> {{ cliente.telefone }}</p>
+                        <p class="contact-detail"><i class="bi bi-geo-alt-fill"></i> {{ cliente.cidade }} - {{
+                            cliente.estado }}</p>
+                    </div>
+
+                    <div class="card-detalhes-clientes">
+                        <div class="status-pedidos">
+                            <span class="stat-label">Pedidos</span>
+                            <span class="stat-value">{{ cliente.total_pedidos or 0 }}</span>
+                        </div>
+                        <div class="status-pedidos">
+                            <span class="stat-label">Total Gasto</span>
+                            <span class="stat-value total-spent">R$ {{ cliente.total_gasto or '0,00'}}</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+            {% else %}
+            <div class="text-center mt-5 w-100">
+                <i class="bi bi-people" style="font-size: 60px; color: #ccc;"></i>
+                <h3 class="mt-3">Nenhum Cliente cadastrado</h3>
+                <p class="text-muted">Comece adicionando seu primeiro Cliente.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- LISTA DE CLIENTES -->
+        <!--    <section class="cliente-card">
+            {% if clientes %}
+            {% for cliente in clientes %}
+            <a href="{{ url_for('pedidos_clientes', cliente_id=cliente.id) }}" class="link-card">
+                <div class="clientes-card">
+
+                    <div class="container-fluid mt-4">
+
+                        <div class="clientes-card">
+                            <div class="clientes-texto">
+                                <span class="clientes-icone green-bg-icon"><i class="bi bi-people-fill"></i></span>
+                                <div class="clientes-titulo">
+                                    <h2 class="cliente-nome">{{ cliente.empresa }}</h2>
+                                    <p class="contato-pessoa">{{ cliente.nome }}</p>
+                                </div>
+                                <span class="status-cliente status-ativo">Ativo</span>
+                            </div>
+
+                            <div class="card-info-clientes">
+                                <p class="contact-detail"><i class="bi bi-envelope-fill"></i> {{ cliente.email
+                                    }}
+                                </p>
+                                <p class="contact-detail"><i class="bi bi-phone-fill"></i> {{ cliente.telefone
+                                    }}
+                                </p>
+                                <p class="contact-detail"><i class="bi bi-geo-alt-fill"></i> {{ cliente.cidade
+                                    }} -
+                                    {{ cliente.estado }}</p>
+                            </div>
+
+                            <div class="card-detalhes-clientes">
+                                <div class="status-pedidos">
+                                    <span class="stat-label">Pedidos</span>
+                                    <span class="stat-value">1</span>
+                                </div>
+                                <div class="status-pedidos">
+                                    <span class="stat-label">Total Gasto</span>
+                                    <span class="stat-value total-spent">R$ 0,00</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="text-center mt-5 w-100">
+                            <i class="bi bi-people" style="font-size: 60px; color: #ccc;"></i>
+                            <h3 class="mt-3">Nenhum cliente cadastrado</h3>
+                            <p class="text-muted">Comece adicionando seu primeiro cliente.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+        </section>-->
+    </main>
+
+</body>
+
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}">
+    <title>HypeX - Gestão de Estoque</title>
+</head>
+
+<body>
+    <!--Navegação-->
+    <header>
+        <div id="logo">
+            <img src="static/imagem/logo.png" alt="logo">
+        </div>
+        <nav class="menu">
+            <ul>
+                <a href="#home">
+                    <li>Home</li>
+                </a>
+                <a href="#Sobre">
+                    <li>Sobre</li>
+                </a>
+                <a href="#Solucoes">
+                    <li>Soluções</li>
+                </a>
+                <a href="#Funcionalidades">
+                    <li>Funcionalidades</li>
+                </a>
+                <a href="#Segmentos">
+                    <li>Segmentos</li>
+                </a>
+                <a href="#Planos">
+                    <li>Planos</li>
+                </a>
+                <a href="#contato" id="botao-header">
+                    <li>Contato</li>
+                </a>
+                <a href="{{ url_for('login') }}" id="login-header">
+                    <li>Entrar</li>
+                </a>
+            </ul>
+        </nav>
+    </header>
+    <!-- Conteúdo principal -->
+    <main class="main-principal">
+        <div class="container">
+            <aside class="main-text">
+                <span class="software">SOFTWARE DE GESTÃO DE ESTOQUE</span>
+                <h1>Mais <span>eficiência</span> no gerenciamento do seu estoque físico e virtual</h1>
+                <p>
+                    Encontre o equilíbrio perfeito entre excesso e falta de produtos.
+                    Reduza perdas, libere capital e garanta disponibilidade total.
+                </p>
+                <div class="cta-group">
+                    <a href="#contato" class="btn-primary">Experimente Agora</a>
+                    <a href="#Funcionalidades" class="btn-secondary">Ver Funcionalidades</a>
+                </div>
+            </aside>
+        </div>
+    </main>
+    <!--Funcionalidades do Sistema-->
+    <section id="Funcionalidades">
+        <span>GESTÃO DE ESTOQUE</span>
+        <h2>Transforme dados em decisões<br>
+            e assuma o controle total do seu estoque.</h2>
+        <p>Nossa plataforma oferece a visibilidade de ponta a ponta que você precisa. Desde a<br>
+            previsão de demanda precisa e o gerenciamento de múltiplos níveis e locais</p>
+        <div class="grid-servicos">
+            <div class="card-item">
+                <img src="static/imagem/icon-demanda.svg" alt="demanda">
+                <h3>Previsão de Demanda Inteligente</h3>
+                <p>Utilize dados históricos e tendências de mercado<br>
+                    para prever com precisão o que, quanto e quando<br>
+                    você deve comprar, eliminando incertezas</p>
+            </div>
+            <div class="card-item">
+                <img src="static/imagem/icon-calendario.svg" alt="reabastecimento">
+                <h3>Reabastecimento Automático (Just-in-Time)</h3>
+                <p>Automático (Just-in-Time) Deixe o sistema gerenciar o seu reabastecimento.<br>
+                    Receba sugestões ou gere ordens de compra<br>
+                    automáticas para manter o estoque sempre no<br>
+                    nível ideal.</p>
+            </div>
+            <div class="card-item">
+                <img src="static/imagem/icon-olho.svg" alt="olho">
+                <h3>Gestão de Múltiplos Galpões (Multi-Echelon)</h3>
+                <p>Controle o estoque em todas as suas unidades,<br>
+                    filiais e centros de distribuição de forma<br>
+                    centralizada e eficiente, não importa a<br>
+                    complexidade da sua rede.</p>
+            </div>
+            <div class="card-item">
+                <img src="static/imagem/icon-balancing.svg" alt="balanceamento">
+                <h3>Balanceamento de Rede Estratégico</h3>
+                <p>Transfira produtos entre galpões de forma<br>
+                    inteligente para evitar excessos em um local e<br>
+                    rupturas em outro, otimizando o capital de giro.</p>
+            </div>
+            <div class="card-item">
+                <img src="static/imagem/icon-grafico.svg" alt="alocacao">
+                <h3>Alocação Inteligente e Priorizada</h3>
+                <p>Defina regras automáticas para alocar o estoque<br>
+                    escasso, priorizando pedidos estratégicos e<br>
+                    garantindo o atendimento dos clientes mais<br>
+                    importantes.</p>
+            </div>
+            <div class="card-item">
+                <img src="static/imagem/icnon-grafico2.svg" alt="grafico">
+                <h3>Análise de Performance em Tempo Real</h3>
+                <p>Visualize em gráficos claros o desempenho<br>
+                    financeiro do seu estoque (lucro e perda) e tenha<br>
+                    a visão exata do seu volume total de ativos em<br>
+                    estoque</p>
+            </div>
+        </div>
+    </section>
+    <!-- Soluções/ o que entregamos-->
+    <section id="Solucoes">
+        <div id="Solucoes-container"></div>
+        <div class="Solucoes-texto">
+            <h2>Soluções Estratégicas para o Futuro do seu Estoque.</h2>
+            <p>Não apenas gerencie, planeje. Nossas soluções de ponta fornecem o controle, a<br>
+                inteligência e a automação que sua operação exige, permitindo que você tome<br>
+                decisões com base em dados para um crescimento sustentável."
+            </p>
+            <div class="Solucoes-diferenciais">
+                <div class="dif-item">
+                    <img src="static/imagem/certo.png" alt="icon-certo">
+                    <p>Geração de Ordens de Compra Automatizada</p>
+                </div>
+                <div class="dif-item">
+                    <img src="static/imagem/certo.png" alt="icon-certo">
+                    <p>Rastreabilidade por Número de Série (Serialização)</p>
+                </div>
+                <div class="dif-item">
+                    <img src="static/imagem/certo.png" alt="icon-certo">
+                    <p>Endereçamento Inteligente de Estoque</p>
+                </div>
+                <div class="dif-item">
+                    <img src="static/imagem/certo.png" alt="icon-certo">
+                    <p>Inventário Rotativo sem Parar a Operação</p>
+                </div>
+                <div class="dif-item">
+                    <img src="static/imagem/certo.png" alt="icon-certo">
+                    <p>Dashboards e KPIs Personalizáveis</p>
+                </div>
+                <div class="cta-group">
+                    <a href="#contato" class="btn-primary">Experimente Agora</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Segmentos de Mercado/ em quais areas pode ser usado o software -->
+    <section id="Segmentos">
+        <h2>Segmentos de Mercado</h2>
+        <div class="grid-segmentos">
+            <div class="item">
+                <img src="static/imagem/e-commerce.png" alt="e-commerce">
+                <p>E-commerce e Varejo Multicanal (Omnichannel)</p>
+            </div>
+            <div class="item">
+                <img src="static/imagem/industria-manifatura.png" alt="industria">
+                <p>Indústria de Manufatura e Produção</p>
+            </div>
+            <div class="item">
+                <img src="static/imagem/caminhao.png" alt="distribuicao">
+                <p>Distribuição e Atacado (Logística)</p>
+            </div>
+            <div class="item">
+                <img src="static/imagem/esterira.png" alt="esterira">
+                <p>Produtos de Alto Valor Agregado/Tecnologia</p>
+            </div>
+            <div class="item">
+                <img src="static/imagem/produtos-venciveis.png" alt="produtos-venciveis" id="alimentos">
+                <p>Alimentos e Bebidas (Perecíveis)</p>
+            </div>
+        </div>
+    </section>
+    <!-- Planos-->
+    <section id="Planos">
+        <span>Planos para a Sua Empresa</span>
+        <h2>Planos Desenvolvidos para o Seu Próximo Nível de Crescimento.</h2>
+
+        <div class="grid-planos">
+            <div class="card-plano">
+                <h2>PLANO BASICO</h2>
+                <img class="plano-img" src="static/imagem/plano-basico.png" alt="plano-basico">
+                <ul class="lista-plano">
+                    <li>Cadastro de até 200 produtos</li>
+                    <li>Controle de entrada e saída de estoque</li>
+                    <li>1 usuário administrador</li>
+                </ul>
+                <h3>R$ 199,90/mês</h3>
+                <a href="#formulario" class="btn-plano"><img class="carrinho" src="static/imagem/carrinhodecompra.png"
+                        alt="compra">Entrar em contato</a>
+            </div>
+            <div class="card-plano">
+                <h2>PLANO PROFISSIONAL</h2>
+                <img class="plano-img" src="static/imagem/plano-profissional.png" alt="plano-profissional">
+                <ul class="lista-plano">
+                    <li>Cadastro ilimitado de produtos</li>
+                    <li>Controle de entrada e saída de estoque</li>
+                    <li>Controle multi-estoque (vários depósitos)</li>
+                    <li>Controle de fornecedores e histórico de compras</li>
+                    <li>Até 5 usuários com diferentes permissões</li>
+                </ul>
+                <h3>R$ 499,90/mês</h3>
+                <a href="#formulario" class="btn-plano"><img class="carrinho" src="static/imagem/carrinhodecompra.png"
+                        alt="compra">Entrar em contato</a>
+            </div>
+            <div class="card-plano">
+                <h2>PLANO EMPRESARIAL</h2>
+                <img class="plano-img" src="static/imagem/plano-empresarial.png" alt="plano-empresarial">
+                <ul class="lista-plano">
+                    <li>Tudo do plano Profissional +</li>
+                    <li>Cadastro e gerenciamento de filiais</li>
+                    <li>Automação de pedidos de reposição com fornecedores</li>
+                    <li>Relatórios preditivos usando IA (previsão de demanda)</li>
+                    <li>Dashboard personalizável com indicadores-chave (KPI)</li>
+                    <li>API aberta para integrações personalizadas</li>
+                    <li>Usuários ilimitados</li>
+                    <li>Suporte prioritário 24hrs</li>
+                </ul>
+                <h3>R$ 999,90/mês</h3>
+                <a href="#formulario" class="btn-plano"><img class="carrinho" src="static/imagem/carrinhodecompra.png"
+                        alt="compra">Entrar em contato</a>
+            </div>
+        </div>
+    </section>
+    <!--Sobre a Empresa-->
+    <section id="Sobre">
+        <aside class="text-info">
+            <h3>SOBRE-NÓS</h3>
+            <h2>HYPE <span>X</span></h2>
+            <p>
+                Somos uma empresa de tecnologia e automação que<br>
+                oferece uma solução completa no formato SaaS,<br>
+                com ambições globais.
+            </p>
+
+            <p>
+                Nosso software de controle automatizado é único: ele opera<br>
+                em integração física com nossos próprios sensores e hardware<br>
+                inteligentes, garantindouma precisão de inventário inigualável.</p>
+
+            <p>
+                Com a Hype X, sua empresa assume o controle total, reduzindo custos<br>
+                operacionais e garantindo que cada decisão logística seja baseada<br>
+                em dados precisos e automatizados."
+            </p>
+        </aside>
+        <div id="info-img">
+            <img src="static/imagem/sobre.png" alt="sobre">
+        </div>
+    </section>
+    <!-- Formulário de Contato -->
+    <section id="formulario">
+        <div class="main-form">
+            <h3>ENTRE EM CONTATO</h3>
+            <p>
+                Nossa equipe de especialistas está à disposição para entender os desafios específicos da sua
+                operação<br>
+                e demonstrar como a inteligência e a automação da Hype X podem otimizar seus resultados.
+            </p>
+            <form class="form-contato">
+                <h2>INFORMAÇÕES</h2>
+
+                <div class="input-group">
+                    <div class="capo-input">
+                        <label for="nome">Nome*</label>
+                        <input type="text" name="nome" id="nome" required>
+                    </div>
+                    <div class="capo-input">
+                        <label for="sobrenome">Sobrenome*</label>
+                        <input type="text" name="sobrenome" id="sobrenome" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="capo-input">
+                        <label for="email">E-mail*</label>
+                        <input type="email" name="email" id="email" required>
+                    </div>
+                    <div class="capo-input">
+                        <label for="telefone">Telefone*</label>
+                        <input type="tel" name="telefone" id="telefone" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="capo-input">
+                        <label for="empresa">Empresa*</label>
+                        <input type="text" name="empresa" id="empresa" required>
+                    </div>
+                    <div class="capo-input">
+                        <label for="cargo">Cargo*</label>
+                        <input type="text" name="Cargo" id="cargo" required>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <p>Eu concordo em receber outras comunicações da Hype X.* <input type="checkbox" id="consentimento" name="consentimento" required></p>
+                    <p class="consentimento-texto">As informações pessoais que você nos fornecer <a href="#">Política de
+                            Privacidade</a></p>
+                </div>
+                <div class="cta-group-form">
+                    <a href="#contato" class="btn-primary">Entrar em Contato</a>
+                </div>
+            </form>
+        </div>
+        </main>
+    </section>
+    <!-- Footer onde esta nossas informações -->
+    <footer id="rodape">
+        <div class="footer-container">
+
+            <div class="footer-coluna">
+                <h4 class="logo-footer">HYPE X</h4>
+                <p>
+                    A Logística 4.0 no controle total do seu estoque.
+                </p>
+                <p>
+                    <i></i> hypex.org@gmail.com
+                </p>
+                <p>
+                    <i></i> (19) 99128-5631
+                </p>
+            </div>
+
+            <div class="footer-coluna">
+                <h4>Soluções</h4>
+                <ul>
+                    <li><a href="#">Plano Básico</a></li>
+                    <li><a href="#">Plano Profissional</a></li>
+                    <li><a href="#">Plano Empresarial</a></li>
+                    <li><a href="#">Gerenciamento de Multi-estoque</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-coluna">
+                <h4>Empresa</h4>
+                <ul>
+                    <li><a href="#Sobre">Sobre Nós</a></li>
+                    <li><a href="#Planos">Nossos Planos</a></li>
+                    <li><a href="#formulario">Entre em Contato</a></li>
+                    <li><a href="#">Política de Privacidade</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-coluna">
+                <h4>Siga-nos</h4>
+                <div class="social-links">
+                    <a href="#"><img src="imagens/facebook.png" alt="facebook">@HypeX_Solutions</a>
+                </div>
+                <div class="social-links">
+                    <a href="#"><img src="imagens/instagram.png" alt="instagram">@HypeX_Solutions</a>
+                </div>
+                <div class="social-links">
+                    <a href="#"><img src="imagens/whatsapp.png" alt="whatsapp">Hype X</a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer-copy">
+            <p>&copy; 2025 Hype X. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

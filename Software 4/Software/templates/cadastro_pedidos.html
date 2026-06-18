@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software HYPEX - Criar Pedido</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_info_galpao.css') }}">
+</head>
+
+<body>
+
+    <aside id="menu">
+        <div class="status-dots">
+            <span class="dot-red"></span>
+            <span class="dot-yellow"></span>
+            <span class="dot-green"></span>
+        </div>
+
+        <div class="perfil">
+            <img src="{{ url_for('static', filename='imagem/perfil.png') }}">
+            <h3>{{ session['empresa_nome'] if 'empresa_nome' in session else 'Empresa' }}</h3>
+        </div>
+
+        <nav>
+            <ul>
+                <li class="nav-menu">
+                    <a href="/dashboard"><i class="bi bi-bar-chart-fill"></i> DASHBOARD</a>
+                </li>
+                <li class="nav-menu">
+                    <a href="/galpao"><i class="bi bi-box-seam-fill"></i> ESTOQUE</a>
+                </li>
+                <li class="nav-menu">
+                    <a href="/fornecedores"><i class="bi bi-people-fill"></i> FORNECEDORES</a>
+                </li>
+                <li class="nav-menu">
+                    <a href="/pedidos_saida"><i class="bi bi-basket2-fill"></i> PEDIDOS</a>
+                </li>
+                <li class="nav-menu selected">
+                    <a href="/clientes"><i class="bi bi-person-fill"></i> CLIENTES</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="menu-opcoes">
+            <a href="/config" class="opcoes-btn"><i class="bi bi-gear-fill"></i></a>
+            <button class="opcoes-btn"><i class="bi bi-circle-half"></i></button>
+            <a href="{{ url_for('logout') }}" class="opcoes-btn red-opcoes-btn" onclick="return confirmarLogout()">
+                <i class="bi bi-door-open-fill"></i>
+            </a>
+        </div>
+    </aside>
+
+    <main id="config-conteudo">
+        <header class="config-texto">
+            <div class="config-info">
+                <h1><i class="bi bi-basket2-fill"></i> ABERTURA DE PEDIDO</h1>
+                <p>Selecione o cliente, o galpão de origem, adicione os produtos e defina as quantidades</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for categoria, mensagem in messages %}
+                <div class="alert alert-{{ 'danger' if categoria == 'erro' else 'success' }} mt-2">
+                    {{ mensagem }}
+                </div>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <button class="salvar-btn" form="form-pedido" type="submit">Fechar Pedido</button>
+        </header>
+
+        <form id="form-pedido" method="POST" action="/salvar_pedido_saida">
+
+            <input type="hidden" name="itens_json" id="itens-json">
+
+            <section class="config-grid">
+
+                <!-- CARD 1: Cliente e documento -->
+                <div class="config-card">
+                    <h3><i class="bi bi-person-fill"></i> Cliente e Documento</h3>
+
+                    <div class="input-resp">
+                        <input type="hidden" name="cliente_id" value="{{ cliente.id }}">
+                    </div>
+
+                    <div class="inputs-empresa">
+                        <div class="input-resp">
+                            <label>Nº do Documento</label>
+                            <input type="text" name="numero_documento" placeholder="NF-001">
+                        </div>
+                        <div class="input-resp">
+                            <label>Data do Pedido</label>
+                            <input type="date" name="data_saida" required>
+                        </div>
+                    </div>
+
+                    <div class="input-resp">
+                        <label>Observação</label>
+                        <input type="text" name="observacao" placeholder="Opcional...">
+                    </div>
+                </div>
+
+                <!-- CARD 2: Galpão de origem -->
+                <div class="config-card">
+                    <h3><i class="bi bi-geo-alt-fill"></i> Origem e Produtos</h3>
+
+                    <div class="input-resp">
+                        <label>Galpão de Retirada</label>
+                        <select id="select-galpao" name="galpao_id" required onchange="atualizarProdutosDoGalpao()">
+                            <option value="">Selecione</option>
+                             {% for galpao in galpoes %} 
+                            <option value="{{ galpao.id }}">
+                                {{ galpao.nome }} - {{galpao.stats}}
+
+                            </option>
+
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="input-resp mt-3">
+                        <label>Produto (Disponíveis no Galpão)</label>
+                        <select id="select-produto" disabled onchange="verificarPrecoItem()">
+                            <option value="">-- Selecione primeiro o galpão --</option>
+                        </select>
+                    </div>
+
+                    <div class="inputs-empresa">
+                        <div class="input-resp">
+                            <label>Preço Unitário (R$)</label>
+                            <input type="number" id="produto-preco" readonly placeholder="0,00" step="0.01">
+                        </div>
+                        <div class="input-resp">
+                            <label>Quantidade</label>
+                            <input type="number" id="produto-qtd" min="1" value="1">
+                        </div>
+                    </div>
+
+                    <button type="button" class="add-sensor-btn w-100 mt-2" id="btn-add-produto" disabled
+                        onclick="adicionarItemNaTabela()">
+                        <i class="bi bi-plus-lg"></i> Adicionar ao Pedido
+                    </button>
+                </div>
+
+                <!-- CARD 3: Tabela de itens -->
+                <div class="config-card full-width mt-2">
+                    <h3><i class="bi bi-cart-check-fill"></i> Itens do Pedido</h3>
+
+                    <div class="sensor-lista-container">
+                        <table class="sensor-lista" id="tabela-itens">
+                            <thead>
+                                <tr>
+                                    <th>Código/SKU</th>
+                                    <th>Produto</th>
+                                    <th>Qtd. Solicitada</th>
+                                    <th>Preço Unitário</th>
+                                    <th>Subtotal</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corpo-tabela-itens">
+                                <tr id="linha-vazia">
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        Nenhum produto adicionado ao pedido ainda.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row mt-4 align-items-center">
+                        <div class="col-md-6 text-muted">
+                            <small>* Mudar o galpão com itens na lista limpará a tabela para evitar conflito logístico.</small>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="total-pedido-box">
+                                Total do Pedido: R$ <span id="total-pedido-valor">0,00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </form>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let itensPedido = [];
+
+        async function atualizarProdutosDoGalpao() {
+            const galpaoId = document.getElementById("select-galpao").value;
+            const selectProduto = document.getElementById("select-produto");
+            const btnAdd = document.getElementById("btn-add-produto");
+
+            if (itensPedido.length > 0) {
+                const confirmou = confirm("Ao trocar o galpão, os itens adicionados serão removidos. Deseja continuar?");
+                if (!confirmou) return;
+                itensPedido = [];
+                renderizarTabela();
+            }
+
+            selectProduto.innerHTML = '<option value="">-- Carregando... --</option>';
+            selectProduto.disabled = true;
+            btnAdd.disabled = true;
+            document.getElementById("produto-preco").value = "";
+
+            if (!galpaoId) {
+                selectProduto.innerHTML = '<option value="">-- Selecione primeiro o galpão --</option>';
+                return;
+            }
+
+            try {
+                const resp = await fetch(`/api/produtos_do_galpao/${galpaoId}`);
+                if (!resp.ok) throw new Error("Erro na requisição");
+                const produtos = await resp.json();
+
+                if (produtos.length === 0) {
+                    selectProduto.innerHTML = '<option value="">-- Nenhum produto em estoque --</option>';
+                    return;
+                }
+
+                selectProduto.innerHTML = '<option value="">-- Selecione um produto --</option>';
+                produtos.forEach(p => {
+                    const opt = document.createElement("option");
+                    opt.value = p.id;
+                    opt.textContent = `${p.sku} — ${p.nome} (${p.estoque_disponivel} em estoque)`;
+                    opt.dataset.preco   = p.preco_venda;
+                    opt.dataset.sku     = p.sku;
+                    opt.dataset.nome    = p.nome;
+                    opt.dataset.estoque = p.estoque_disponivel;
+                    selectProduto.appendChild(opt);
+                });
+
+                selectProduto.disabled = false;
+
+            } catch (e) {
+                selectProduto.innerHTML = '<option value="">-- Erro ao carregar produtos --</option>';
+                console.error(e);
+            }
+        }
+
+        function verificarPrecoItem() {
+            const selectProduto = document.getElementById("select-produto");
+            const inputPreco    = document.getElementById("produto-preco");
+            const btnAdd        = document.getElementById("btn-add-produto");
+            const opcao         = selectProduto.options[selectProduto.selectedIndex];
+
+            if (!opcao || !opcao.value) {
+                inputPreco.value = "";
+                btnAdd.disabled = true;
+                return;
+            }
+
+            inputPreco.value = parseFloat(opcao.dataset.preco || 0).toFixed(2);
+            btnAdd.disabled  = false;
+        }
+
+        function adicionarItemNaTabela() {
+            const selectProduto  = document.getElementById("select-produto");
+            const inputQtd       = document.getElementById("produto-qtd");
+            const inputPreco     = document.getElementById("produto-preco");
+            const opcao          = selectProduto.options[selectProduto.selectedIndex];
+
+            if (!opcao || !opcao.value) return;
+
+            const produto_id       = parseInt(opcao.value);
+            const quantidade       = parseFloat(inputQtd.value) || 1;
+            const preco_unitario   = parseFloat(inputPreco.value) || 0;
+            const estoqueDisponivel = parseFloat(opcao.dataset.estoque || 0);
+
+            if (quantidade <= 0) {
+                alert("A quantidade deve ser maior que zero.");
+                return;
+            }
+            if (quantidade > estoqueDisponivel) {
+                alert(`Estoque insuficiente. Disponível: ${estoqueDisponivel}`);
+                return;
+            }
+
+            const existente = itensPedido.find(i => i.produto_id === produto_id);
+            if (existente) {
+                const novaQtd = existente.quantidade + quantidade;
+                if (novaQtd > estoqueDisponivel) {
+                    alert(`Quantidade total excede o estoque disponível (${estoqueDisponivel}).`);
+                    return;
+                }
+                existente.quantidade = novaQtd;
+            } else {
+                itensPedido.push({ produto_id, sku: opcao.dataset.sku, nome: opcao.dataset.nome,
+                                   quantidade, preco_unitario, estoque_disponivel: estoqueDisponivel });
+            }
+
+            selectProduto.value = "";
+            inputQtd.value      = 1;
+            inputPreco.value    = "";
+            document.getElementById("btn-add-produto").disabled = true;
+
+            renderizarTabela();
+        }
+
+        function removerItem(index) {
+            itensPedido.splice(index, 1);
+            renderizarTabela();
+        }
+
+        function renderizarTabela() {
+            const tbody = document.getElementById("corpo-tabela-itens");
+            tbody.innerHTML = "";
+
+            if (itensPedido.length === 0) {
+                tbody.innerHTML = `<tr id="linha-vazia">
+                    <td colspan="6" class="text-center text-muted py-4">Nenhum produto adicionado ao pedido ainda.</td>
+                </tr>`;
+                document.getElementById("total-pedido-valor").textContent = "0,00";
+                return;
+            }
+
+            let total = 0;
+            itensPedido.forEach((item, index) => {
+                const subtotal = item.quantidade * item.preco_unitario;
+                total += subtotal;
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${item.sku}</td>
+                    <td>${item.nome}</td>
+                    <td>${item.quantidade}</td>
+                    <td>R$ ${item.preco_unitario.toFixed(2).replace(".", ",")}</td>
+                    <td>R$ ${subtotal.toFixed(2).replace(".", ",")}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="removerItem(${index})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById("total-pedido-valor").textContent =
+                total.toFixed(2).replace(".", ",");
+        }
+
+        document.getElementById("form-pedido").addEventListener("submit", function (e) {
+            if (itensPedido.length === 0) {
+                e.preventDefault();
+                alert("Adicione pelo menos um produto antes de fechar o pedido.");
+                return;
+            }
+
+            const payload = itensPedido.map(i => ({
+                produto_id:     i.produto_id,
+                quantidade:     i.quantidade,
+                preco_unitario: i.preco_unitario,
+            }));
+
+            document.getElementById("itens-json").value = JSON.stringify(payload);
+        });
+
+        function confirmarLogout() {
+            return confirm("Deseja realmente sair?");
+        }
+    </script>
+</body>
+</html>

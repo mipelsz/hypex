@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software HYPEX - Galpões</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_galpao.css') }}">
+
+</head>
+
+<body>
+
+    <aside id="menu">
+        <div class="status-dots">
+            <span class="dot-red"></span>
+            <span class="dot-yellow"></span>
+            <span class="dot-green"></span>
+        </div>
+
+        <div class="perfil">
+            <img src="{{ url_for('static', filename='imagem/perfil.png') }}">
+            <h3>Empresa</h3>
+        </div>
+
+        <nav>
+            <ul>
+                <li class="nav-menu">
+                    <a href="/dashboard">
+                        <i class="bi-solid bi-bar-chart-fill"></i>
+                        DASHBOARD
+                    </a>
+                </li>
+
+                <li class="nav-menu selected">
+                    <a href="/estoque">
+                        <i class="bi-solid bi-box-seam-fill"></i>
+                        ESTOQUE
+                    </a>
+                </li>
+                <li class="nav-menu">
+                    <a href="/fornecedores">
+                        <i class="bi-solid bi-people-fill"></i>
+                        FORNECEDORES
+                    </a>
+                </li>
+                <li class="nav-menu">
+                    <a href="/pedidos">
+                        <i class="bi-solid bi-basket2-fill"></i>
+                        PEDIDOS
+                    </a>
+                </li>
+                <li class="nav-menu">
+                    <a href="/clientes">
+                        <i class="bi-solid bi-person-fill"></i>
+                        CLIENTES
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="menu-opcoes">
+            <a href="/config" class="opcoes-btn">
+                <i class="bi-solid bi-gear-fill"></i>
+            </a>
+            <button class="opcoes-btn selected-opcoes-btn"><i class="bi-solid bi-circle-half"></i></button>
+            <a href="{{ url_for('logout') }}" class="opcoes-btn red-opcoes-btn" onclick="return confirmarLogout()">
+                <i class="bi bi-door-open-fill"></i>
+            </a>
+        </div>
+    </aside>
+
+    <main id="galpao-conteudo">
+
+        <header class="galpao">
+            <div class="galpao-texto">
+                <h1><i class="bi-solid bi-house-fill"></i> GALPÕES</h1>
+                <p>Gerencie suas unidades de armazenamento</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for categoria, mensagem in messages %}
+            <div class="alert alert-{{ 'danger' if categoria == 'erro' else 'success' }}">
+                {{ mensagem }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <div id="add-galpao">
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <i class="bi-solid bi-plus-lg"></i> Adicionar Galpão
+                </button>
+
+                <!-- Modal -->
+                <form method="POST" action="{{ url_for('salvar_galpao') }}">
+                    <div class="modal fade" id="exampleModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5">Adicionar Galpão</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+
+                                    <div class="row g-3">
+                                        <div class="col">
+                                            <h6>Nome do Galpão</h6>
+                                            <input type="text" name="nome" class="form-control" required>
+                                        </div>
+
+                                        <div class="col">
+                                            <h6>Status</h6>
+                                            <select class="form-select" name="stats">
+                                                <option value="ativo">Operacional</option>
+                                                <option value="manutencao">Em Manutenção</option>
+                                                <option value="inativo">Inativo</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-3 mt-2">
+                                        <div class="col-md-6">
+                                            <h6>E-mail Responsável</h6>
+                                            <input type="email" name="email_resp" class="form-control">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <h6>Nome do Responsável</h6>
+                                            <input type="text" name="nome_resp" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-12">
+                                            <h6>Endereço</h6>
+                                            <input type="text" name="endereco" class="form-control">
+                                        </div>
+
+                                        <div class="col-12 mt-2">
+                                            <h6>Referencia</h6>
+                                            <input type="text" name="referencia" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <h6>Cidade</h6>
+                                            <input type="text" name="cidade" class="form-control">
+                                        </div>
+
+                                        <div class="col">
+                                            <h6>Estado</h6>
+                                            <select class="form-select" name="estado">
+                                                <option value="SP">São Paulo</option>
+                                                <option value="RJ">Rio de Janeiro</option>
+                                                <option value="MG">Minas Gerais</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <h6>Cep</h6>
+                                            <input type="text" name="cep" class="form-control">
+                                        </div>
+
+                                        <div class="col">
+                                            <h6>Área Total (m²)</h6>
+                                            <input type="text" name="area_total" class="form-control">
+                                        </div>
+
+                                        <div class="col">
+                                            <h6>Telefone</h6>
+                                            <input type="text" name="telefone" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <h6>Caixas por Nível</h6>
+                                            <input type="number" name="caixas_por_nivel" class="form-control">
+                                        </div>
+
+                                        <div class="col">
+                                            <h6>Total de Prateleiras</h6>
+                                            <input type="number" name="total_prateleiras" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <h6>Andar de Prateleiras</h6>
+                                            <input type="number" name="niveis_por_prateleira" class="form-control">
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-primary">Salvar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+        </header>
+
+        <section class="barra-pesquisa">
+            <div class="caixa-pesquisa">
+                <i class="bi-solid bi-search"></i>
+                <input type="text" placeholder="Buscar Galpões por nome ou cidade...">
+            </div>
+            <div class="pesquias-botao">
+                <button class="filtro-botao filter-btn"><i class="bi-solid bi-funnel-fill"></i> Filtros</button>
+                <button class="filtro-botao export-btn"><i class="bi-solid bi-cloud-arrow-down-fill"></i>
+                    Exportar</button>
+            </div>
+        </section>
+
+        <section class="cards-galpao">
+            {% if galpoes %}
+            {% for galpao in galpoes %}
+            <a href="/estoque/{{galpao.id}}" class="link-estoque">
+                <div class="galpao-card">
+                    <div class="galpao-texto">
+                        <span class="galpao-icone green-bg-icon"><i class="bi-solid bi-buildings-fill"></i></span>
+                        <div class="galpao-titulo">
+                            <h2 class="nome-galpao">{{ galpao.nome }}</h2>
+                            <p class="galpao-resp">Responsável: {{ galpao.nome_resp }}</p>
+                        </div>
+                        <span class="status-galpao 
+                        {% if galpao.stats == 'ativo' %} status-ativo
+                        {% elif galpao.stats == 'manutencao' %} status-manutencao
+                        {% else %} status-inativo {% endif %}">
+
+                            {% if galpao.stats == 'ativo' %}
+                            Operacional
+
+                            {% elif galpao.stats == 'manutencao' %}
+                            Em Manutenção
+
+                            {% else %}
+                            Inativo
+                            {% endif %}
+
+                        </span>
+                    </div>
+
+                    <div class="cards-info-galpao">
+                        <p class="detalhe-galpao"><i class="bi bi-upc"></i> {{ galpao.total_produtos }} Itens </p>
+                        <p class="detalhe-galpao"><i class="bi bi-telephone-fill"></i> {{ galpao.telefone }}</p>
+                        <p class="detalhe-galpao"><i class="bi bi-geo-alt-fill"></i> {{ galpao.cidade }} - {{
+                            galpao.estado }}</p>
+                    </div>
+
+                    <div class="cards-detalhe-galpao">
+                        <div class="stats-galpao">
+                            <span class="stats-ocupa">Ocupação</span>
+                            <span class="stats-espaco">
+                                {{ galpao.ocupacao }}%</span>
+                        </div>
+                        <div class="stats-galpao">
+                            <span class="stats-area">Área Total</span>
+                            <span class="stats-espaco total-spent">{{ galpao.area_total }} m²</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            {% endfor %}
+
+
+
+            {% else %}
+            <div class="text-center mt-5 w-100">
+                <i class="bi bi-house-add-fill" style="font-size: 60px; color: #ccc;"></i>
+                <h3 class="mt-3">Nenhum Galpao cadastrado</h3>
+                <p class="text-muted">Comece adicionando seu primeiro galpão.</p>
+            </div>
+            {% endif %}
+
+        </section>
+
+
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

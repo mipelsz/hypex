@@ -1,0 +1,394 @@
+body {
+    background-color: #f1f1f1;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#menu {
+    width: 250px;
+    background-color: #15477F;
+    color: white;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.status-dots {
+    display: flex;
+    gap: 8px;
+    padding: 0 20px 25px 20px;
+}
+
+.status-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: white;
+    border: 1px solid white;
+}
+
+.status-dots .dot-red {
+    background-color: white;
+}
+
+.status-dots .dot-yellow {
+    opacity: 0.6;
+}
+
+.status-dots .dot-green {
+    background-color: #2B6BB9;
+    border-color: #2B6BB9;
+}
+
+
+.perfil img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.perfil {
+    display: flex;
+    align-items: center;
+    color: #EAEFF6;
+    padding: 0 20px 20px 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.perfil i {
+    font-size: 28px;
+    margin-right: 10px;
+}
+
+.perfil h3 {
+    font-size: 18px;
+    margin: 0;
+    font-weight: 500;
+}
+
+nav {
+    flex-grow: 1;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-menu {
+    margin: 0;
+}
+
+.nav-menu a {
+    display: flex;
+    align-items: center;
+    color: #EAE4D7;
+    text-decoration: none;
+    font-size: 15px;
+    padding: 12px 20px;
+    transition: background-color 0.2s;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.nav-menu a i {
+    margin-right: 10px;
+    font-size: 18px;
+    color: #98B4CA;
+}
+
+.nav-menu.selected {
+    background-color: #2B6BB9;
+    border-left: 5px solid white;
+}
+
+.nav-menu.selected a {
+    color: white;
+    padding-left: 15px;
+}
+
+.nav-menu.selected a i {
+    color: white;
+}
+
+.nav-menu:not(.selected):hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-menu:not(.selected):hover a {
+    color: white;
+}
+
+.nav-menu:not(.selected):hover a i {
+    color: white;
+}
+
+.menu-opcoes {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.opcoes-btn {
+    flex: 1;
+    height: 40px;
+    background-color: #7E9EC4;
+    border: none;
+    border-radius: 8px;
+    color: #15477F;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.opcoes-btn:hover {
+    opacity: 0.8;
+}
+
+.selected-opcoes-btn {
+    background-color: #2B6BB9;
+    color: white;
+}
+
+.red-opcoes-btn {
+    background-color: #d63031;
+    color: white;
+}
+
+
+#fornecedor-conteudo {
+    margin-left: 250px;
+    padding: 30px;
+    flex-grow: 1;
+}
+
+.fornecedor-texto {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.fornecedor-texto h1 {
+    font-size: 24px;
+    color: #333;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+}
+
+.fornecedor-texto h1 i {
+    margin-right: 10px;
+}
+
+.fornecedor-texto p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.add-fornecedor-btn {
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-fornecedor-btn:hover {
+    background-color: #387bd8;
+}
+
+.add-fornecedor-btn i {
+    margin-right: 5px;
+}
+
+.barra-pesquisa {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+.caixa-pesquisa {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px 15px;
+    width: 40%;
+}
+
+.caixa-pesquisa i {
+    color: #999;
+    margin-right: 10px;
+}
+
+.caixa-pesquisa input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+}
+
+.pesquias-botao {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    color: #333;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.action-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.action-btn i {
+    margin-right: 5px;
+}
+
+
+.fornecedores-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.fornecedor-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f1f1;
+    transition: box-shadow 0.3s;
+}
+
+.fornecedor-card:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.fornecedor-card.inactive {
+    opacity: 0.6;
+}
+
+.fornecedor-card .fornecedor-texto {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f9f9f9;
+}
+
+.fornecedor-icone {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background-color: #E6F7E9;
+    color: #4A90E2;
+    font-size: 18px;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.fornecedor-nome {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.contato-fornecedor {
+    font-size: 13px;
+    color: #999;
+    margin: 2px 0 0 0;
+}
+
+.status-fornecedor {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 10px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.2s;
+}
+
+.card-link:hover {
+    transform: translateY(-5px);
+}
+
+.status-ativo {
+    background-color: #E6F7E9;
+    color: #38C172;
+}
+
+.status-inativo {
+    background-color: #FEEEEE;
+    color: #E3342F;
+}
+
+.card-detalhe {
+    margin-bottom: 15px;
+}
+
+.contato-detalhe {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0;
+}
+
+.contato-detalhe i {
+    color: #999;
+    margin-right: 8px;
+}
+
+.card-produtos {
+    padding-top: 15px;
+    border-top: 1px solid #f9f9f9;
+}
+
+.produtos-fornecedor {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4A90E2;
+}

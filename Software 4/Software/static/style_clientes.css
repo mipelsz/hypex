@@ -1,0 +1,456 @@
+body {
+    background-color: #f1f1f1;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container principal do menu */
+#menu {
+    width: 250px;
+    background-color: #15477F;
+    color: white;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.status-dots {
+    display: flex;
+    gap: 8px;
+    padding: 0 20px 25px 20px;
+}
+
+.status-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+
+    background-color: white;
+    border: 1px solid white;
+}
+
+.status-dots .dot-red {
+    background-color: white;
+}
+
+.status-dots .dot-yellow {
+    opacity: 0.6;
+}
+
+.status-dots .dot-green {
+    background-color: #2B6BB9;
+    border-color: #2B6BB9;
+}
+
+
+.perfil img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.perfil {
+    display: flex;
+    align-items: center;
+    color: #EAEFF6;
+    padding: 0 20px 20px 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.perfil i {
+    font-size: 28px;
+    margin-right: 10px;
+}
+
+.perfil h3 {
+    font-size: 18px;
+    margin: 0;
+    font-weight: 500;
+}
+
+nav {
+    flex-grow: 1;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-menu {
+    margin: 0;
+}
+
+.nav-menu a {
+    display: flex;
+    align-items: center;
+    color: #EAE4D7;
+    text-decoration: none;
+    font-size: 15px;
+    padding: 12px 20px;
+    transition: background-color 0.2s;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.nav-menu a i {
+    margin-right: 10px;
+    font-size: 18px;
+    color: #98B4CA;
+}
+
+
+.nav-menu.selected {
+    background-color: #2B6BB9;
+    border-left: 5px solid white;
+}
+
+.nav-menu.selected a {
+    color: white;
+    padding-left: 15px;
+}
+
+.nav-menu.selected a i {
+    color: white;
+}
+
+.nav-menu:not(.selected):hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-menu:not(.selected):hover a {
+    color: white;
+}
+
+.nav-menu:not(.selected):hover a i {
+    color: white;
+}
+
+.menu-opcoes {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.opcoes-btn {
+    flex: 1;
+    height: 40px;
+    background-color: #7E9EC4;
+    border: none;
+    border-radius: 8px;
+    color: #15477F;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.opcoes-btn:hover {
+    opacity: 0.8;
+}
+
+.selected-opcoes-btn {
+    background-color: #2B6BB9;
+    color: white;
+}
+
+.red-opcoes-btn {
+    background-color: #d63031;
+    color: white;
+}
+
+/*=======clientes.css=======*/
+
+#cliente-conteudo {
+    margin-left: 250px;
+    padding: 30px;
+    flex-grow: 1;
+}
+
+.clientes {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.clientes h1 {
+    font-size: 24px;
+    color: #333;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+}
+
+.clientes h1 i {
+    margin-right: 10px;
+}
+
+.clientes p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.add-client-btn {
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-client-btn:hover {
+    background-color: #387bd8;
+}
+
+.add-client-btn i {
+    margin-right: 5px;
+}
+
+/* --- CARDS DE CLIENTES --- */ 
+
+.clientes-cards {
+    display: grid;
+    /* Isso força 3 colunas em telas grandes e diminui conforme o espaço acaba */
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+    gap: 20px;
+    width: 100%;
+}
+
+/* Ajuste para garantir que o card interno não quebre o layout */
+.clientes-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f1f1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.cliente-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f1f1;
+    transition: box-shadow 0.3s;
+}
+
+
+.clientes-card:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.clientes-card.inactive {
+    opacity: 0.6;
+}
+
+.clientes-texto {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.clientes-icone {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.clientes-titulo {
+    flex-grow: 1;
+}
+
+.cliente-nome {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+.contato-pessoa {
+    font-size: 13px;
+    color: #999;
+    margin: 2px 0 0 0;
+}
+
+.green-bg-icon {
+    background-color: #E6F7E9;
+    color: #38C172;
+}
+
+.gray-bg-icon {
+    background-color: #f0f0f0;
+    color: #999;
+}
+
+/* pesquisa e ações */
+.barra-pesquisa {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+.caixa-pesquisa {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px 15px;
+    width: 40%;
+}
+
+.caixa-pesquisa i {
+    color: #999;
+    margin-right: 10px;
+}
+
+.caixa-pesquisa input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+}
+
+.pesquias-botao {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    color: #333;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.action-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.action-btn i {
+    margin-right: 5px;
+}
+
+.cards-info-clientes {
+    margin-bottom: 15px;
+}
+
+.contact-detail {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0;
+}
+
+.contact-detail i {
+    color: #999;
+    margin-right: 8px;
+    width: 14px;
+    text-align: center;
+}
+
+.clientes-card .card-detalhes-clientes {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 15px;
+    border-top: 1px solid #f9f9f9;
+}
+
+.status-pedidos {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.status-pedidos:first-child {
+    border-right: 1px solid #f1f1f1;
+    text-align: left;
+    padding-right: 10px;
+}
+
+.status-cliente {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 10px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.status-ativo {
+    background-color: #E6F7E9;
+    color: #38C172;
+}
+
+.status-inativo {
+    background-color: #F8E6E6;
+    color: #C13838;
+}
+
+
+.status-pedidos:last-child {
+    text-align: right;
+    padding-left: 10px;
+}
+
+.stat-label {
+    display: block;
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.total-spent {
+    color: #38C172;
+}
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.2s;
+}
+
+.card-link:hover {
+    transform: translateY(-5px);
+}
+

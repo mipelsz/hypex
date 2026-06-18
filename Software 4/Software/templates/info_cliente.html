@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software HYPEX - Informações do Cliente</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_info_galpao.css') }}">
+</head>
+
+<body>
+
+    <aside id="menu">
+        <div class="status-dots">
+            <span class="dot-red"></span>
+            <span class="dot-yellow"></span>
+            <span class="dot-green"></span>
+        </div>
+        <div class="perfil">
+            <img src="{{ url_for('static', filename='imagem/perfil.png') }}">
+            <h3>Empresa</h3>
+        </div>
+        <nav>
+            <ul>
+                <li class="nav-menu"><a href="/dashboard"><i class="bi bi-bar-chart-fill"></i> DASHBOARD</a></li>
+                <li class="nav-menu"><a href="/galpao"><i class="bi bi-box-seam-fill"></i> ESTOQUE</a></li>
+                <li class="nav-menu"><a href="/fornecedores"><i class="bi bi-people-fill"></i> FORNECEDORES</a></li>
+                <li class="nav-menu"><a href="/pedidos"><i class="bi bi-basket2-fill"></i> PEDIDOS</a></li>
+                <li class="nav-menu selected"><a href="/clientes"><i class="bi bi-person-fill"></i> CLIENTES</a></li>
+            </ul>
+        </nav>
+        <div class="menu-opcoes">
+            <a href="/config" class="opcoes-btn">
+                <i class="bi bi-gear-fill"></i>
+            </a>
+            <button class="opcoes-btn">
+                <i class="bi bi-circle-half"></i>
+            </button>
+            <a href="{{ url_for('logout') }}" class="opcoes-btn red-opcoes-btn" onclick="return confirmarLogout()">
+                <i class="bi bi-door-open-fill"></i>
+            </a>
+        </div>
+    </aside>
+
+    <main id="config-conteudo">
+        <header class="config-texto">
+            <div class="config-info">
+                <h1><i class="bi bi-person-vcard-fill"></i> PERFIL DO CLIENTE</h1>
+                <p>Detalhes do Cliente <strong>{{ cliente.nome }}</strong></p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for categoria, mensagem in messages %}
+            <div class="alert alert-{{ 'danger' if categoria == 'erro' else 'success' }}">
+                {{ mensagem }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <div class="grupo-botoes">
+                <!-- FIX: botões ligados aos forms pelo atributo form= -->
+                <button type="button" class="excluir-btn" data-bs-toggle="modal"
+                    data-bs-target="#modalDeletarCliente{{ cliente.id }}">
+                    Excluir Cliente
+                </button>
+                <div class="modal fade" id="modalDeletarCliente{{ cliente.id }}" tabindex="-1"
+                    aria-labelledby="modalClienteLabel{{ cliente.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalClienteLabel{{ cliente.id }}">Confirmar Exclusão
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body text-start">
+                                Tem certeza que deseja excluir o cliente <strong>{{ cliente.nome }}</strong>?
+                                <br>
+                                <small class="text-danger">Atenção: Isso pode excluir também os pedidos vinculados a
+                                    ele.</small>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+
+                                <!-- O formulário de exclusão do fornecedor -->
+                                <form id="form-excluir" method="POST"
+                                    action="{{ url_for('deletar_cliente', cliente_id=cliente.id) }}">
+                                    <button type="submit" class="btn btn-danger">Excluir Cliente</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" form="form-cliente" class="salvar-btn">
+                    Salvar Alterações
+                </button>
+            </div>
+        </header>
+
+        <!-- Form de exclusão -->
+        <form id="form-excluir" method="POST" action="{{ url_for('deletar_cliente', cliente_id=cliente.id) }}">
+        </form>
+
+        <!-- Form principal de atualização -->
+        <form id="form-cliente" method="POST" action="{{ url_for('atualizar_cliente', cliente_id=cliente.id) }}">
+
+            <section class="config-grid">
+
+                <!-- Card 1: identificação (só exibição) -->
+                <div class="config-card">
+                    <h3><i class="bi bi-image"></i> Identificação</h3>
+                    <img class="img-galpao" src="{{ url_for('static', filename='imagem/perfil.png') }}" alt="perfil">
+                    <div class="input-resp mt-3">
+                        <label>Nome Completo / Razão Social</label>
+                        <!-- disabled: só exibição; o campo "nome" real está no card de dados -->
+                        <input disabled type="text" value="{{ cliente.nome }}">
+                    </div>
+                </div>
+
+                <!-- Card 2: comunicação -->
+                <div class="config-card">
+                    <h3><i class="bi bi-telephone-fill"></i> Comunicação</h3>
+                    <div class="input-resp">
+                        <label>Empresa Vinculada</label>
+                        <!-- FIX: adicionado name="empresa" -->
+                        <input type="text" name="empresa" value="{{ cliente.empresa or '' }}"
+                            placeholder="Pessoa Física">
+                    </div>
+                    <div class="input-resp">
+                        <label>E-mail</label>
+                        <!-- FIX: adicionado name="email" -->
+                        <input type="email" name="email" value="{{ cliente.email }}">
+                    </div>
+                    <div class="input-resp">
+                        <label>Telefone</label>
+                        <!-- FIX: adicionado name="telefone" -->
+                        <input type="tel" name="telefone" value="{{ cliente.telefone }}">
+                    </div>
+                </div>
+
+                <!-- Card 3: dados fiscais e endereço -->
+                <div class="config-card full-width">
+                    <h3><i class="bi bi-geo-alt-fill"></i> Dados Fiscais e Endereço</h3>
+                    <div class="inputs-empresa">
+                        <div class="input-resp">
+                            <label>CPF / CNPJ</label>
+                            <!-- disabled: CPF/CNPJ não deve ser editado -->
+                            <input disabled type="text" value="{{ cliente.cpf_cnpj }}">
+                        </div>
+                        <div class="input-resp">
+                            <label>CEP</label>
+                            <!-- FIX: adicionado name="cep" -->
+                            <input type="text" name="cep" value="{{ cliente.cep }}">
+                        </div>
+                        <div class="input-resp">
+                            <label>Estado</label>
+                            <!-- FIX: adicionado name="estado" -->
+                            <input type="text" name="estado" value="{{ cliente.estado }}">
+                        </div>
+                    </div>
+                    <div class="inputs-empresa">
+                        <div class="input-resp">
+                            <label>Nome Completo</label>
+                            <!-- FIX: adicionado name="nome" -->
+                            <input type="text" name="nome" value="{{ cliente.nome }}">
+                        </div>
+                        <div class="input-resp">
+                            <label>Cidade</label>
+                            <!-- FIX: adicionado name="cidade" -->
+                            <input type="text" name="cidade" value="{{ cliente.cidade }}">
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </form>
+        <!-- /form-cliente -->
+
+        <!-- Tabela de pedidos -->
+        <section class="config-card full-width ativar-sensor mt-4">
+            <h3><i class="bi bi-basket2-fill"></i> Pedidos do Cliente</h3>
+            <div class="sensor-lista-container">
+                <table class="sensor-lista">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Produto</th>
+                            <th>Qtd.</th>
+                            <th>Valor Total</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pedido in pedidos %}
+                        <tr>
+                            <td>
+                                {% if pedido.status_pedido == 'pendente' %}
+                                <span class="badge bg-warning text-dark">Pendente</span>
+                                {% elif pedido.status_pedido == 'processado' %}
+                                <span class="badge bg-success">Processado</span>
+                                {% elif pedido.status_pedido == 'cancelado' %}
+                                <span class="badge bg-danger">Cancelado</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ pedido.status_pedido }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ pedido.produto_pedido }}</td>
+                            <td>—</td>
+                            <td>R$ {{ "%.2f"|format(pedido.valor_total) }}</td>
+                            <td>{{ pedido.data_pedido.strftime('%d/%m/%Y') if pedido.data_pedido else '—' }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                Nenhum pedido registrado para este cliente.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmarLogout() {
+            return confirm('Deseja realmente sair?');
+        }
+    </script>
+
+</body>
+
+</html>

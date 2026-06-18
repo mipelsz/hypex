@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software HYPEX - Informações do Produto</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_info_galpao.css') }}">
+</head>
+
+<body>
+
+    <aside id="menu">
+        <div class="status-dots">
+            <span class="dot-red"></span>
+            <span class="dot-yellow"></span>
+            <span class="dot-green"></span>
+        </div>
+
+        <div class="perfil">
+            <img src="{{ url_for('static', filename='imagem/perfil.png') }}">
+            <h3>{{ session['empresa_nome'] if 'empresa_nome' in session else 'Empresa' }}</h3>
+        </div>
+
+        <nav>
+            <ul>
+                <li class="nav-menu">
+                    <a href="/dashboard"><i class="bi bi-bar-chart-fill"></i> DASHBOARD</a>
+                </li>
+                <li class="nav-menu selected">
+                    <a href="/galpao"><i class="bi bi-box-seam-fill"></i> ESTOQUE</a>
+                </li>
+                <li class="nav-menu">
+                    <a href="/fornecedores"><i class="bi bi-people-fill"></i> FORNECEDORES</a>
+                </li>
+                <li class="nav-menu">
+                    <a href="/pedidos"><i class="bi bi-basket2-fill"></i> PEDIDOS</a>
+                </li>
+                <li class="nav-menu">
+                    <a href="/clientes"><i class="bi bi-person-fill"></i> CLIENTES</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="menu-opcoes">
+            <a href="/config" class="opcoes-btn"><i class="bi bi-gear-fill"></i></a>
+            <button class="opcoes-btn"><i class="bi bi-circle-half"></i></button>
+            <a href="{{ url_for('logout') }}" class="opcoes-btn red-opcoes-btn" onclick="return confirmarLogout()">
+                <i class="bi bi-door-open-fill"></i>
+            </a>
+        </div>
+    </aside>
+
+    <main id="config-conteudo">
+        <header class="config-texto">
+            <div class="config-info">
+                <h1><i class="bi bi-box-seam"></i> GESTÃO DE PRODUTOS</h1>
+                <p>Gerencie as informações do seu produto e edite-as conforme necessário</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for categoria, mensagem in messages %}
+            <div class="alert alert-{{ 'danger' if categoria == 'erro' else 'success' }} mt-2">
+                {{ mensagem }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <div class="grupo-botoes">
+                <button type="submit" form="form-excluir" class="excluir-btn"
+                    onclick="return confirm('Deseja excluir o Produto {{ produto.nome }}? Esta ação não pode ser desfeita.')">
+                    Excluir Produto
+                </button>
+                <button type="submit" form="form-produto" class="salvar-btn">
+                    Salvar Alterações
+                </button>
+            </div>
+        </header>
+
+        <form id="form-produto" method="POST" action="{{ url_for('atualizar_produto', id=produto.id) }}">
+
+            <section class="config-grid">
+                <div class="config-card">
+                    <h3><i class="bi bi-image"></i> Imagem do Produto</h3>
+                    <img class="img-galpao" src="{{ url_for('static', filename='imagem/imagemproduto.png') }}"
+                        alt="produto">
+                    <button type="button" class="alterar-btn">
+                        <i class="bi bi-pencil-fill"></i> Alterar Imagem
+                    </button>
+                    <div class="input-resp">
+                        <label>Código de Barras (EAN)</label>
+                        <input type="text" name="codigo_barras" value="{{ produto.codigo_barras or '' }}"
+                            placeholder="789000...">
+                    </div>
+                </div>
+
+                <div class="config-card">
+                    <h3><i class="bi bi-info-circle-fill"></i> Identificação Básica</h3>
+                    <div class="input-resp">
+                        <label>Nome do Produto</label>
+                        <input type="text" name="nome" value="{{ produto.nome }}" placeholder="Ex: Monitor Gamer 24'">
+                    </div>
+                    <div class="input-resp">
+                        <label>SKU (Código Interno)</label>
+                        <input type="text" name="sku" value="{{ produto.sku }}" placeholder="MNTR-24-001">
+                    </div>
+                    <div class="input-resp">
+                        <label>Categoria</label>
+                        <input type="text" name="categoria" value="{{ produto.categoria or '' }}"
+                            placeholder="Eletrônicos">
+                    </div>
+                    <div class="input-resp">
+                        <label>Tipo de Carga</label>
+                        {# Os valores do select devem bater exatamente com os gravados no banco #}
+                        <select name="tipo">
+                            <option value="leve" {% if produto.tipo=='leve' %}selected{% endif %}>Leve</option>
+                            <option value="medio" {% if produto.tipo=='medio' %}selected{% endif %}>Médio</option>
+                            <option value="pesado" {% if produto.tipo=='pesado' %}selected{% endif %}>Pesado</option>
+                            <option value="fragil" {% if produto.tipo=='fragil' %}selected{% endif %}>Frágil</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="config-card full-width">
+                    <h3><i class="bi bi-currency-dollar"></i> Detalhes Financeiros e Físicos</h3>
+                    <div class="inputs-empresa">
+                        <div class="input-resp">
+                            <label>Preço de Custo (R$)</label>
+                            <input type="number" step="0.01" min="0" name="preco_custo"
+                                value="{{ produto.preco_custo }}">
+                        </div>
+                        <div class="input-resp">
+                            <label>Preço de Venda (R$)</label>
+                            <input type="number" step="0.01" min="0" name="preco_venda"
+                                value="{{ produto.preco_venda }}">
+                        </div>
+                        <div class="input-resp">
+                            <label>Peso (kg)</label>
+                            <input type="number" step="0.001" min="0" name="peso" value="{{ produto.peso }}">
+                        </div>
+                        <div class="input-resp">
+                            <label>Volume (m³)</label>
+                            <input type="number" step="0.001" min="0" name="volume" value="{{ produto.volume }}">
+                        </div>
+                    </div>
+                    <div class="inputs-empresa">
+                        <div class="input-resp">
+                            <label>Quantidade Mínima</label>
+                            <input type="number" step="1" min="0" name="quantidade_minimo"
+                                value="{{ produto.estoque_minimo }}">
+                        </div>
+                        <div class="input-resp">
+                            <label>Quantidade </label>
+                            <input type="number" step="1" min="0" name="quantidade"
+                                value="{{ produto.quantidade }}">
+                        </div>
+                        <div class="input-resp">
+                            <label>Fornecedor</label>
+                            <input type="text" name="Fornecedor" value="{{ produto.fornecedor }}">
+                        </div>
+                        <div class="input-resp">
+                            <label>Itens por caixa</label>
+                            <input type="number" step="1" min="0" name="item_por_caixa"
+                                value="{{ produto.item_por_caixa }}">
+                        </div>
+                    </div>
+                    <div class="inputs-empresa">
+                        <div class="input-resp">
+                            <label>Setor</label>
+                            <input type="text" step="1" min="0" name="setor" value="{{ produto.setor }}">
+                        </div>
+                        <div class="input-resp">
+                            <label>Prateleira</label>
+                            <input type="number" step="1" min="0" name="prateleira" value="{{ produto.prateleira }}">
+                        </div>
+                        <div class="input-resp">
+                            <label>Nível</label>
+                            <input type="text" step="1" min="0" name="nivel" value="{{ produto.nivel }}">
+                        </div>
+                    </div>
+                    <div class="input-resp mt-3">
+                        <label>Descrição Completa</label>
+                        <textarea class="form-control" name="descricao"
+                            rows="3">{{ produto.descricao or '' }}</textarea>
+                    </div>
+                </div>
+            </section>
+
+        </form><!-- /form-produto -->
+
+        <section class="config-card full-width ativar-sensor mt-4">
+            <h3><i class="bi bi-clock-history"></i> Histórico de Alterações</h3>
+            <div class="sensor-lista-container">
+                <table class="sensor-lista">
+                    <thead>
+                        <tr>
+                            <th>Data / Hora</th>
+                            <th>Usuário</th>
+                            <th>Ação</th>
+                            <th>Módulo / Item</th>
+                            <th>Descrição da Alteração</th>
+                            <th>IP / Origem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in historico %}
+                        <tr>
+                            <td><strong>{{ log.data_hora.strftime('%d/%m/%Y %H:%M') }}</strong></td>
+
+                            <td>{{ log.usuario_nome }}</td>
+
+                            <td>
+                                {% if log.acao == 'Criar' %}
+                                <span class="badge bg-success">Criou</span>
+                                {% elif log.acao == 'Editar' %}
+                                <span class="badge bg-warning text-dark">Editou</span>
+                                {% elif log.acao == 'Excluir' %}
+                                <span class="badge bg-danger">Excluiu</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ log.acao }}</span>
+                                {% endif %}
+                            </td>
+
+                            <td>{{ log.modulo }}</td>
+
+                            <td class="text-muted">{{ log.descricao }}</td>
+
+                            <td><small class="text-muted">{{ log.ip_origem or '—' }}</small></td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">Nenhuma alteração registrada até o
+                                momento.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmarLogout() {
+            return confirm("Deseja realmente sair?");
+        }
+    </script>
+</body>
+
+</html>
