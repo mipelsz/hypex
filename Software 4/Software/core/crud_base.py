@@ -1,16 +1,26 @@
 from core.database import Database
+from core.empresa import empresa_atual
 
 class CrudBase:
     table = ""
     fields = []
+
+    por_empresa = True
+
+    @classmethod
+    def _filtro_empresa(cls, prefixo=" WHERE"):
+        if cls.por_empresa:
+            return f"{prefixo} empresa_id = %s", (empresa_atual(),)
+        return "", ()
 
     @classmethod
     def find_all(cls, order_by="id"):
         conexao = Database.connect()
         cursor = conexao.cursor(dictionary=True)
         try:
-            sql = f"SELECT * FROM {cls.table} ORDER BY {order_by}"
-            cursor.execute(sql)
+            filtro, valores = cls._filtro_empresa()
+            sql = f"SELECT * FROM {cls.table}{filtro} ORDER BY {order_by}"
+            cursor.execute(sql, valores)
             return cursor.fetchall()
         finally:
             cursor.close()
@@ -21,8 +31,9 @@ class CrudBase:
         conexao = Database.connect()
         cursor = conexao.cursor(dictionary=True)
         try:
-            sql = f"SELECT * FROM {cls.table} WHERE id = %s"
-            cursor.execute(sql, (id,))
+            filtro, valores = cls._filtro_empresa(" AND")
+            sql = f"SELECT * FROM {cls.table} WHERE id = %s{filtro}"
+            cursor.execute(sql, (id,) + valores)
             return cursor.fetchone()
         finally:
             cursor.close()
@@ -33,8 +44,9 @@ class CrudBase:
         conexao = Database.connect()
         cursor = conexao.cursor()
         try:
-            sql = f"DELETE FROM {cls.table} WHERE id = %s"
-            cursor.execute(sql, (id,))
+            filtro, valores = cls._filtro_empresa(" AND")
+            sql = f"DELETE FROM {cls.table} WHERE id = %s{filtro}"
+            cursor.execute(sql, (id,) + valores)
             conexao.commit()
             return cursor.rowcount
         except Exception:
@@ -48,11 +60,15 @@ class CrudBase:
         conexao = Database.connect()
         cursor = conexao.cursor()
         try:
-            colunas = ", ".join(self.fields)
-            marcadores = ", ".join(["%s"] * len(self.fields))
-            valores = tuple(getattr(self, campo) for campo in self.fields)
+            campos = list(self.fields)
+            valores = [getattr(self, campo) for campo in self.fields]
+            if self.por_empresa and "empresa_id" not in campos:
+                campos.insert(0, "empresa_id")
+                valores.insert(0, empresa_atual())
+            colunas = ", ".join(campos)
+            marcadores = ", ".join(["%s"] * len(campos))
             sql = f"INSERT INTO {self.table} ({colunas}) VALUES ({marcadores})"
-            cursor.execute(sql, valores)
+            cursor.execute(sql, tuple(valores))
             conexao.commit()
             return cursor.lastrowid
         except Exception:
@@ -67,8 +83,9 @@ class CrudBase:
         cursor = conexao.cursor()
         try:
             campos = ", ".join([f"{campo} = %s" for campo in self.fields])
-            valores = tuple(getattr(self, campo) for campo in self.fields) + (id,)
-            sql = f"UPDATE {self.table} SET {campos} WHERE id = %s"
+            filtro, extra = self._filtro_empresa(" AND")
+            valores = tuple(getattr(self, campo) for campo in self.fields) + (id,) + extra
+            sql = f"UPDATE {self.table} SET {campos} WHERE id = %s{filtro}"
             cursor.execute(sql, valores)
             conexao.commit()
             return cursor.rowcount

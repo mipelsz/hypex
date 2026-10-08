@@ -1,0 +1,184 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f4f4;
+    color: #263238;
+}
+
+.layout {
+    min-height: 100vh;
+    display: flex;
+}
+
+
+/* PARTE INFERIOR */
+
+.sidebar-bottom {
+    margin-top: auto;
+    padding: 0 15px 18px;
+    display: flex;
+    gap: 12px;
+}
+
+.sidebar-bottom button {
+    width: 68px;
+    height: 48px;
+    border: none;
+    border-radius: 8px;
+    background: #8bb1da;
+    color: #164b80;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.sidebar-bottom .logout {
+    background: #e62f32;
+    color: white;
+}
+
+
+/* =========================
+   CONTEÚDO
+========================= */
+
+.content {
+    flex: 1;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+
+/* CARD 404 */
+
+.error-card {
+    width: min(700px, 90%);
+    background: white;
+    border-radius: 12px;
+    padding: 60px 50px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+
+/* 404 */
+
+.error-icon {
+    font-size: 120px;
+    font-weight: 800;
+    line-height: 1;
+    color: #3478c5;
+    margin-bottom: 25px;
+}
+
+
+/* TÍTULO */
+
+.error-card h1 {
+    font-size: 30px;
+    color: #263238;
+    margin-bottom: 15px;
+}
+
+
+/* TEXTO */
+
+.error-card p {
+    color: #65717c;
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+.error-description {
+    margin-top: 5px;
+    font-size: 15px !important;
+}
+
+
+/* BOTÃO */
+
+.back-button {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 14px 25px;
+    background: #3478c5;
+    color: white;
+    text-decoration: none;
+    border-radius: 7px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.back-button:hover {
+    background: #2868aa;
+    transform: translateY(-1px);
+}
+
+
+/* =========================
+   RESPONSIVO
+========================= */
+
+@media (max-width: 800px) {
+
+    .sidebar {
+        width: 220px;
+    }
+
+    .profile span {
+        font-size: 17px;
+    }
+
+    .menu-item {
+        font-size: 15px;
+    }
+
+    .error-card {
+        padding: 45px 25px;
+    }
+
+    .error-icon {
+        font-size: 90px;
+    }
+
+    .error-card h1 {
+        font-size: 25px;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .sidebar {
+        display: none;
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .error-card {
+        width: 100%;
+        padding: 40px 20px;
+    }
+
+    .error-icon {
+        font-size: 80px;
+    }
+
+    .error-card h1 {
+        font-size: 23px;
+    }
+
+    .error-card p {
+        font-size: 15px;
+    }
+}

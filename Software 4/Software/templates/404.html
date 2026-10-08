@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página não encontrada</title>
+
+    <!-- Arquivo CSS específico para a página de erro 404 -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style404.css') }}">
+
+</head>
+
+<body>
+
+    <!-- Container da estrutura principal do layout -->
+    <div class="layout">
+
+        <!-- Área de conteúdo principal -->
+        <main class="content">
+
+            <!-- Card centralizado de exibição da mensagem de erro -->
+            <div class="error-card">
+
+                <!-- Ícone/Destaque visual do código de erro 404 -->
+                <div class="error-icon">
+                    404
+                </div>
+
+                <!-- Título principal do erro -->
+                <h1>Página não encontrada</h1>
+
+                <!-- Mensagem explicativa inicial -->
+                <p>
+                    Ops! A página que você está procurando
+                    não existe ou foi movida.
+                </p>
+
+                <!-- Instrução adicional para orientação do usuário -->
+                <p class="error-description">
+                    Verifique o endereço ou volte para o Dashboard
+                    para continuar utilizando o sistema.
+                </p>
+
+                <!-- Botão para redirecionar o usuário de volta ao Dashboard -->
+                <a href="{{ url_for('dashboard') }}" class="back-button">
+                    ← Voltar ao Dashboard
+                </a>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

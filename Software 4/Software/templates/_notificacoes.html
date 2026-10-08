@@ -1,0 +1,37 @@
+{% with mensagens = get_flashed_messages(with_categories=true) %}
+{% if mensagens %}
+<!-- Container principal para exibição das mensagens do sistema (mensagens flash) -->
+<div class="notificacoes" role="status" aria-live="polite">
+
+    <!-- Iteração sobre a lista de mensagens recebidas -->
+    {% for categoria, mensagem in mensagens %}
+    {% set indice = loop.index %}
+
+    <!-- Controle de estado oculto para fechar a notificação via checkbox -->
+    <input type="checkbox" id="fechar-notificacao-{{ indice }}" class="notificacao-fechar" hidden>
+
+    <!-- Card da notificação com estilo de acordo com a categoria -->
+    <div class="notificacao notificacao-{{ 'erro' if categoria == 'erro' else categoria }}">
+
+        <!-- Ícone correspondente ao tipo de mensagem (erro, aviso, info ou sucesso) -->
+        <i class="bi
+            {%- if categoria == 'erro' %} bi-exclamation-triangle-fill
+            {%- elif categoria == 'aviso' %} bi-exclamation-circle-fill
+            {%- elif categoria == 'info' %} bi-info-circle-fill
+            {%- else %} bi-check-circle-fill{% endif %}"></i>
+
+        <!-- Texto explicativo da mensagem -->
+        <span class="notificacao-texto">{{ mensagem }}</span>
+
+        <!-- Botão/Rótulo para fechar e remover o alerta da tela -->
+        <label for="fechar-notificacao-{{ indice }}" class="notificacao-x"
+            title="Fechar" aria-label="Fechar notificação">
+            <i class="bi bi-x-lg"></i>
+        </label>
+
+    </div>
+    {% endfor %}
+
+</div>
+{% endif %}
+{% endwith %}

@@ -1,214 +1,223 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Software HYPEX - Configurações</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="style_config.css"> 
-</head>
+{% block title %}
+Software HYPEX - Configurações
+{% endblock %}
 
-<body>
+<!-- Folha de estilo para a página de configurações -->
+{% block css %}
 
-    <aside id="menu">
-        <div class="status-dots">
-            <span class="dot-red"></span>
-            <span class="dot-yellow"></span>
-            <span class="dot-green"></span>
+<link rel="stylesheet" href="{{ url_for('static', filename='style_config.css') }}">
+
+{% endblock %}
+
+{% block content %}
+
+<!-- Conteúdo principal do painel de configurações -->
+<main id="config-conteudo">
+    <!-- Cabeçalho da página de configurações -->
+    <header class="config-texto">
+        <div class="config-info">
+            <h1><i class="bi bi-gear-fill"></i> CONFIGURAÇÕES</h1>
+            <p>Gerencie as preferências da sua conta e do sistema</p>
         </div>
+    </header>
 
-        <div class="perfil">
-            <img src="{{ url_for('static', filename='imagem/perfil.png') }}">
-            <h3>Empresa</h3>
-        </div>
 
-        <nav>
-            <ul>
-                <li class="nav-menu">
-                    <a href="/dashboard">
-                        <i class="bi-solid bi-bar-chart-fill"></i>
-                        DASHBOARD
-                    </a>
-                </li>
-                <li class="nav-menu">
-                    <a href="/galpao">
-                        <i class="bi-solid bi-box-seam-fill"></i>
-                        ESTOQUE
-                    </a>
-                </li>
-                <li class="nav-menu">
-                    <a href="/fornecedores">
-                        <i class="bi-solid bi-people-fill"></i>
-                        FORNECEDORES
-                    </a>
-                </li>
-                <li class="nav-menu">
-                    <a href="/pedidos">
-                        <i class="bi-solid bi-basket2-fill"></i>
-                        PEDIDOS
-                    </a>
-                </li>
-                <li class="nav-menu">
-                    <a href="/clientes">
-                        <i class="bi-solid bi-person-fill"></i>
-                        CLIENTES
-                    </a>
-                </li>
-            </ul>
-        </nav>
+    <!-- Grid com os cards de configurações divididos por seções -->
+    <section class="config-grid">
 
-        <div class="menu-opcoes">
-            <a href="/config" class="opcoes-btn selected-opcoes-btn">
-                <i class="bi-solid bi-gear-fill"></i>
-            </a>
-            <button class="opcoes-btn">
-                <i class="bi-solid bi-circle-half"></i>
-            </button>
-            <a href="{{ url_for('logout') }}" 
-            class="opcoes-btn red-opcoes-btn"
-            onclick="return confirmarLogout()">
-                <i class="bi bi-door-open-fill"></i>
-            </a>
-        </div>
-    </aside>
+        <!-- Card de gerenciamento dos dados e logo da empresa -->
+        <div class="config-card full-width">
+            <h3><i class="bi bi-building-fill"></i> Dados da Empresa</h3>
 
-    <main id="config-conteudo">
-        <header class="config-texto">
-            <div class="config-info">
-                <h1><i class="bi-solid bi-gear-fill"></i> CONFIGURAÇÕES</h1>
-                <p>Gerencie as preferências da sua conta e do sistema</p>
-            </div>
-            <button class="salvar-btn">Salvar Alterações</button>
-        </header>
+            <!-- Mensagem informativa sobre restrição de permissão -->
+            {% if not pode_gerenciar %}
+            <p class="config-dica">Somente administradores e gerentes alteram os dados da empresa.</p>
+            {% endif %}
 
-        <section class="config-grid">
-            <div class="config-card">
-                <h3><i class="bi-solid bi-person-fill-gear"></i> Perfil do Administrador</h3>
-                <div class="input-resp">
-                    <label>Nome do Responsável</label>
-                    <input type="text" value="Ricardo Souza">
-                </div>
-                <div class="input-resp">
-                    <label>E-mail de Contato</label>
-                    <input type="email" value="admin@hypex.com">
-                </div>
-                <button class="senha-btn">
-                    <i class="bis bi-lock-fill"></i>
-                    Alterar Senha de Acesso
-                </button>
-            </div>
+            <!-- Formulário para upload do logo e dados cadastrais da empresa -->
+            <form method="POST" enctype="multipart/form-data" class="empresa-form"
+                action="{{ url_for('salvar_empresa') }}">
+                <fieldset class="empresa-fieldset" {{ 'disabled' if not pode_gerenciar }}>
 
-            <div class="config-card">
-                <h3><i class="bi-solid bi-display"></i> Sistema e Tema</h3>
-                <div class="modo-escolha">
-                    <span>Modo Escuro (Dark Mode)</span>
-                    <label class="switch">
-                        <input type="checkbox">
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-                <div class="modo-escolha">
-                    <span>Notificações por E-mail</span>
-                    <label class="switch">
-                        <input type="checkbox" checked>
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-                <div class="input-resp">
-                    <label>Idioma do Painel</label>
-                    <select>
-                        <option>Português (BR)</option>
-                        <option>English (US)</option>
-                        <option>Español</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="config-card full-width">
-                <h3><i class="bi-solid bi-building-fill"></i> Dados da Empresa</h3>
-                <div class="inputs-empresa">
-                    <div class="input-resp">
-                        <label>Razão Social</label>
-                        <input type="text" placeholder="Nome da Empresa">
+                    <!-- Campo de pré-visualização e seleção da imagem de perfil/logo da empresa -->
+                    <div class="empresa-foto campo-imagem">
+                        <img class="preview-imagem"
+                            src="{{ url_for('static', filename='imagem/' + (empresa.imagem | imagem_ou('perfil.png'))) }}"
+                            alt="{{ empresa.nome }}">
+                        <input type="file" id="imagem-empresa" name="imagem" class="input-imagem"
+                            accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+                        <label for="imagem-empresa" class="alterar-foto">
+                            <i class="bi bi-camera-fill"></i> Alterar foto
+                        </label>
+                        <small>PNG, JPG, WEBP ou GIF até 5 MB</small>
                     </div>
+
+                    <!-- Campos textuais da empresa (Razão Social e CNPJ) -->
+                    <div class="empresa-campos">
+                        <div class="input-resp">
+                            <label>Razão Social</label>
+                            <input type="text" name="nome" value="{{ empresa.nome or '' }}"
+                                placeholder="Nome da Empresa" required>
+                        </div>
+
+                        <div class="input-resp">
+                            <label>CNPJ</label>
+                            <input type="text" name="cnpj"
+                                value="{{ empresa.cnpj | documento if empresa.cnpj else '' }}"
+                                placeholder="00.000.000/0001-00">
+                        </div>
+
+                        <!-- Botão para salvar os dados da empresa -->
+                        <div class="config-acoes">
+                            <button type="submit" class="salvar-btn">
+                                <i class="bi bi-check-lg"></i> Salvar Empresa
+                            </button>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+
+        <!-- Card de edição de dados do perfil do usuário logado -->
+        <div class="config-card">
+            <h3><i class="bi bi-person-fill-gear"></i> Meu Perfil</h3>
+
+            <!-- Formulário de dados pessoais do usuário -->
+            <form method="POST" action="{{ url_for('salvar_perfil') }}">
+                <div class="input-resp">
+                    <label>Nome</label>
+                    <input type="text" name="nome" value="{{ usuario.nome or '' }}" required>
+                </div>
+
+                <div class="input-resp">
+                    <label>E-mail</label>
+                    <input type="email" name="email" value="{{ usuario.email or '' }}" required>
+                </div>
+
+                <div class="config-duas-colunas">
                     <div class="input-resp">
-                        <label>CNPJ</label>
-                        <input type="text" placeholder="00.000.000/0001-00">
+                        <label>Telefone</label>
+                        <input type="tel" name="telefone"
+                            value="{{ usuario.telefone | telefone if usuario.telefone else '' }}"
+                            placeholder="(11) 90000-0000">
+                    </div>
+
+                    <!-- Exibição somente leitura do perfil de acesso do usuário -->
+                    <div class="input-resp">
+                        <label>Perfil de Acesso</label>
+                        <input type="text" value="{{ usuario_tipo }}" readonly>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <div class="config-card full-width sensor-conteudo">
-            <h3><i class="bi-solid bi-cpu-fill"></i> Cadastrar Novo Sensor</h3>
-            <div class="sensor-grid">
-                <div class="input-resp">
-                    <label>Nome do Sensor</label>
-                    <input type="text" placeholder="Ex: Sensor de Temperatura 01">
+                <!-- Botão para salvar dados do perfil -->
+                <div class="config-acoes">
+                    <button type="submit" class="salvar-btn">
+                        <i class="bi bi-check-lg"></i> Salvar Perfil
+                    </button>
                 </div>
-                <div class="input-resp">
-                    <label>Tipo de Sensor</label>
-                    <select>
-                        <option>Temperatura (°C)</option>
-                        <option>Umidade (%)</option>
-                        <option>Presença (Movimento)</option>
-                        <option>Fumaça/Incêndio</option>
-                    </select>
-                </div>
-                <div class="input-resp">
-                    <label>ID do Dispositivo (MAC)</label>
-                    <input type="text" placeholder="00:1A:2B:3C:4D:5E">
-                </div>
-                <div class="input-resp">
-                    <label>Vincular ao Galpão</label>
-                    <select>
-                        <option>Logística Central SP</option>
-                        <option>Hub Nordeste</option>
-                        <option>Unidade Sul</option>
-                    </select>
-                </div>
-            </div>
-            <div class="vin-sensor">
-                <button class="add-sensor-btn">
-                    <i class="bis bi-plus-lg"></i>
-                    Vincular Sensor
-                </button>
-            </div>
+            </form>
         </div>
 
-        <section class="config-card full-width ativar-sensor">
-            <h3><i class="bi-solid bi-list-check"></i> Sensores Ativos no Sistema</h3>
-            <div class="sensor-lista-container">
-                <table class="sensor-lista">
-                    <thead>
-                        <tr>
-                            <th>Status</th>
-                            <th>Nome do Sensor</th>
-                            <th>Tipo</th>
-                            <th>Localização</th>
-                            <th>Última Leitura</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="status-indicador online"></span> Online</td>
-                            <td><strong>Termômetro A1</strong></td>
-                            <td>Temperatura</td>
-                            <td>Logística Central SP</td>
-                            <td>22.5 °C</td>
-                            <td>
-                                <button class="acao-btn"><i class="bi-solid bi-pen-fill"></i></button>
-                                <button class="acao-btn delete"><i class="bi-solid bi-trash"></i></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
-</body>
+        <!-- Card para alteração de senha de acesso -->
+        <div class="config-card">
+            <h3><i class="bi bi-lock-fill"></i> Alterar Senha</h3>
 
-</html>
+            <!-- Formulário de alteração de senha -->
+            <form method="POST" action="{{ url_for('alterar_senha') }}">
+                <div class="input-resp">
+                    <label>Senha Atual</label>
+                    <input type="password" name="senha_atual" autocomplete="current-password" required>
+                </div>
+
+                <div class="config-duas-colunas">
+                    <div class="input-resp">
+                        <label>Nova Senha</label>
+                        <input type="password" name="nova_senha" minlength="6" autocomplete="new-password" required>
+                    </div>
+
+                    <div class="input-resp">
+                        <label>Confirmar Nova Senha</label>
+                        <input type="password" name="confirmar_senha" minlength="6" autocomplete="new-password"
+                            required>
+                    </div>
+                </div>
+
+                <small class="config-dica">Mínimo de 6 caracteres.</small>
+
+                <!-- Botão para salvar nova senha -->
+                <div class="config-acoes">
+                    <button type="submit" class="senha-btn">
+                        <i class="bi bi-lock-fill"></i> Alterar Senha
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Card com atalho para gerenciamento de usuários (visível apenas para administradores) -->
+        {% if perfil == 'admin' %}
+        <div class="config-card full-width">
+            <h3><i class="bi bi-people-fill"></i> Equipe e Usuários</h3>
+            <div class="equipe-atalho">
+                <p>Crie acessos para sua equipe e defina quem é administrador, gerente ou operador.</p>
+                <a href="{{ url_for('usuarios') }}" class="salvar-btn"><i class="bi bi-people-fill"></i> Gerenciar
+                    Usuários</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Card de preferências globais para notificações do sistema -->
+        <div class="config-card full-width" id="notificacoes">
+            <h3><i class="bi bi-bell-fill"></i> Notificações</h3>
+            <p class="config-dica">
+                Define o que aparece no sininho do topo e nos alertas do dashboard. Vale para toda a equipe.
+                {% if not pode_gerenciar %}Somente administradores e gerentes podem alterar.{% endif %}
+            </p>
+
+            <!-- Formulário para configurar tipos de notificações e margem de alerta -->
+            <form method="POST" action="{{ url_for('salvar_notificacoes') }}">
+                <fieldset class="empresa-fieldset" {{ 'disabled' if not pode_gerenciar }}>
+                    <div class="preferencias">
+                        <!-- Iteração sobre os tipos de notificação configuráveis -->
+                        {% for coluna, (padrao, rotulo, explicacao) in opcoes_notificacao.items() %}
+                        <label class="modo-escolha notif-opcao">
+                            <span>
+                                <strong>{{ rotulo }}</strong>
+                                <small>{{ explicacao }}</small>
+                            </span>
+                            <input type="checkbox" name="{{ coluna }}" value="1" class="notif-check" {{ 'checked' if
+                                notificacoes[coluna] }}>
+                            <span class="notif-switch" aria-hidden="true"></span>
+                        </label>
+                        {% endfor %}
+
+                        <!-- Configuração da porcentagem de aviso antecipado do estoque mínimo -->
+                        <label class="modo-escolha notif-opcao">
+                            <span>
+                                <strong>Aviso antecipado</strong>
+                                <small>Avisar quando o saldo estiver até esta porcentagem acima do mínimo (0 = só no
+                                    mínimo)</small>
+                            </span>
+                            <span class="notif-margem">
+                                <input type="number" name="notif_margem" min="0" max="200" step="5"
+                                    value="{{ notificacoes.notif_margem }}"> %
+                            </span>
+                        </label>
+                    </div>
+
+                    <!-- Botão para salvar preferências de notificações -->
+                    <div class="config-acoes">
+                        <button type="submit" class="salvar-btn"><i class="bi bi-check-lg"></i> Salvar
+                            Notificações</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+
+        <!-- Card de preferências de interface (Tema escuro e Menu lateral) -->
+        <div class="config-card full-width">
+    </section>
+</main>
+
+{% endblock %}

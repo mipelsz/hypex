@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}
+Software HYPEX - Produtos Inativos
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style_estoque_do_galpao.css') }}">
+{% endblock %}
+
+{% block content %}
+<main id="inventario-conteudo">
+
+    <!-- Cabeçalho da página -->
+    <header class="inventario-texto">
+        <div class="inventario-info">
+            <h1><i class="bi bi-slash-circle-fill"></i> PRODUTOS INATIVOS</h1>
+            <p>Produtos desativados — reative para voltar a movimentá-los no estoque</p>
+
+            <a href="{{ url_for('produtos') }}" class="btn btn-voltar">
+                <i class="bi bi-arrow-left"></i> Voltar ao Estoque
+            </a>
+        </div>
+    </header>
+
+    <!-- Listagem de produtos inativos -->
+    <section class="inventario-lista">
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>ID</th>
+                    <th>SKU</th>
+                    <th>Categoria</th>
+                    <th>Preço de Venda</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produto in produtos %}
+                <tr>
+                    <td class="produto-info">
+                        <strong>{{ produto.nome }}</strong>
+                    </td>
+                    <td>{{ produto.id }}</td>
+                    <td>{{ produto.sku or '—' }}</td>
+                    <td>{{ produto.categoria or '—' }}</td>
+                    <td>R$ {{ produto.preco_venda | moeda }}</td>
+                    <td class="acao-estoque">
+                        <div class="acoes-linha">
+                            <!-- Botão Visualizar -->
+                            <a href="{{ url_for('info_produtos', id=produto.id) }}" class="acao-btn btn-visualizar" title="Visualizar">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+
+                            <!-- Formulário e Modal de Reativação -->
+                            <form method="POST" id="reativar-{{ produto.id }}" action="{{ url_for('reativar_produto', id=produto.id) }}" class="d-inline">
+                                <input type="hidden" name="voltar_para" value="{{ request.full_path if request.query_string else request.path }}">
+                            </form>
+
+                            {% with id='reativar-' ~ produto.id,
+                                    form_id='reativar-' ~ produto.id,
+                                    titulo='Reativar produto',
+                                    texto='Reativar o produto ' ~ produto.nome ~ '?',
+                                    icone='bi-arrow-counterclockwise',
+                                    classe='acao-btn btn-editar',
+                                    confirmar='Reativar' %}
+                            {% include '_confirmar.html' %}
+                            {% endwith %}
+
+                            <!-- Formulário e Modal de Exclusão Definitiva -->
+                            {% if pode_gerenciar %}
+                            <form method="POST" id="excluir-{{ produto.id }}" action="{{ url_for('excluir_produto', id=produto.id) }}" class="d-inline">
+                                <input type="hidden" name="voltar_para" value="{{ request.full_path if request.query_string else request.path }}">
+                            </form>
+
+                            {% with id='excluir-' ~ produto.id,
+                                    form_id='excluir-' ~ produto.id,
+                                    titulo='Excluir produto',
+                                    texto='Excluir definitivamente o produto ' ~ produto.nome ~ '? Esta ação não pode ser desfeita.',
+                                    icone='bi-trash3-fill',
+                                    classe='acao-btn delete',
+                                    confirmar='Excluir', perigo=True %}
+                            {% include '_confirmar.html' %}
+                            {% endwith %}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        Nenhum produto inativo.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+</main>
+{% endblock %}

@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Software HYPEX - Usuários{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style_config.css') }}">
+{% endblock %}
+
+{% block content %}
+<main id="config-conteudo">
+
+    <!-- Cabeçalho da página -->
+    <header class="config-texto">
+        <div class="config-info">
+            <h1><i class="bi bi-people-fill"></i> USUÁRIOS</h1>
+            <p>Quem da sua equipe acessa o sistema e o que cada um pode fazer</p>
+        </div>
+        <a href="{{ url_for('config') }}" class="voltar-link"><i class="bi bi-arrow-left"></i> Configurações</a>
+    </header>
+
+    <section class="config-grid usuarios-grid">
+
+        <!-- Tabela de Usuários Cadastrados na Empresa -->
+        <div class="config-card full-width">
+            <h3><i class="bi bi-person-lines-fill"></i> Equipe ({{ usuarios_empresa | length }})</h3>
+
+            <div class="tabela-rolagem">
+                <table class="tabela-usuarios">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th>Perfil</th>
+                            <th>Situação</th>
+                            <th class="col-acoes">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in usuarios_empresa %}
+                        {% set eu = u.id == session.usuario_id %}
+                        <tr class="{{ 'inativo' if not u.ativo }}">
+                            <td>
+                                <strong>{{ u.nome }}</strong>{% if eu %} <span class="selo-voce">você</span>{% endif %}
+                            </td>
+                            <td>{{ u.email }}</td>
+                            <td>
+                                {% if eu %}
+                                <span class="selo-perfil perfil-{{ u.tipo }}">{{ perfis[u.tipo] }}</span>
+                                {% else %}
+                                <form method="POST" action="{{ url_for('alterar_perfil_usuario', usuario_id=u.id) }}" class="perfil-form">
+                                    <select name="tipo" aria-label="Perfil de {{ u.nome }}">
+                                        {% for chave, rotulo in perfis.items() %}
+                                        <option value="{{ chave }}" {{ 'selected' if chave == u.tipo }}>{{ rotulo }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="mini-btn" title="Salvar perfil"><i class="bi bi-check-lg"></i></button>
+                                </form>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="selo-status {{ 'ativo' if u.ativo else 'inativo' }}">
+                                    {{ 'Ativo' if u.ativo else 'Inativo' }}
+                                </span>
+                            </td>
+                            <td class="col-acoes">
+                                {% if not eu %}
+                                <form method="POST" action="{{ url_for('alternar_usuario_ativo', usuario_id=u.id) }}">
+                                    <input type="hidden" name="ativo" value="{{ '0' if u.ativo else '1' }}">
+                                    <button type="submit" class="mini-btn {{ 'perigo' if u.ativo }}">
+                                        {% if u.ativo %}<i class="bi bi-person-x-fill"></i> Desativar
+                                        {% else %}<i class="bi bi-person-check-fill"></i> Reativar{% endif %}
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Formulário para Cadastro de Novo Usuário -->
+        <div class="config-card">
+            <h3><i class="bi bi-person-plus-fill"></i> Novo Usuário</h3>
+
+            <form method="POST" action="{{ url_for('salvar_usuario') }}">
+                <div class="input-resp">
+                    <label>Nome</label>
+                    <input type="text" name="nome" required>
+                </div>
+
+                <div class="input-resp">
+                    <label>E-mail</label>
+                    <input type="email" name="email" required>
+                </div>
+
+                <div class="config-duas-colunas">
+                    <div class="input-resp">
+                        <label>Senha provisória</label>
+                        <input type="text" name="senha" minlength="6" autocomplete="off" required>
+                    </div>
+
+                    <div class="input-resp">
+                        <label>Perfil</label>
+                        <select name="tipo">
+                            {% for chave, rotulo in perfis.items() %}
+                            <option value="{{ chave }}" {{ 'selected' if chave == 'operador' }}>{{ rotulo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <small class="config-dica">A pessoa troca a senha em Configurações depois do primeiro acesso.</small>
+
+                <div class="config-acoes">
+                    <button type="submit" class="salvar-btn"><i class="bi bi-person-plus-fill"></i> Criar Usuário</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Guia Informativo sobre os Perfis de Acesso -->
+        <div class="config-card">
+            <h3><i class="bi bi-shield-lock-fill"></i> Perfis de Acesso</h3>
+
+            <ul class="lista-perfis">
+                <li>
+                    <span class="selo-perfil perfil-admin">Administrador</span>
+                    Tudo, inclusive gerenciar usuários e os dados da empresa.
+                </li>
+                <li>
+                    <span class="selo-perfil perfil-gerente">Gerente</span>
+                    Tudo do dia a dia, inclusive excluir registros. Não gerencia usuários.
+                </li>
+                <li>
+                    <span class="selo-perfil perfil-operador">Operador</span>
+                    Cadastra, edita, movimenta estoque, desativa e cancela. Não exclui.
+                </li>
+            </ul>
+        </div>
+
+    </section>
+</main>
+{% endblock %}

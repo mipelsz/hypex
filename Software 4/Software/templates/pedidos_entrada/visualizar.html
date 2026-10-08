@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}
+Software HYPEX - Pedido de Entrada #{{ pedido.id }}
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style_info_galpao.css') }}">
+{% endblock %}
+
+{% block content %}
+<main id="config-conteudo">
+
+    <header class="config-texto">
+        <div class="config-info">
+            <h1><i class="bi bi-basket2-fill"></i> PEDIDO DE ENTRADA #{{ pedido.id }}</h1>
+            <p>Nota {{ pedido.numero_documento or '—' }} — fornecedor {{ pedido.fornecedor_nome or '—' }}</p>
+
+            <a href="{{ url_for('listar_pedidos_entrada') }}" class="btn btn-voltar"><i class="bi bi-arrow-left"></i> Voltar</a>
+        </div>
+
+    </header>
+
+    <section class="config-grid">
+
+        <div class="config-card">
+            <h3><i class="bi bi-info-circle-fill"></i> Dados do Pedido</h3>
+            <ul class="list-unstyled">
+                <li><strong>Fornecedor:</strong> {{ pedido.fornecedor_nome or '—' }}</li>
+                <li><strong>Galpão de destino:</strong> {{ pedido.galpao_nome or '—' }}</li>
+                <li><strong>Nº do documento:</strong> {{ pedido.numero_documento or '—' }}</li>
+                <li><strong>Status:</strong> {{ (pedido.status or 'pendente').capitalize() }}</li>
+                <li>
+                    <strong>Data do pedido:</strong>
+                    {{ pedido.data_pedido.strftime('%d/%m/%Y %H:%M') if pedido.data_pedido else '—' }}
+                </li>
+                <li>
+                    <strong>Data prevista:</strong>
+                    {{ pedido.data_prevista.strftime('%d/%m/%Y') if pedido.data_prevista else '—' }}
+                </li>
+                <li><strong>Observação:</strong> {{ pedido.observacao or '—' }}</li>
+            </ul>
+        </div>
+
+        <div class="config-card">
+            <h3><i class="bi bi-cash-coin"></i> Total</h3>
+            <div class="total-pedido-box">
+                R$ {{ pedido.valor_total | moeda }}
+            </div>
+        </div>
+
+        <div class="config-card full-width mt-2">
+            <h3><i class="bi bi-cart-check-fill"></i> Itens</h3>
+
+            <div class="sensor-lista-container">
+                <table class="sensor-lista">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Produto</th>
+                            <th>Quantidade</th>
+                            <th>Preço Unitário</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in pedido.itens %}
+                        <tr>
+                            <td>{{ item.sku or '—' }}</td>
+                            <td>{{ item.produto_nome }}</td>
+                            <td>{{ item.quantidade | quantidade }}</td>
+                            <td>R$ {{ item.preco_unitario | moeda }}</td>
+                            <td>R$ {{ ((item.quantidade or 0) * (item.preco_unitario or 0)) | moeda }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                Este pedido não possui itens.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </section>
+</main>
+{% endblock %}

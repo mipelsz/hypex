@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}
+Software HYPEX - Editar Pedido #{{ pedido.id }}
+{% endblock %}
+
+<!-- Folha de estilo para a tela de visualização e edição do pedido -->
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style_info_galpao.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Conteúdo principal da página de edição do pedido -->
+<main id="config-conteudo">
+
+    <!-- Cabeçalho com identificação do pedido, botão de voltar e ação de salvar -->
+    <header class="config-texto">
+        <div class="config-info">
+            <h1><i class="bi bi-pen-fill"></i> EDITAR PEDIDO #{{ pedido.id }}</h1>
+            <p>Cliente {{ pedido.cliente_nome or '—' }}</p>
+
+            <a href="{{ url_for('pedidos_clientes', cliente_id=pedido.cliente_id) }}" class="btn btn-voltar"><i class="bi bi-arrow-left"></i> Voltar</a>
+        </div>
+
+        <!-- Botão para submeter as alterações do formulário -->
+        <button class="salvar-btn" form="form-pedido" type="submit">Salvar Alterações</button>
+    </header>
+
+    <!-- Formulário principal para atualização dos dados cadastrais e status do pedido -->
+    <form id="form-pedido" method="POST"
+        action="{{ url_for('atualizar_pedido_cliente', pedido_id=pedido.id) }}">
+
+        <section class="config-grid">
+
+            <!-- Card de edição dos dados editáveis do pedido (Documento, Situação e Observação) -->
+            <div class="config-card">
+                <h3><i class="bi bi-file-earmark-text-fill"></i> Dados do Pedido</h3>
+
+                <!-- Campo: Número do Documento / Nota Fiscal -->
+                <div class="input-resp">
+                    <label>Nº do Documento</label>
+                    <input type="text" name="numero_documento"
+                        value="{{ pedido.numero_documento or '' }}" placeholder="NF-001">
+                </div>
+
+                <!-- Campo: Seleção da Situação/Status do Pedido -->
+                <div class="input-resp mt-2">
+                    <label>Situação</label>
+                    <select name="status_pedido">
+                        <!-- Iteração sobre os status permitidos no sistema -->
+                        {% for s in status_possiveis %}
+                        <option value="{{ s }}"
+                            {% if pedido.status_pedido == s %}selected{% endif %}
+                            {% if s == 'cancelado' and pedido.status_pedido != 'cancelado' %}disabled{% endif %}>
+                            {{ s.capitalize() }}
+                            {%- if s == 'cancelado' and pedido.status_pedido != 'cancelado' %}
+                            (use o botão Cancelar)
+                            {%- endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Campo: Observações gerais do pedido -->
+                <div class="input-resp mt-2">
+                    <label>Observação</label>
+                    <input type="text" name="observacao"
+                        value="{{ pedido.observacao or '' }}" placeholder="Opcional...">
+                </div>
+            </div>
+
+            <!-- Card informativo com resumo não editável dos dados do pedido e avisos de regra de negócio -->
+            <div class="config-card">
+                <h3><i class="bi bi-info-circle-fill"></i> Informações</h3>
+
+                <!-- Lista de resumo das informações do pedido -->
+                <ul class="list-unstyled">
+                    <li><strong>Cliente:</strong> {{ pedido.cliente_nome or '—' }}</li>
+                    <li><strong>Galpão de retirada:</strong> {{ pedido.galpao_nome or '—' }}</li>
+                    <li>
+                        <strong>Data do pedido:</strong>
+                        {{ pedido.data_pedido.strftime('%d/%m/%Y %H:%M') if pedido.data_pedido else '—' }}
+                    </li>
+                    <li><strong>Valor total:</strong> R$ {{ pedido.valor_total | moeda }}</li>
+                </ul>
+
+                <!-- Dica explicativa sobre o porquê dos itens do estoque não serem editáveis diretamente nesta tela -->
+                <p class="text-muted mt-2">
+                    <small>
+                        Produtos e quantidades não são editados aqui: o estoque já
+                        foi baixado no fechamento do pedido. Para refazer os itens,
+                        cancele o pedido — o estoque volta ao galpão — e abra um novo.
+                    </small>
+                </p>
+            </div>
+
+            <!-- Card de exibição em tabela dos itens já inseridos no pedido -->
+            <div class="config-card full-width mt-2">
+                <h3><i class="bi bi-cart-check-fill"></i> Itens do Pedido</h3>
+
+                <!-- Tabela de listagem dos itens do pedido -->
+                <div class="sensor-lista-container">
+                    <table class="sensor-lista">
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Produto</th>
+                                <th>Quantidade</th>
+                                <th>Preço Unitário</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Iteração sobre os produtos vinculados a este pedido -->
+                            {% for item in itens %}
+                            <tr>
+                                <td>{{ item.sku or '—' }}</td>
+                                <td>{{ item.nome }}</td>
+                                <td>{{ item.quantidade | quantidade }}</td>
+                                <td>R$ {{ item.preco_unitario_no_momento | moeda }}</td>
+                                <td>
+                                    R$ {{ ((item.quantidade or 0) * (item.preco_unitario_no_momento or 0)) | moeda }}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <!-- Mensagem exibida caso o pedido não contenha itens cadastrados -->
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    Este pedido não possui itens.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+    </form>
+
+</main>
+{% endblock %}

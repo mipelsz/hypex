@@ -1,19 +1,15 @@
 from core.database import Database
 
-
-# Classe responsável por representar e manipular endereços no banco de dados
 class Endereco:
 
-    # Construtor da classe Endereco
-    # Inicializa os atributos principais do endereço
+    # Inicializa os dados do endereço.
     def __init__(self, rua, cidade, estado, cep):
         self.rua = rua
         self.cidade = cidade
         self.estado = estado
         self.cep = cep
 
-
-    # Insere um novo endereço no banco de dados
+    # Cadastra um novo endereço.
     def insert(self):
         conn = Database.connect()
         cursor = conn.cursor()
@@ -26,8 +22,7 @@ class Endereco:
         conn.commit()
         conn.close()
 
-
-    # Busca e retorna todos os endereços cadastrados
+    # Lista todos os endereços.
     @staticmethod
     def find_all():
         conn = Database.connect()

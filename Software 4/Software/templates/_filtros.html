@@ -1,0 +1,63 @@
+{% if menu_filtros is not defined %}
+<!-- Botão simples de submissão do formulário quando os filtros avançados não estiverem configurados -->
+<button class="action-btn filter-btn" type="submit"><i class="bi bi-funnel-fill"></i> Filtros</button>
+{% else %}
+<!-- Calcula a quantidade de filtros ativos (ordenação e/ou situação) -->
+{% set ativos = (1 if menu_filtros.ordem else 0) + (1 if menu_filtros.situacao else 0) %}
+
+<!-- Componente retrátil (dropdown) do menu de filtros -->
+<details class="filtro-menu">
+    <!-- Botão principal do menu que exibe o contador de filtros ativos -->
+    <summary class="action-btn filter-btn {{ 'filtro-ligado' if ativos }}">
+        <i class="bi bi-funnel-fill"></i> Filtros
+        {% if ativos %}<span class="filtro-contador">{{ ativos }}</span>{% endif %}
+        <i class="bi bi-chevron-down filtro-seta"></i>
+    </summary>
+
+    <!-- Painel contendo as opções de ordenação e filtragem -->
+    <div class="filtro-painel">
+
+        <!-- Opções para ordenação dos dados -->
+        <p class="filtro-titulo">Ordenar por</p>
+        <div class="filtro-opcoes">
+            <!-- Opção de ordenação padrão -->
+            <label class="filtro-opcao">
+                <input type="radio" name="ordem" value="" {{ 'checked' if not menu_filtros.ordem }}>
+                <span><i class="bi bi-list"></i> Padrão</span>
+            </label>
+            <!-- Iteração sobre as opções de ordenação disponíveis -->
+            {% for valor, rotulo, icone in menu_filtros.ordens %}
+            <label class="filtro-opcao">
+                <input type="radio" name="ordem" value="{{ valor }}" {{ 'checked' if menu_filtros.ordem == valor }}>
+                <span><i class="bi {{ icone }}"></i> {{ rotulo }}</span>
+            </label>
+            {% endfor %}
+        </div>
+
+        <!-- Opções de filtragem por situação/status (exibido apenas se houver opções) -->
+        {% if menu_filtros.situacoes %}
+        <p class="filtro-titulo">Mostrar</p>
+        <div class="filtro-chips">
+            <!-- Opção para exibir todos os registros -->
+            <label class="filtro-chip">
+                <input type="radio" name="situacao" value="" {{ 'checked' if not menu_filtros.situacao }}>
+                <span>Todos</span>
+            </label>
+            <!-- Iteração sobre as situações/status disponíveis -->
+            {% for valor, rotulo in menu_filtros.situacoes %}
+            <label class="filtro-chip">
+                <input type="radio" name="situacao" value="{{ valor }}" {{ 'checked' if menu_filtros.situacao == valor }}>
+                <span>{{ rotulo }}</span>
+            </label>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Botões de ação do painel: Limpar e Aplicar -->
+        <div class="filtro-rodape">
+            <a href="{{ limpar_url }}" class="filtro-limpar">Limpar tudo</a>
+            <button type="submit" class="filtro-aplicar"><i class="bi bi-check-lg"></i> Aplicar</button>
+        </div>
+    </div>
+</details>
+{% endif %} 

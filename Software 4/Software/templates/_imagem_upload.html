@@ -1,0 +1,29 @@
+<!-- Container principal do campo de upload de imagem -->
+<div class="campo-imagem">
+
+    <!-- Título do campo (exibido por padrão ou se definido) -->
+    {% if titulo is not defined or titulo %}
+    <h3><i class="bi bi-image"></i> {{ titulo | default('Imagem', true) }}</h3>
+    {% endif %}
+
+    <!-- Bloco com a pré-visualização da imagem e controle de upload -->
+    <div class="foto-bloco">
+        <!-- Exibição da foto atual ou imagem padrão definida -->
+        <img class="preview-imagem"
+            src="{{ url_for('static', filename='imagem/' + (imagem | default('', true) | imagem_ou(padrao | default('imagemproduto.png', true)))) }}"
+            alt="{{ alt | default('Imagem', true) }}">
+
+        <!-- Input oculta do tipo arquivo para seleção de imagens -->
+        <input type="file" id="{{ campo_id }}" name="imagem" class="input-imagem"
+            accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+
+        <!-- Botão/Rótulo para acionar a seleção do arquivo -->
+        <label for="{{ campo_id }}" class="alterar-foto" role="button" tabindex="0">
+            <i class="bi bi-camera-fill"></i> Alterar foto
+        </label>
+
+        <!-- Orientação ao usuário sobre formatos e tamanho permitidos -->
+        <small class="foto-dica">PNG, JPG, WEBP ou GIF até 5 MB</small>
+    </div>
+
+</div>

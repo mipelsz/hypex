@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Redefinir senha</title>
+
+    <!-- Estilos CSS e Bibliotecas de Ícones -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_redefinirsenha.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='notificacoes.css') }}">
+
+</head>
+
+<body>
+
+    <!-- Container Principal de Centralização -->
+    <div class="container d-flex align-items-center justify-content-center login-container">
+
+        <div class="login-card text-start">
+
+            <!-- Card Lateral Informativo -->
+            <div class="card-cad text-start mb-4">
+
+                <img 
+                    src="{{ url_for('static', filename='imagem/logo.png') }}" 
+                    alt="HypeX" 
+                    class="logo"
+                >
+
+                <h4 class="mb-3 text-white">
+                    Redefina sua senha!
+                </h4>
+
+                <p class="mb-4 text-white">
+                    Crie uma nova senha para acessar sua conta.
+                </p>
+
+                <div class="mt-4 text-white copyright">
+                    © 2025 HYPE X - Sistema de Estoque.
+                </div>
+
+            </div>
+
+            <!-- Formulário de Redefinição de Senha -->
+            <form method="POST">
+
+                <div class="forms mb-3 text-start">
+
+                    <h2>REDEFINIR SENHA</h2>
+
+                    <p class="descricao">
+                        Digite sua nova senha abaixo.
+                    </p>
+
+                    <!-- Campo: Nova Senha -->
+                    <div class="campo-senha">
+
+                        <label class="form-label">
+                            Nova senha
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-lock-fill"></i>
+                            </span>
+
+                            <input 
+                                type="password" 
+                                name="senha" 
+                                class="form-control" 
+                                placeholder="Digite sua nova senha" 
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <!-- Campo: Confirmar Nova Senha -->
+                    <div class="campo-senha confirmar">
+
+                        <label class="form-label">
+                            Confirmar nova senha
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-lock-fill"></i>
+                            </span>
+
+                            <input 
+                                type="password" 
+                                name="confirmar_senha" 
+                                class="form-control" 
+                                placeholder="Digite novamente sua senha" 
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <!-- Botão de Envio -->
+                    <button class="btn-login" type="submit">
+                        Redefinir senha
+                    </button>
+
+                    <!-- Link de Retorno ao Login -->
+                    <div class="login-links">
+
+                        <div class="link-senha">
+
+                            <a href="{{ url_for('login') }}" class="esqueci-senha">
+                                Voltar para o login
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- Script para ocultar mensagens de alerta dinamicamente -->
+    <script>
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 3000);
+    </script>
+
+    <!-- Componente Reutilizável de Notificações -->
+    {% include '_notificacoes.html' %}
+
+</body>
+
+</html>

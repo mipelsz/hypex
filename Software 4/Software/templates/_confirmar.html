@@ -1,0 +1,46 @@
+<!-- Controle de estado do modal via checkbox oculto -->
+<input type="checkbox" id="abrir-{{ id }}" class="confirmacao-gatilho" hidden>
+
+<!-- Botão/Rótulo que aciona a abertura do modal -->
+<label for="abrir-{{ id }}" class="{{ classe | default('acao-btn') }}"
+    title="{{ titulo }}" role="button" tabindex="0">
+    {% if icone is defined and icone %}<i class="bi {{ icone }}"></i>{% endif %}
+    {%- if rotulo is defined and rotulo %} {{ rotulo }}{% endif %}
+</label>
+
+<!-- Estrutura do modal de confirmação -->
+<div class="confirmacao">
+
+    <!-- Fundo escurecido que fecha o modal ao ser clicado -->
+    <label for="abrir-{{ id }}" class="confirmacao-fundo" aria-hidden="true"></label>
+
+    <!-- Caixa de diálogo do modal -->
+    <div class="confirmacao-caixa" role="dialog" aria-modal="true"
+        aria-labelledby="titulo-{{ id }}">
+
+        <!-- Cabeçalho do modal com título e botão fechar -->
+        <div class="confirmacao-topo">
+            <h5 id="titulo-{{ id }}">{{ titulo }}</h5>
+            <label for="abrir-{{ id }}" class="confirmacao-x" title="Fechar">
+                <i class="bi bi-x-lg"></i>
+            </label>
+        </div>
+
+        <!-- Conteúdo/Mensagem de confirmação -->
+        <div class="confirmacao-corpo">
+            {{ texto }}
+        </div>
+
+        <!-- Botões de ação (Cancelar e Confirmar) -->
+        <div class="confirmacao-acoes">
+            <label for="abrir-{{ id }}" class="btn btn-secondary">Cancelar</label>
+
+            <!-- Botão de submissão do formulário vinculado -->
+            <button type="submit" form="{{ form_id }}"
+                class="btn {{ 'btn-danger' if (perigo is defined and perigo) else 'btn-primary' }}">
+                {{ confirmar | default('Confirmar') }}
+            </button>
+        </div>
+
+    </div>
+</div>

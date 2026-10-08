@@ -8,6 +8,12 @@ CREATE TABLE empresa (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     cnpj VARCHAR(20) UNIQUE,
+    imagem VARCHAR(255),
+    notif_estoque_baixo TINYINT(1) NOT NULL DEFAULT 1,
+    notif_sem_estoque TINYINT(1) NOT NULL DEFAULT 1,
+    notif_incluir_inativos TINYINT(1) NOT NULL DEFAULT 1,
+    notif_pedidos_pendentes TINYINT(1) NOT NULL DEFAULT 1,
+    notif_margem INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -16,14 +22,22 @@ CREATE TABLE empresa (
 -- =========================================
 CREATE TABLE fornecedor (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
     nome VARCHAR(100) NOT NULL,
     nome_ctt VARCHAR(100) NOT NULL,
     email VARCHAR(100),
     telefone VARCHAR(20),
-    cnpj VARCHAR(18) UNIQUE,
+    cnpj VARCHAR(18),
     ativo VARCHAR(20),
+    imagem VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE KEY uq_fornecedor_empresa_cnpj (empresa_id, cnpj),
+
+    FOREIGN KEY (empresa_id)
+    REFERENCES empresa(id)
+    ON DELETE CASCADE
 );
 
 -- =========================================
@@ -31,17 +45,25 @@ CREATE TABLE fornecedor (
 -- =========================================
 CREATE TABLE cliente (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
     nome VARCHAR(100) NOT NULL,
     empresa VARCHAR(100),
     estado VARCHAR(50),
     cidade VARCHAR(50),
-    cpf_cnpj VARCHAR(18) UNIQUE,
+    cpf_cnpj VARCHAR(18),
     cep VARCHAR(10),
     email VARCHAR(100),
     telefone VARCHAR(20),
     ativo VARCHAR(30),
+    imagem VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE KEY uq_cliente_empresa_cpf_cnpj (empresa_id, cpf_cnpj),
+
+    FOREIGN KEY (empresa_id)
+    REFERENCES empresa(id)
+    ON DELETE CASCADE
 );
 
 
@@ -50,6 +72,7 @@ CREATE TABLE cliente (
 -- =========================================
 CREATE TABLE galpao (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
     nome VARCHAR(100) NOT NULL,
     stats VARCHAR(100),
     email_resp VARCHAR(100),
@@ -65,8 +88,13 @@ CREATE TABLE galpao (
     niveis_por_prateleira INT,
     caixas_por_nivel INT,
     capacidade_total INT,
+    imagem VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (empresa_id)
+    REFERENCES empresa(id)
+    ON DELETE CASCADE
 );
 
 -- =========================================
@@ -74,10 +102,11 @@ CREATE TABLE galpao (
 -- =========================================
 CREATE TABLE funcionario (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
     galpao_id INT NULL,
     nome VARCHAR(100) NOT NULL,
     salario DECIMAL(10,2),
-    cpf VARCHAR(14) UNIQUE,
+    cpf VARCHAR(14),
     email VARCHAR(100),
     telefone VARCHAR(20),
     cargo VARCHAR(50),
@@ -90,7 +119,13 @@ CREATE TABLE funcionario (
     FOREIGN KEY (galpao_id)
     REFERENCES galpao(id)
     ON DELETE SET NULL
-    ON UPDATE CASCADE
+    ON UPDATE CASCADE,
+
+    UNIQUE KEY uq_funcionario_empresa_cpf (empresa_id, cpf),
+
+    FOREIGN KEY (empresa_id)
+    REFERENCES empresa(id)
+    ON DELETE CASCADE
 );
 
 -- =========================================
@@ -117,16 +152,35 @@ CREATE TABLE usuario (
 );
 
 -- =========================================
+-- RECUPERACAO DE SENHA
+-- =========================================
+
+CREATE TABLE recuperacao_senha (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expira_em DATETIME NOT NULL,
+    usado BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (usuario_id)
+    REFERENCES usuario(id)
+    ON DELETE CASCADE
+);
+
+-- =========================================
 -- EMPILHADEIRA
 -- =========================================
 CREATE TABLE empilhadeira (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
     marca VARCHAR(100),
     ano_fabricacao VARCHAR(4),
     tipo_combustivel VARCHAR(50),
     modelo VARCHAR(100),
     capacidade INT,
     galpao_id INT NULL,
+    funcionario_id INT NULL,
     ativo VARCHAR(30),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -134,7 +188,15 @@ CREATE TABLE empilhadeira (
     FOREIGN KEY (galpao_id)
     REFERENCES galpao(id)
     ON DELETE SET NULL
-    ON UPDATE CASCADE
+    ON UPDATE CASCADE,
+    FOREIGN KEY (funcionario_id)
+    REFERENCES funcionario(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+
+    FOREIGN KEY (empresa_id)
+    REFERENCES empresa(id)
+    ON DELETE CASCADE
 );
 
 -- =========================================
@@ -142,7 +204,8 @@ CREATE TABLE empilhadeira (
 -- =========================================
 CREATE TABLE produto (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    sku VARCHAR(50) UNIQUE NOT NULL,
+    empresa_id INT NOT NULL,
+    sku VARCHAR(50) NOT NULL,
     nome VARCHAR(100) NOT NULL,
     descricao TEXT,
     categoria VARCHAR(50),
@@ -153,10 +216,19 @@ CREATE TABLE produto (
     item_por_caixa INT DEFAULT 0,
     volume DECIMAL(10,2),
     tipo ENUM('leve', 'medio', 'pesado', 'fragil') DEFAULT 'medio',
-    codigo_barras VARCHAR(100) UNIQUE,
+    codigo_barras VARCHAR(100),
+    imagem VARCHAR(255),
     ativo BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE KEY uq_produto_empresa_sku (empresa_id, sku),
+
+    UNIQUE KEY uq_produto_empresa_codigo_barras (empresa_id, codigo_barras),
+
+    FOREIGN KEY (empresa_id)
+    REFERENCES empresa(id)
+    ON DELETE CASCADE
 );
 -- =========================================
 -- FORNECEDOR PRODUTO
@@ -233,7 +305,7 @@ CREATE TABLE estoque (
     ON DELETE CASCADE
     ON UPDATE CASCADE,
 
-    UNIQUE (produto_id, galpao_id, localizacao_id)
+    UNIQUE (produto_id, galpao_id)
 );
 
 -- =========================================
@@ -263,6 +335,7 @@ CREATE TABLE lote (
 -- =========================================
 CREATE TABLE movimentacao (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
     produto_id INT NOT NULL,
     galpao_id INT NOT NULL,
     galpao_destino_id INT NULL,
@@ -289,7 +362,11 @@ CREATE TABLE movimentacao (
     REFERENCES galpao(id),
 
     FOREIGN KEY (funcionario_id)
-    REFERENCES funcionario(id)
+    REFERENCES funcionario(id),
+
+    FOREIGN KEY (empresa_id)
+    REFERENCES empresa(id)
+    ON DELETE CASCADE
 );
 
 -- =========================================
@@ -297,10 +374,11 @@ CREATE TABLE movimentacao (
 -- =========================================
 CREATE TABLE pedido_fornecedor (
     id                 INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
     fornecedor_id      INT,
     funcionario_id     INT,
     galpao_id          INT,
-    numero_documento   VARCHAR(100),                          -- NOVO
+    numero_documento   VARCHAR(100),                          
     data_pedido        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_prevista      DATE,
     data_recebimento   DATE,
@@ -318,7 +396,11 @@ CREATE TABLE pedido_fornecedor (
 
     FOREIGN KEY (fornecedor_id)  REFERENCES fornecedor(id),
     FOREIGN KEY (funcionario_id) REFERENCES funcionario(id),
-    FOREIGN KEY (galpao_id)      REFERENCES galpao(id)
+    FOREIGN KEY (galpao_id)      REFERENCES galpao(id),
+
+    FOREIGN KEY (empresa_id)
+    REFERENCES empresa(id)
+    ON DELETE CASCADE
 );
 
 -- =========================================
@@ -345,13 +427,13 @@ CREATE TABLE item_pedido_fornecedor (
 -- =========================================
 CREATE TABLE pedido_cliente (
     id               INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
     cliente_id       INT,
-    galpao_id        INT NULL,                               -- NOVO
-    numero_documento VARCHAR(100),                           -- NOVO
-    produto_id       INT,                                    -- legado, ignorar no novo fluxo
-    produto_pedido   VARCHAR(200), 
-    observacao VARCHAR(200) NULL,
-    numero_documento VARCHAR(200) NULL,
+    galpao_id        INT NULL,                               
+    numero_documento VARCHAR(100),                           
+    produto_id       INT,                                    
+    produto_pedido   VARCHAR(200),
+    observacao       VARCHAR(200) NULL,
     data_pedido      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status_pedido    ENUM(
                          'pendente',
@@ -365,8 +447,12 @@ CREATE TABLE pedido_cliente (
     updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     FOREIGN KEY (cliente_id) REFERENCES cliente(id),
-    FOREIGN KEY (galpao_id)  REFERENCES galpao(id),         -- NOVO
-    FOREIGN KEY (produto_id) REFERENCES produto(id)
+    FOREIGN KEY (galpao_id)  REFERENCES galpao(id),         
+    FOREIGN KEY (produto_id) REFERENCES produto(id),
+
+    FOREIGN KEY (empresa_id)
+    REFERENCES empresa(id)
+    ON DELETE CASCADE
 );
 
 -- =========================================

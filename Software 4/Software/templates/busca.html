@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Busca - Software HYPEX{% endblock %}
+
+{% block content %}
+<!-- Conteúdo principal da página de resultados de pesquisa -->
+<main class="busca-geral">
+
+    <!-- Título principal da seção de busca -->
+    <h1 class="title"><i class="bi bi-search"></i> Resultados da busca</h1>
+
+    <!-- Exibição de mensagens informativas sobre o estado do termo pesquisado -->
+    {% if not q %}
+    <p class="busca-vazia">Digite algo no campo de pesquisa do topo.</p>
+    {% elif not total %}
+    <p class="busca-vazia">Nada encontrado para "<strong>{{ q }}</strong>".</p>
+    {% else %}
+    <p class="busca-vazia">{{ total }} resultado(s) para "<strong>{{ q }}</strong>".</p>
+    {% endif %}
+
+    <!-- Seção de resultados encontrados na categoria de Produtos -->
+    {% if produtos %}
+    <section class="busca-grupo">
+        <h2><i class="bi bi-box-seam-fill"></i> Produtos</h2>
+        {% for p in produtos %}
+        <a href="{{ url_for('info_produtos', id=p.id) }}" class="busca-item">
+            <strong>{{ p.nome }}</strong>
+            <small>SKU {{ p.sku }}{% if p.categoria %} · {{ p.categoria }}{% endif %}{% if not p.ativo %} · inativo{% endif %}</small>
+        </a>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- Seção de resultados encontrados na categoria de Clientes -->
+    {% if clientes %}
+    <section class="busca-grupo">
+        <h2><i class="bi bi-person-fill"></i> Clientes</h2>
+        {% for c in clientes %}
+        <a href="{{ url_for('info_cliente', cliente_id=c.id) }}" class="busca-item">
+            <strong>{{ c.nome }}</strong>
+            <small>{{ c.cpf_cnpj | documento }}{% if c.empresa %} · {{ c.empresa }}{% endif %}{% if c.cidade %} · {{ c.cidade }}{% endif %}</small>
+        </a>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- Seção de resultados encontrados na categoria de Fornecedores -->
+    {% if fornecedores %}
+    <section class="busca-grupo">
+        <h2><i class="bi bi-people-fill"></i> Fornecedores</h2>
+        {% for f in fornecedores %}
+        <a href="{{ url_for('info_fornecedor', fornecedor_id=f.id) }}" class="busca-item">
+            <strong>{{ f.nome }}</strong>
+            <small>{{ f.cnpj | documento }}{% if f.nome_ctt %} · {{ f.nome_ctt }}{% endif %}</small>
+        </a>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- Seção de resultados encontrados na categoria de Galpões -->
+    {% if galpoes %}
+    <section class="busca-grupo">
+        <h2><i class="bi bi-building-fill"></i> Galpões</h2>
+        {% for g in galpoes %}
+        <a href="{{ url_for('info_galpao', galpao_id=g.id) }}" class="busca-item">
+            <strong>{{ g.nome }}</strong>
+            <small>{{ g.cidade or '' }}{% if g.estado %} - {{ g.estado }}{% endif %}</small>
+        </a>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+</main>
+{% endblock %}

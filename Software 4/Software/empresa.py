@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash
 
 # ===== DADOS DA EMPRESA =====
 nome_empresa = "Imbil"
-cnpj = "00.000.000/0002-00"
+cnpj = "45723174000110"
 
 # ===== DADOS DO USUÁRIO =====
 nome_usuario = "Miguel Rodrigues"
@@ -26,8 +26,8 @@ try:
     empresa_id = cursor.lastrowid
 
     sql_usuario = """
-    INSERT INTO usuario (nome, cpf, data_nascimento, email, telefone, senha, empresa_id)
-    VALUES (%s, %s, %s, %s, %s, %s, %s)
+    INSERT INTO usuario (nome, cpf, data_nascimento, email, telefone, senha, empresa_id, tipo)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, 'admin')
     """
     cursor.execute(sql_usuario, (
         nome_usuario,

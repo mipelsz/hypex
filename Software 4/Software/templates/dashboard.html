@@ -1,202 +1,258 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Software HYPEX - Dashboard</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+{% block title %}
+Software HYPEX - Dashboard
+{% endblock %}
 
-<body>
-    <aside id="menu">
-        <div class="status-dots">
-            <span class="dot-red"></span>
-            <span class="dot-yellow"></span>
-            <span class="dot-green"></span>
+{% block content %}
+
+<!-- Cabeçalho da página Dashboard com título e sub-título -->
+<header class="dashboard-texto">
+
+    <h1 class="title">
+        <i class="bi bi-bar-chart-fill"></i>
+        DASHBOARD
+    </h1>
+
+    <p class="subtitle">
+        Visão geral do seu negócio em tempo real
+    </p>
+
+</header>
+
+<!-- Primeira seção de cards com indicadores financeiros e métrica de produtos -->
+<section class="cards-valors">
+    <!-- Card de Ganhos / Receitas do sistema -->
+    <div class="cards-valor">
+        <div class="cards-valors-info">
+            <div class="valor-cards">
+                <span class="icon-text"><i class="bi-solid bi-wallet-fill"></i> GANHOS</span>
+                <span class="porcentagem-positiva"></span>
+            </div>
+            <p class="valor">R$ {{ ganhos | moeda }}</p>
+        </div>
+        <div class="progress-bar"></div>
+    </div>
+
+    <!-- Card de Gastos / Despesas com fornecedores e compras -->
+    <div class="cards-valor">
+        <div class="cards-valors-info">
+            <div class="valor-cards">
+                <span class="icon-text"><i class="bi-solid bi-cart-fill"></i> GASTOS</span>
+                <span class="porcentagem-positiva negative"></span>
+            </div>
+            <p class="valor">R$ {{ gastos | moeda }}</p>
+        </div>
+        <div class="progress-bar"></div>
+    </div>
+
+    <!-- Card com o total de produtos cadastrados -->
+    <div class="cards-valor">
+        <div class="cards-valors-info">
+            <div class="valor-cards">
+                <span class="icon-text"><i class="bi-solid bi-box-seam-fill"></i> Produtos</span>
+            </div>
+            <p class="valor">{{ total_produtos }} un.</p>
+        </div>
+        <div class="progress-bar"></div>
+    </div>
+</section>
+
+<!-- Segunda seção de cards com totais de cadastros (Fornecedores, Clientes e Galpões) -->
+<section class="cards-valors">
+    <!-- Card com a quantidade total de fornecedores -->
+    <div class="cards-valor">
+        <div class="cards-valors-info">
+            <div class="valor-cards">
+                <span class="icon-text"><i class="bi-solid bi-cart-fill"></i> Fornecedores</span>
+            </div>
+            <p class="valor">{{ total_fornecedores }} un.</p>
+        </div>
+        <div class="progress-bar"></div>
+    </div>
+
+    <!-- Card com a quantidade total de clientes -->
+    <div class="cards-valor">
+        <div class="cards-valors-info">
+            <div class="valor-cards">
+                <span class="icon-text"><i class="bi-solid bi-cart-fill"></i> Clientes</span>
+            </div>
+            <p class="valor">{{ total_clientes }} un.</p>
+        </div>
+        <div class="progress-bar"></div>
+    </div>
+
+    <!-- Card com a quantidade total de galpões cadastrados -->
+    <div class="cards-valor">
+        <div class="cards-valors-info">
+            <div class="valor-cards">
+                <span class="icon-text"><i class="bi-solid bi-cart-fill"></i> Galpões</span>
+            </div>
+            <p class="valor">{{ total_galpoes }} un.</p>
+        </div>
+        <div class="progress-bar"></div>
+    </div>
+</section>
+
+<!-- Seção principal com gráfico de lucros e ranking de produtos mais vendidos -->
+<section class="cards-grafico">
+    <!-- Card de exibição do lucro acumulado e gráfico dos últimos 6 meses -->
+    <div class="cards-valor cards-grafico-valor">
+        <div class="grafico-texto">
+            <span class="icon-text"><i class="bi-solid bi-cash-coin"></i> LUCRO</span>
+            <span class="tempo">Últimos 6 meses</span>
+        </div>
+        <div class="grafico-info">
+            <!-- Exibe o valor do lucro com destaque para valores negativos -->
+            <p class="grafico-valor {{ 'negative' if lucro < 0 }}">R$ {{ lucro | moeda }}</p>
+            {% if variacao is not none %}
+            <span class="grafico-porcentagem-positiva {{ 'negative' if variacao < 0 }}">
+                {{ "%+.1f" | format(variacao) }}% vs mês anterior
+            </span>
+            {% else %}
+            <span class="tempo">Sem vendas no mês anterior para comparar</span>
+            {% endif %}
+            <span class="tempo">
+                Estoque avaliado em R$ {{ valor_estoque | moeda }}
+            </span>
+        </div>
+        <!-- Gráfico em colunas com proporção de barras positivas e negativas -->
+        <div class="grafico-lucro" role="img" aria-label="Lucro dos últimos 6 meses">
+            {% for m in grafico_lucro %}
+            <div class="grafico-coluna"
+                title="{{ m.rotulo }}: lucro R$ {{ m.lucro | moeda }} (ganhos R$ {{ m.ganhos | moeda }}, gastos R$ {{ m.gastos | moeda }})">
+                <div class="grafico-metade positivo">
+                    {% if m.lucro > 0 %}<span class="barra" style="height: {{ m.altura }}%"></span>{% endif %}
+                </div>
+                <div class="grafico-metade negativo">
+                    {% if m.lucro < 0 %}<span class="barra" style="height: {{ m.altura }}%"></span>{% endif %}
+                </div>
+                <small>{{ m.rotulo }}</small>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Card com a lista dos produtos mais vendidos no sistema -->
+    <div class="cards-valor cards-grafico-valor">
+        <div class="grafico-texto">
+            <span class="icon-text"><i class="bi-solid bi-box-seam-fill"></i> MAIS VENDIDOS</span>
+            <span class="tempo">Top Produtos</span>
         </div>
 
-        <div class="perfil">
-            <img src="{{ url_for('static', filename='imagem/perfil.png') }}">
-            <h3>Empresa</h3>
+        <ul class="alertas-lista">
+            <!-- Iteração sobre a lista dos produtos de maior volume de vendas -->
+            {% for item in mais_vendidos %}
+            <li class="alertas-item">
+                <span class="alertas-icon green-icon"><i class="bi-solid bi-box-seam-fill"></i></span>
+                <div class="alertas-detalhes">
+                    <p class="alertas-texto">{{ item.nome }}</p>
+                    <span class="alertas-tempo">
+                        {{ item.quantidade | quantidade }} un. — R$ {{ item.receita | moeda }}
+                    </span>
+                </div>
+            </li>
+            {% else %}
+            <!-- Exibido caso nenhuma venda tenha sido computada ainda -->
+            <li class="alertas-item">
+                <div class="alertas-detalhes">
+                    <span class="alertas-tempo">Nenhuma venda registrada ainda.</span>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+
+<!-- Seção inferior com feed de atividades recentes e alertas de estoque -->
+<section class="cards-alertas">
+    <!-- Card contendo o histórico recente de movimentações do estoque -->
+    <div class="cards-valor alertas-cards-valor">
+        <div class="cards-valor-header">
+            <span class="icone-sino"><i class="bi-solid bi-arrow-counterclockwise"></i></span>
+            <div>
+                <h2 class="alertas-titulo">ATIVIDADES RECENTES</h2>
+                <p class="alertas-sub">Últimas movimentações</p>
+            </div>
         </div>
+        <ul class="alertas-lista">
+            <!-- Iteração sobre o histórico de entradas, saídas e transferências -->
+            {% for mov in atividades %}
+            <li class="alertas-item">
+                <!-- Definição dinâmica do ícone de acordo com o tipo da movimentação -->
+                {% if mov.tipo == 'entrada' %}
+                <span class="alertas-icon green-icon"><i class="bi-solid bi-arrow-up"></i></span>
+                {% elif mov.tipo == 'saida' %}
+                <span class="alertas-icon red-icon"><i class="bi-solid bi-arrow-down"></i></span>
+                {% else %}
+                <span class="alertas-icon"><i class="bi-solid bi-arrow-left-right"></i></span>
+                {% endif %}
+                <div class="alertas-detalhes">
+                    <p class="alertas-texto">
+                        {{ mov.tipo.replace('_', ' ') | capitalize }} de
+                        {{ mov.quantidade | quantidade }} un. — {{ mov.produto }}
+                    </p>
+                    <span class="alertas-tempo">
+                        {{ mov.data_movimentacao.strftime('%d/%m/%Y %H:%M') if mov.data_movimentacao else '' }}
+                        {% if mov.galpao %} · {{ mov.galpao }}{% endif %}
+                    </span>
+                </div>
+            </li>
+            {% else %}
+            <!-- Mensagem exibida caso não haja histórico de movimentações -->
+            <li class="alertas-item">
+                <div class="alertas-detalhes">
+                    <span class="alertas-tempo">Nenhuma movimentação registrada.</span>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('movimentacoes') }}" class="ver-atividade">Ver todas as atividades</a>
+    </div>
 
-        <nav>
-            <ul>
-                <li class="nav-menu selected">
-                    <a href="/dashboard">
-                        <i class="bi-solid bi-bar-chart-fill"></i> DASHBOARD
-                    </a>
-                </li>
-                <li class="nav-menu">
-                    <a href="/galpao">
-                        <i class="bi-solid bi-box-seam-fill"></i> ESTOQUE
-                    </a>
-                </li>
-                <li class="nav-menu">
-                    <a href="/fornecedores">
-                        <i class="bi-solid bi-people-fill"></i> FORNECEDORES
-                    </a>
-                </li>
-                <li class="nav-menu">
-                    <a href="/pedidos">
-                        <i class="bi-solid bi-basket2-fill"></i> PEDIDOS
-                    </a>
-                </li>
-                <li class="nav-menu">
-                    <a href="/clientes">
-                        <i class="bi-solid bi-person-fill"></i> CLIENTES
-                    </a>
-                </li>
-            </ul>
-        </nav>
-
-        <div class="menu-opcoes">
-            <a href="/config" class="opcoes-btn">
-                <i class="bi-solid bi-gear-fill"></i>
-            </a>
-            <button class="opcoes-btn selected-opcoes-btn"><i class="bi-solid bi-circle-half"></i></button>
-            <a href="{{ url_for('logout') }}" class="opcoes-btn red-opcoes-btn" onclick="return confirmarLogout()">
-                <i class="bi bi-door-open-fill"></i>
-            </a>
+    <!-- Card contendo alertas de itens com estoque zerado ou abaixo do mínimo -->
+    <div class="cards-valor alertas-cards-valor">
+        <div class="cards-valor-header">
+            <span class="icone-sino"><i class="bi-solid bi-bell-fill"></i></span>
+            <div>
+                <h2 class="alertas-titulo">ALERTAS</h2>
+                <p class="alertas-sub">Itens críticos</p>
+            </div>
         </div>
-    </aside>
-
-    <main id="dashboard-conteudo">
-        <header class="dashboard-texto">
-            <h1 class="title"><i class="bi-solid bi-grafico-simple"></i> DASHBOARD</h1>
-            <p class="subtitle">Visão geral do seu negócio em tempo real</p>
-        </header>
-
-        <section class="cards-valors">
-            <div class="cards-valor">
-                <div class="cards-valors-info">
-                    <div class="valor-cards">
-                        <span class="icon-text"><i class="bi-solid bi-wallet-fill"></i> GANHOS</span>
-                        <span class="porcentagem-positiva"></span>
-                    </div>
-                    <p class="valor">R$ 0,00</p>
+        <ul class="alertas-lista">
+            <!-- Iteração sobre a lista de produtos em situação crítica de estoque -->
+            {% for alerta in alertas %}
+            <li class="alertas-item">
+                <span class="alertas-icon red-icon"><i class="bi-solid bi-exclamation-triangle-fill"></i></span>
+                <div class="alertas-detalhes">
+                    <p class="alertas-text">{{ alerta.nome }}</p>
+                    <span class="alertas-info">
+                        {{ alerta.quantidade | quantidade }} em estoque
+                        (mínimo {{ alerta.estoque_minimo | quantidade }})
+                        {% if alerta.galpao %} · {{ alerta.galpao }}{% endif %}
+                    </span>
                 </div>
-                <div class="progress-bar"></div>
-            </div>
+            </li>
+            {% else %}
+            <!-- Exibido quando todos os estoques estiverem normais -->
+            <li class="alertas-item">
+                <div class="alertas-detalhes">
+                    <p class="alertas-text">Nenhum item crítico</p>
+                    <span class="alertas-info">Todos os produtos estão acima do estoque mínimo.</span>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
 
-            <div class="cards-valor">
-                <div class="cards-valors-info">
-                    <div class="valor-cards">
-                        <span class="icon-text"><i class="bi-solid bi-cart-fill"></i> GASTOS</span>
-                        <span class="porcentagem-positiva negative"></span>
-                    </div>
-                    <p class="valor">R$ 0,00</p>
-                </div>
-                <div class="progress-bar"></div>
-            </div>
+        <!-- Exibição da contagem excedente de produtos em situação de alerta -->
+        {% if total_alertas > alertas | length %}
+        <span class="alertas-info">
+            e mais {{ total_alertas - (alertas | length) }} produto(s) abaixo do limite
+        </span>
+        {% endif %}
 
-            <div class="cards-valor">
-                <div class="cards-valors-info">
-                    <div class="valor-cards">
-                        <span class="icon-text"><i class="bi-solid bi-box-seam-fill"></i> Produtos</span>
-                    </div>
-                    <p class="valor">{{ total_produtos }} un.</p>
-                </div>
-                <div class="progress-bar"></div>
-            </div>
-        </section>
-        <section class="cards-valors">
-            <div class="cards-valor">
-                <div class="cards-valors-info">
-                    <div class="valor-cards">
-                        <span class="icon-text"><i class="bi-solid bi-cart-fill"></i> Fornecedores</span>
-                    </div>
-                    <p class="valor">{{ total_fornecedores }} un.</p>
-                </div>
-                <div class="progress-bar"></div>
-            </div>
+        <a href="{{ url_for('estoque') }}" class="ver-atividade red-link">Ver todos os alertas</a>
+    </div>
+</section>
 
-            <div class="cards-valor">
-                <div class="cards-valors-info">
-                    <div class="valor-cards">
-                        <span class="icon-text"><i class="bi-solid bi-cart-fill"></i> Clientes</span>
-                    </div>
-                    <p class="valor">{{ total_clientes }} un.</p>
-                </div>
-                <div class="progress-bar"></div>
-            </div>
-
-            <div class="cards-valor">
-                <div class="cards-valors-info">
-                    <div class="valor-cards">
-                        <span class="icon-text"><i class="bi-solid bi-cart-fill"></i> Galpões</span>
-                    </div>
-                    <p class="valor">{{ total_galpoes }} un.</p>
-                </div>
-                <div class="progress-bar"></div>
-            </div>
-        </section>
-
-        <section class="cards-grafico">
-            <div class="cards-valor cards-grafico-valor">
-                <div class="grafico-texto">
-                    <span class="icon-text"><i class="bi-solid bi-cash-coin"></i> LUCRO</span>
-                    <span class="tempo">Últimos 6 meses</span>
-                </div>
-                <div class="grafico-info">
-                    <p class="grafico-valor">R$ 0,00</p>
-                    <span class="grafico-porcentagem-positiva">15% vs mês anterior</span>
-                </div>
-            </div>
-
-            <div class="cards-valor cards-grafico-valor">
-                <div class="grafico-texto">
-                    <span class="icon-text"><i class="bi-solid bi-box-seam-fill"></i> MAIS VENDIDOS</span>
-                    <span class="tempo">Top Produtos</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="cards-alertas">
-            <div class="cards-valor alertas-cards-valor">
-                <div class="cards-valor-header">
-                    <span class="icone-sino"><i class="bi-solid bi-arrow-counterclockwise"></i></span>
-                    <div>
-                        <h2 class="alertas-titulo">ATIVIDADES RECENTES</h2>
-                        <p class="alertas-sub">Últimas movimentações</p>
-                    </div>
-                </div>
-                <ul class="alertas-lista">
-                    <li class="alertas-item">
-                        <span class="alertas-icon green-icon"><i class="bi-solid bi-arrow-up"></i></span>
-                        <div class="alertas-detalhes">
-                            <p class="alertas-texto">Entrada de 50 unidades - Produto A</p>
-                            <span class="alertas-tempo">2 horas atrás</span>
-                        </div>
-                    </li>
-                </ul>
-                <a href="#" class="ver-atividade">Ver todas as atividades</a>
-            </div>
-
-            <div class="cards-valor alertas-cards-valor">
-                <div class="cards-valor-header">
-                    <span class="icone-sino"><i class="bi-solid bi-bell-fill"></i></span>
-                    <div>
-                        <h2 class="alertas-titulo">ALERTAS</h2>
-                        <p class="alertas-sub">Itens críticos</p>
-                    </div>
-                </div>
-                <ul class="alertas-lista">
-                    <li class="alertas-item">
-                        <span class="alertas-icon red-icon"><i class="bi-solid bi-exclamation-triangle-fill"></i></span>
-                        <div class="alertas-detalhes">
-                            <p class="alertas-text">Estoque Baixo</p>
-                            <span class="alertas-info">3 produtos abaixo do limite</span>
-                        </div>
-                    </li>
-                </ul>
-                <a href="#" class="ver-atividade red-link">Ver todos os alertas</a>
-            </div>
-        </section>
-    </main>
-</body>
-
-</html>
+{% endblock %}

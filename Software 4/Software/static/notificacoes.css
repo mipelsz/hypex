@@ -1,0 +1,283 @@
+/* =========================================
+   NOTIFICAÇÕES (flash messages)
+=========================================
+   Antes as mensagens eram blocos "alert" dentro do conteúdo, que empurravam
+   a página para baixo e, quando vinham duas, apareciam lado a lado ocupando
+   a tela. Agora flutuam no canto inferior direito, uma sobre a outra. */
+
+.notificacoes {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 3000;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    max-width: min(380px, calc(100vw - 40px));
+}
+
+.notificacao {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    padding: 14px 16px;
+
+    border-radius: 10px;
+    border-left: 4px solid transparent;
+
+    background-color: #22262b;
+    color: #f1f1f1;
+
+    font-size: 14px;
+    line-height: 1.4;
+
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+
+    animation: notificacao-entra 0.25s ease-out,
+               notificacao-sai 0.4s ease-in 6s forwards;
+}
+
+.notificacao i {
+    font-size: 17px;
+    line-height: 1.3;
+    flex-shrink: 0;
+}
+
+.notificacao-texto {
+    flex: 1;
+}
+
+/* Cores por categoria, no ícone e na borda */
+
+.notificacao-sucesso {
+    border-left-color: #38C172;
+}
+
+.notificacao-sucesso > i {
+    color: #4ade80;
+}
+
+.notificacao-erro {
+    border-left-color: #E3342F;
+}
+
+.notificacao-erro > i {
+    color: #f87171;
+}
+
+.notificacao-aviso {
+    border-left-color: #F0A020;
+}
+
+.notificacao-aviso > i {
+    color: #fbbf24;
+}
+
+.notificacao-info {
+    border-left-color: #2B6BB9;
+}
+
+.notificacao-info > i {
+    color: #60a5fa;
+}
+
+/* Fechar: label ligado a um checkbox escondido, sem JavaScript */
+
+.notificacao-x {
+    cursor: pointer;
+    opacity: 0.6;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.notificacao-x:hover {
+    opacity: 1;
+}
+
+.notificacao-fechar:checked + .notificacao {
+    display: none;
+}
+
+@keyframes notificacao-entra {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes notificacao-sai {
+    to {
+        opacity: 0;
+        transform: translateY(12px);
+        visibility: hidden;
+    }
+}
+
+/* Quem preferir menos animação vê a notificação parada */
+@media (prefers-reduced-motion: reduce) {
+    .notificacao {
+        animation: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .notificacoes {
+        right: 10px;
+        left: 10px;
+        bottom: 10px;
+        max-width: none;
+    }
+}
+
+
+/* =========================================
+   JANELA DE CONFIRMAÇÃO
+=========================================
+   Aberta por um checkbox escondido, não pelo JavaScript do Bootstrap: se o
+   CDN não carregar, a confirmação continua funcionando. */
+
+.confirmacao {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+    z-index: 3500;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+/* O checkbox marcado abre a janela que vem logo depois dele.
+
+   Usa irmão ADJACENTE (+) em vez de irmão geral (~): com dois botões de
+   confirmação no mesmo lugar (desativar e excluir na mesma linha da tabela),
+   o `~` abria os dois de uma vez e o segundo cobria o primeiro, deixando o
+   botão do primeiro sem resposta ao clique. */
+.confirmacao-gatilho:checked + label + .confirmacao {
+    display: flex;
+}
+
+.confirmacao-fundo {
+    position: absolute;
+    inset: 0;
+
+    background-color: rgba(0, 0, 0, 0.5);
+
+    cursor: pointer;
+}
+
+.confirmacao-caixa {
+    position: relative;
+
+    width: 100%;
+    max-width: 440px;
+
+    background-color: white;
+    color: #2c3e50;
+
+    border-radius: 10px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+
+    overflow: hidden;
+}
+
+.confirmacao-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 16px 18px;
+
+    border-bottom: 1px solid #ececec;
+}
+
+.confirmacao-topo h5 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.confirmacao-x {
+    cursor: pointer;
+    opacity: 0.6;
+    line-height: 1;
+}
+
+.confirmacao-x:hover {
+    opacity: 1;
+}
+
+.confirmacao-corpo {
+    padding: 18px;
+    line-height: 1.5;
+}
+
+.confirmacao-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    padding: 14px 18px;
+
+    border-top: 1px solid #ececec;
+}
+
+/* Os botões de cancelar são <label>: precisam parecer botão */
+.confirmacao-acoes label {
+    cursor: pointer;
+    margin: 0;
+}/* Estilo próprio dos botões da confirmação.
+   As classes .btn vêm do Bootstrap; estas regras garantem que a janela
+   continue apresentável mesmo se o CDN não carregar. */
+
+.confirmacao-acoes .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 18px;
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.confirmacao-acoes .btn-secondary {
+    background-color: #e6e6e6;
+    color: #2c3e50;
+}
+
+.confirmacao-acoes .btn-secondary:hover {
+    background-color: #d9d9d9;
+}
+
+.confirmacao-acoes .btn-primary {
+    background-color: #2B6BB9;
+    color: white;
+}
+
+.confirmacao-acoes .btn-primary:hover {
+    background-color: #24599b;
+}
+
+.confirmacao-acoes .btn-danger {
+    background-color: #E3342F;
+    color: white;
+}
+
+.confirmacao-acoes .btn-danger:hover {
+    background-color: #c62d28;
+}

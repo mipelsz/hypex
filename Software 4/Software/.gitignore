@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+static/imagem/produto_*
+static/imagem/fornecedor_*
+static/imagem/galpao_*
+static/imagem/empresa_*

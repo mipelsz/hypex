@@ -184,5 +184,375 @@ body {
     margin-left: 60px;
     margin-top: 10px;
 }
- 
- 
+/* =========================================
+   CHECKBOX - MANTER LOGADO
+========================================= */
+
+.manter-logado {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-top: 15px;
+    margin-bottom: 10px;
+
+    font-size: 14px;
+    color: #333;
+
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Esconde o checkbox padrão */
+.manter-logado input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 20px;
+    height: 20px;
+
+    margin: 0;
+
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+
+    background: #ffffff;
+
+    cursor: pointer;
+
+    position: relative;
+
+    transition: all 0.2s ease;
+}
+
+/* Hover */
+.manter-logado input[type="checkbox"]:hover {
+    border-color: #15477F;
+    transform: scale(1.05);
+}
+
+/* Marcado */
+.manter-logado input[type="checkbox"]:checked {
+    background: #15477F;
+    border-color: #15477F;
+}
+
+/* Check */
+.manter-logado input[type="checkbox"]:checked::after {
+    content: "";
+
+    position: absolute;
+
+    width: 5px;
+    height: 10px;
+
+    left: 6px;
+    top: 2px;
+
+    border: solid #ffffff;
+    border-width: 0 2px 2px 0;
+
+    transform: rotate(45deg);
+}
+
+/* Animação ao clicar */
+.manter-logado input[type="checkbox"]:active {
+    transform: scale(0.92);
+}
+
+/* Foco pelo teclado */
+.manter-logado input[type="checkbox"]:focus-visible {
+    outline: 3px solid rgba(21, 71, 127, 0.2);
+    outline-offset: 2px;
+}   
+
+/* =========================================
+   RESPONSIVIDADE DO LOGIN
+   Mantém o estilo original
+========================================= */
+
+/* Desktop menor / notebook */
+@media (max-width: 1200px) {
+
+    .login-card {
+        max-width: 760px;
+        padding: 35px;
+    }
+
+    .card-cad {
+        margin-left: 55%;
+        width: 50%;
+    }
+
+    .forms h2 {
+        margin-left: 90px;
+        font-size: 32px;
+    }
+
+    .grid-login {
+        margin-left: 45px;
+    }
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 992px) {
+
+    body {
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .login-container {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 700px;
+        height: auto;
+        min-height: 500px;
+        padding: 35px;
+        margin-top: 0;
+    }
+
+    .card-cad {
+        margin-left: 50%;
+        width: 50%;
+        height: 500px;
+        padding: 30px;
+    }
+
+    .forms {
+        margin-top: -465px;
+    }
+
+    .forms h2 {
+        margin-left: 70px;
+        font-size: 30px;
+    }
+
+    .logo {
+        width: 240px;
+    }
+
+    .input-group.w-50,
+    .btn-login.w-50 {
+        width: 55% !important;
+    }
+
+    .grid-login {
+        margin-left: 35px;
+    }
+}
+
+
+/* =========================================
+   CELULAR / MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+    body {
+        min-height: 100vh;
+        height: auto;
+        padding: 20px;
+        box-sizing: border-box;
+
+        background-position: center;
+        background-size: cover;
+    }
+
+    .login-container {
+        width: 100%;
+        height: auto;
+        min-height: 100vh;
+
+        padding: 20px 0;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 500px;
+
+        height: auto;
+        min-height: auto;
+
+        padding: 25px;
+
+        margin-top: 0;
+
+        border-radius: 28px;
+    }
+
+    /* Card azul */
+    .card-cad {
+        position: relative;
+
+        width: 100%;
+        height: auto;
+
+        margin: 0 0 30px 0;
+
+        padding: 30px;
+
+        border-radius: 28px;
+
+        box-sizing: border-box;
+    }
+
+    /* Logo */
+    .logo {
+        width: 220px;
+        max-width: 80%;
+
+        display: block;
+
+        margin: -10px auto 20px;
+    }
+
+    .card-cad h4 {
+        font-size: 30px;
+        margin-top: 0;
+    }
+
+    .card-cad p {
+        font-size: 16px;
+    }
+
+    /* Remove o posicionamento negativo */
+    .forms {
+        margin-top: 0;
+    }
+
+    .forms h2 {
+        margin-left: 0;
+        text-align: center;
+
+        font-size: 30px;
+
+        margin-bottom: 25px;
+    }
+
+    /* Inputs */
+    .input-group.w-50 {
+        width: 100% !important;
+    }
+
+    /* Botão */
+    .btn-login.w-50 {
+        width: 100% !important;
+    }
+
+    /* Espaçamento do formulário */
+    .forms .mb-5 {
+        margin-bottom: 30px !important;
+    }
+
+    /* Esqueci senha */
+    .login-options {
+        margin-top: 0;
+        margin-left: 0;
+    }
+
+    .esqueci-senha {
+        display: inline-block;
+        margin-top: 15px;
+    }
+
+    /* Manter logado */
+    .manter-logado {
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    /* Redes sociais */
+    .grid-login {
+        justify-content: center;
+
+        margin-left: 0;
+        margin-top: 20px;
+
+        gap: 10px;
+    }
+
+    .grid-login a {
+        margin: 0;
+    }
+
+}
+
+
+/* =========================================
+   CELULAR PEQUENO
+========================================= */
+
+@media (max-width: 480px) {
+
+    body {
+        padding: 10px;
+    }
+
+    .login-container {
+        padding: 10px 0;
+    }
+
+    .login-card {
+        padding: 20px;
+
+        border-radius: 24px;
+    }
+
+    .card-cad {
+        padding: 25px 20px;
+
+        border-radius: 24px;
+    }
+
+    .logo {
+        width: 190px;
+        margin-bottom: 15px;
+    }
+
+    .card-cad h4 {
+        font-size: 26px;
+    }
+
+    .card-cad p {
+        font-size: 15px;
+    }
+
+    .forms h2 {
+        font-size: 27px;
+    }
+
+    .form-label {
+        font-size: 14px;
+    }
+
+    .form-control {
+        font-size: 14px;
+    }
+
+    .btn-login {
+        height: 46px;
+        font-size: 15px;
+    }
+
+    .grid-login a {
+        padding: 8px;
+        font-size: 20px;
+    }
+
+    .alert {
+        min-width: auto;
+        width: calc(100% - 30px);
+        max-width: none;
+    }
+
+}

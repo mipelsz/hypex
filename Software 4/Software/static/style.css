@@ -13,185 +13,458 @@
     margin-top: 15px;
 }
 
+/* =========================================
+   CONFIGURAÇÕES GERAIS
+========================================= */
+
 body {
     background-color: #f1f1f1;
     margin: 0;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     padding: 0;
+    transition: background-color 0.3s, color 0.3s;
 }
 
+
+/* =========================================
+   SIDEBAR
+========================================= */
 #menu {
     width: 250px;
-    background-color: #15477F;
-    color: white;
+    min-width: 250px;
     height: 100vh;
+
+    background-color: #15477F;
+
     position: fixed;
-    top: 0;
     left: 0;
-    padding: 20px 0;
+    top: 0;
+
+    z-index: 1000;
+
     display: flex;
     flex-direction: column;
-    box-sizing: border-box;
+
+    overflow: hidden;
+
+    transition:
+        width 0.3s ease,
+        min-width 0.3s ease,
+        transform 0.3s ease;
 }
 
-.status-dots {
+
+/* =========================================
+   BOTÃO DOS TRÊS PONTOS
+========================================= */
+
+.btn-minimizar {
+    position: absolute;
+
+    top: 18px;
+    left: 22px;
+
+    width: 55px;
+    height: 25px;
+
     display: flex;
-    gap: 8px;
-    padding: 0 20px 25px 20px;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    cursor: pointer;
+
+    z-index: 10;
 }
 
-.status-dots span {
-    width: 8px;
-    height: 8px;
+
+/* OS TRÊS PONTOS */
+
+.btn-minimizar span {
+    width: 9px;
+    height: 9px;
+
     border-radius: 50%;
-    background-color: white;
-    border: 1px solid white;
+
+    background-color: #dce9f7;
+
+    transition: opacity 0.2s ease;
 }
 
-.status-dots .dot-red {
-    background-color: white;
+.btn-minimizar span:nth-child(3) {
+    opacity: 0.35;
 }
 
-.status-dots .dot-yellow {
-    opacity: 0.6;
+
+/* =========================================
+   SIDEBAR MINIMIZADA
+========================================= */
+
+#menu.minimizada {
+    width: 75px;
+    min-width: 75px;
 }
 
-.status-dots .dot-green {
-    background-color: #2B6BB9;
-    border-color: #2B6BB9;
-}
 
+/* =========================================
+   PERFIL
+========================================= */
 
 .perfil img {
     width: 70px;
     height: 70px;
+    flex-shrink: 0;
+
+    /* recorta em vez de esticar logos que não são quadrados */
+    object-fit: cover;
     border-radius: 50%;
+
     margin-right: 10px;
 }
+
 
 .perfil {
     display: flex;
     align-items: center;
+
     color: #EAEFF6;
-    padding: 0 20px 20px 20px;
+
+    padding: 60px 20px 20px 20px;
+
     margin-bottom: 20px;
+
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    transition:
+        opacity 0.2s ease,
+        padding 0.3s ease,
+        margin 0.3s ease;
 }
 
-.perfil i {
-    font-size: 28px;
-    margin-right: 10px;
-}
 
 .perfil h3 {
     font-size: 18px;
+
     margin: 0;
+
     font-weight: 500;
+
+    white-space: nowrap;
 }
+
+
+/* PERFIL MINIMIZADO */
+
+#menu.minimizada .perfil {
+    justify-content: center;
+
+    padding: 60px 0 20px 0;
+
+    margin-bottom: 20px;
+}
+
+
+#menu.minimizada .perfil img {
+    width: 42px;
+    height: 42px;
+
+    margin: 0;
+}
+
+
+#menu.minimizada .perfil h3 {
+    display: none;
+}
+
+
+/* =========================================
+   MENU
+========================================= */
 
 nav {
     flex-grow: 1;
 }
 
+
 nav ul {
     list-style-type: none;
+
     padding: 0;
     margin: 0;
 }
+
 
 .nav-menu {
     margin: 0;
 }
 
+
 .nav-menu a {
     display: flex;
     align-items: center;
+
     color: #EAE4D7;
+
     text-decoration: none;
+
     font-size: 15px;
+
     padding: 12px 20px;
-    transition: background-color 0.2s;
+
+    transition:
+        background-color 0.2s,
+        padding 0.3s ease;
+
     text-transform: uppercase;
+
     font-weight: 600;
+
+    white-space: nowrap;
 }
+
 
 .nav-menu a i {
     margin-right: 10px;
+
     font-size: 18px;
+
     color: #98B4CA;
+
+    min-width: 20px;
+
+    text-align: center;
+
+    transition:
+        margin 0.3s ease,
+        font-size 0.3s ease;
 }
 
-.nav-menu.selected {
-    background-color: var(#2B6BB9);
-    border-left: 5px solid white;
+
+/* =========================================
+   MENU MINIMIZADO
+========================================= */
+
+#menu.minimizada .nav-menu a {
+    justify-content: center;
+
+    padding: 15px 0;
 }
+
+
+#menu.minimizada .nav-menu a i {
+    margin-right: 0;
+
+    font-size: 22px;
+}
+
+
+#menu.minimizada .nav-menu a {
+    font-size: 0;
+}
+
+
+/* ITEM SELECIONADO */
+
+.nav-menu {
+    /* Espaço da borda reservado em todos os itens, para o texto ficar parado
+       quando o item passa a selecionado ou recebe o hover. */
+    border-left: 5px solid transparent;
+}
+
+
+.nav-menu.selected {
+    background-color: #2B6BB9;
+
+    border-left: 5px solid white;
+
+    /* Canto direito arredondado: o destaque vira uma faixa com acabamento
+       em vez de um bloco colado nas duas bordas do menu. */
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+
+    margin-right: 12px;
+}
+
 
 .nav-menu.selected a {
     color: white;
+
     padding-left: 15px;
 }
+
 
 .nav-menu.selected a i {
     color: white;
 }
 
+
+/* AJUSTE DO ITEM SELECIONADO MINIMIZADO */
+
+#menu.minimizada .nav-menu:not(.selected):hover {
+    margin-right: 0;
+    border-radius: 0;
+}
+
+
+#menu.minimizada .nav-menu.selected {
+    border-left: 4px solid white;
+
+    /* Minimizado o item é estreito: sem a margem o ícone ficaria descentrado */
+    margin-right: 0;
+    border-radius: 0;
+}
+
+
+#menu.minimizada .nav-menu.selected a {
+    padding-left: 0;
+}
+
+
+/* HOVER */
+
 .nav-menu:not(.selected):hover {
     background-color: rgba(255, 255, 255, 0.1);
+
+    /* Mesmo recorte do item selecionado, senão o realce do hover fica com
+       largura e cantos diferentes e o menu "pula" ao passar o mouse. */
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+
+    margin-right: 12px;
+
+    /* Compensa a borda esquerda que só o item selecionado tem, para o texto
+       não se deslocar ao passar o mouse. */
+    border-left: 5px solid transparent;
 }
+
 
 .nav-menu:not(.selected):hover a {
     color: white;
 }
 
+
 .nav-menu:not(.selected):hover a i {
     color: white;
 }
 
+
+/* =========================================
+   BOTÕES INFERIORES
+========================================= */
+
 .menu-opcoes {
     padding: 20px;
+
     display: flex;
+
     justify-content: space-between;
+
     gap: 10px;
+
+    transition:
+        padding 0.3s ease,
+        gap 0.3s ease;
 }
+
 
 .opcoes-btn {
     flex: 1;
+
     height: 40px;
+
     background-color: #7E9EC4;
+
     border: none;
+
     border-radius: 8px;
+
     color: #15477F;
+
     font-size: 18px;
+
     cursor: pointer;
-    transition: background-color 0.2s;
+
+    transition:
+        background-color 0.2s,
+        width 0.3s ease;
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
     text-decoration: none;
+
     box-sizing: border-box;
 }
+
 
 .opcoes-btn:hover {
     opacity: 0.8;
 }
 
-.selected-opcoes-btn {
-    background-color: #2B6BB9;
-    color: white;
-}
 
 .red-opcoes-btn {
     background-color: #d63031;
+
     color: white;
 }
 
-/*=======dashboard.css=======*/
 
-#dashboard-conteudo {
-    margin-left: 250px;
-    padding: 30px;
-    flex-grow: 1;
+/* =========================================
+   BOTÕES INFERIORES MINIMIZADOS
+========================================= */
+
+#menu.minimizada .menu-opcoes {
+    padding: 15px 10px;
+
+    flex-direction: column;
+
+    gap: 8px;
 }
+
+
+#menu.minimizada .opcoes-btn {
+    width: 55px;
+
+    min-width: 55px;
+
+    flex: none;
+
+    margin: 0 auto;
+}
+
+
+/* =========================================
+   ÁREA PRINCIPAL
+========================================= */
+
+.conteudo {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+
+    padding: 30px;
+    box-sizing: border-box;
+
+    transition:
+        margin-left 0.3s ease,
+        width 0.3s ease;
+}
+
+
+/* SIDEBAR MINIMIZADA */
+
+body.sidebar-minimizada .conteudo {
+    width: calc(100% - 75px);
+    margin-left: 75px;
+}
+/*=======dashboard.css=======*/
 
 .dashboard-texto {
     margin-bottom: 30px;
@@ -322,6 +595,23 @@ nav ul {
 .grafico-porcentagem-positiva {
     font-size: 12px;
     color: #666;
+}
+
+/* Cada informação do card de lucro ocupa a própria linha */
+.grafico-info .grafico-porcentagem-positiva,
+.grafico-info .tempo {
+    display: block;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* Lucro em queda: o prejuízo não pode aparecer com a mesma cor do ganho */
+.grafico-porcentagem-positiva.negative {
+    color: #E3342F;
+}
+
+.grafico-valor.negative {
+    color: #E3342F;
 }
 
 /*alertas.css*/
@@ -467,5 +757,972 @@ nav ul {
 
 .ver-atividade:hover {
     text-decoration: underline;
+}/* =========================================
+   RESPONSIVIDADE - LAYOUT PRINCIPAL
+========================================= */
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 992px) {
+
+    .conteudo {
+        width: calc(100% - 250px);
+
+        margin-left: 250px;
+
+        padding: 25px;
+    }
+
 }
 
+
+/* CELULAR */
+@media (max-width: 768px) {
+
+    .conteudo {
+        width: 100%;
+        margin-left: 0;
+        padding: 20px;
+    }
+
+}
+
+
+/* CELULAR PEQUENO */
+@media (max-width: 480px) {
+
+    .conteudo {
+        padding: 15px;
+    }
+
+}
+
+/* =========================================
+   MENU MOBILE
+========================================= */
+
+/* Tema e logout são formulários (POST) envolvendo o botão. `display: contents`
+   faz o próprio botão continuar sendo o item do flex, mantendo o alinhamento. */
+.menu-opcoes form {
+    display: contents;
+}
+
+.btn-menu-mobile {
+    display: none;
+
+    /* Era um <button>; agora é um <label> ligado ao checkbox escondido. */
+    user-select: none;
+
+    position: fixed;
+    top: 15px;
+    left: 15px;
+
+    width: 45px;
+    height: 45px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: #15477F;
+    color: white;
+
+    font-size: 24px;
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    z-index: 2000;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+/* =========================================
+   SIDEBAR NO CELULAR
+========================================= */
+
+@media (max-width: 768px) {
+
+    #menu {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* O checkbox marcado (label do menu mobile) abre a sidebar. */
+    .menu-mobile-check:checked ~ #menu {
+        transform: translateX(0);
+    }
+
+    .btn-menu-mobile {
+        display: flex;
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .btn-minimizar {
+        display: none;
+    }
+
+}/* ========================================= MODO ESCURO - COMPONENTES COMPARTILHADOS ========================================= O modo escuro só tinha regras para os cards do dashboard {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border-color: #333333;
+}
+
+/* =========================================
+   CARDS COM MAIS DE UM FORMULÁRIO
+=========================================
+   Alguns cards têm dois formulários em sequência (escolher o produto e depois
+   informar a quantidade). Sem folga, o botão do primeiro encosta no rótulo do
+   segundo. Fica aqui porque style.css é o único CSS carregado em toda tela. */
+
+.config-card form + form {
+    margin-top: 22px;
+}
+
+
+/* =========================================
+   CAMPO DE IMAGEM (produto, fornecedor, galpão, empresa)
+========================================= */
+
+.campo-imagem {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.campo-imagem h3 {
+    align-self: stretch;
+}
+
+/* Mesmo visual da foto da empresa em Configurações: moldura clara,
+   foto recortada (nunca esticada), botão com contorno e dica embaixo */
+.foto-bloco {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+
+.campo-imagem .preview-imagem {
+    width: 150px;
+    height: 150px;
+    max-width: 100%;
+
+    object-fit: cover;
+    object-position: center;
+
+    border-radius: 18px;
+    border: 3px solid #e3e8ef;
+    background-color: #f5f7fa;
+}
+
+.alterar-foto {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 7px 16px;
+    border-radius: 8px;
+    border: 1px solid #c9d4e2;
+
+    color: #15477F;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+}
+
+.alterar-foto:hover { background-color: #eef2f7; }
+
+.foto-dica { color: #8a96a8; font-size: 12px; }
+
+/* Miniatura usada nas listagens */
+.miniatura {
+    width: 40px;
+    height: 40px;
+
+    object-fit: cover;
+
+    border-radius: 6px;
+    border: 1px solid #e2e2e2;
+
+    vertical-align: middle;
+}/* Aviso do campo de imagem (substitui o alert do navegador) */
+
+.aviso-imagem {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: #E3342F;
+}/* =========================================
+   BARRA DE FILTROS (movimentações)
+=========================================
+   A tela reaproveitava `.caixa-pesquisa`, que é feita para um campo de busca
+   com ícone; com três selects dentro, o alinhamento quebrava. */
+
+.barra-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+
+    width: 100%;
+
+    padding: 16px 18px;
+
+    background-color: white;
+    border-radius: 10px;
+
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.barra-filtros .filtro-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    flex: 1 1 180px;
+    min-width: 150px;
+}
+
+.barra-filtros label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b6b6b;
+
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.barra-filtros select {
+    width: 100%;
+    height: 40px;
+
+    padding: 0 10px;
+
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+
+    background-color: #fafafa;
+    font-size: 14px;
+
+    color: #2c3e50;
+}
+
+.barra-filtros select:focus {
+    outline: none;
+    border-color: #2B6BB9;
+}
+
+.barra-filtros .filtro-acoes {
+    display: flex;
+    gap: 8px;
+}
+
+.barra-filtros .filtro-acoes .filtro-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    height: 40px;
+    padding: 0 18px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: #2B6BB9;
+    color: white;
+
+    font-size: 14px;
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.barra-filtros .filtro-acoes .filtro-btn:hover {
+    background-color: #24599b;
+}
+
+.barra-filtros .filtro-acoes .filtro-limpar {
+    background-color: #ececec;
+    color: #2c3e50;
+}
+
+.barra-filtros .filtro-acoes .filtro-limpar:hover {
+    background-color: #dedede;
+}/* =============================
+   ACESSIBILIDADE
+   ============================= */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid #15477F;
+    outline-offset: 3px;
+}
+
+#btnVoz {
+    cursor: pointer;
+}
+
+#btnVoz[aria-pressed="true"] {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
+
+/* =========================================
+   RODAPÉ DO MENU (CONFIGURAÇÃO)
+========================================= */
+
+.menu-rodape {
+    margin-top: auto;
+    padding: 16px 12px 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.menu-config {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    color: #dce9f7;
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color 0.2s;
+}
+
+.menu-config i { font-size: 20px; }
+
+.menu-config:hover,
+.menu-config.selected {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+#menu.minimizada .menu-rodape { padding: 14px 10px; }
+#menu.minimizada .menu-config { justify-content: center; padding: 12px 0; }
+#menu.minimizada .menu-config span { display: none; }
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.topo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+
+    /* encosta nas bordas do .conteudo, qualquer que seja o padding dele */
+    margin: calc(-1 * var(--pad-conteudo)) calc(-1 * var(--pad-conteudo)) 26px;
+    padding: 12px var(--pad-conteudo);
+
+    background-color: #ffffff;
+    border-bottom: 1px solid #e3e8ef;
+
+    position: sticky;
+    top: 0;
+    z-index: 900;
+}
+
+.tema-toggle {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 999px;
+    background-color: #eef2f7;
+    margin: 0;
+}
+
+.tema-toggle button {
+    width: 36px;
+    height: 30px;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: #6b7a90;
+    cursor: pointer;
+}
+
+.tema-toggle button.ativo {
+    background-color: #1f6fd1;
+    color: #ffffff;
+}
+
+.topo-icone {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    border: 1px solid #e3e8ef;
+    border-radius: 12px;
+    background-color: #ffffff;
+    color: #15477F;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    list-style: none;
+}
+
+.topo-menu { position: relative; }
+.topo-menu > summary { list-style: none; }
+.topo-menu > summary::-webkit-details-marker { display: none; }
+
+.sino-contador {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background-color: #d63031;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 19px;
+    text-align: center;
+}
+
+.usuario-resumo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 12px;
+}
+
+.usuario-resumo img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.usuario-texto { display: flex; flex-direction: column; line-height: 1.2; }
+.usuario-texto strong { color: #1d2b3a; font-size: 15px; }
+.usuario-texto small { color: #6b7a90; font-size: 13px; }
+.usuario-resumo .bi-chevron-down { color: #6b7a90; transition: transform 0.2s; }
+.usuario-menu[open] .bi-chevron-down { transform: rotate(180deg); }
+
+.topo-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    min-width: 220px;
+    max-width: 340px;
+    padding: 8px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    border: 1px solid #e3e8ef;
+    box-shadow: 0 10px 28px rgba(21, 71, 127, 0.15);
+}
+
+.notificacoes-menu .topo-dropdown { width: 320px; }
+
+.topo-dropdown h6 {
+    margin: 4px 8px 8px;
+    font-weight: 700;
+    color: #15477F;
+}
+
+.topo-dropdown > a,
+.topo-sair {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 10px;
+    border-radius: 8px;
+    color: #1d2b3a;
+    text-decoration: none;
+    cursor: pointer;
+    margin: 0;
+}
+
+.topo-dropdown > a:hover,
+.topo-sair:hover { background-color: #eef2f7; }
+.topo-sair { color: #d63031; }
+
+.notif-item { align-items: flex-start !important; }
+.notif-item i { color: #e1a100; margin-top: 3px; }
+.notif-perigo i { color: #d63031; }
+.notif-aviso i { color: #8a96a8; }
+.notif-info i { color: #1f6fd1; }
+.notificacoes-menu .topo-dropdown { max-height: 70vh; overflow-y: auto; }
+.notif-topo { display: flex; align-items: center; justify-content: space-between; }
+.notif-topo a { color: #6b7a90; padding: 4px 8px; border-radius: 6px; }
+.notif-topo a:hover { background: #eef2f7; color: #15477F; }
+.notif-item small { display: block; color: #6b7a90; }
+.notif-vazio { margin: 8px; color: #6b7a90; }
+.notif-todas { justify-content: center; color: #1f6fd1 !important; font-weight: 600; }@media (max-width: 768px) {
+    .topo { padding-left: 64px; gap: 8px; }
+    .usuario-texto { display: none; }
+    .notificacoes-menu .topo-dropdown { width: 280px; right: -60px; }
+}
+
+.conteudo { --pad-conteudo: 30px; }
+@media (max-width: 992px) { .conteudo { --pad-conteudo: 25px; } }
+@media (max-width: 768px) { .conteudo { --pad-conteudo: 20px; } }
+@media (max-width: 480px) { .conteudo { --pad-conteudo: 15px; } }
+
+
+/* =========================================
+   BUSCA DO HEADER
+========================================= */
+
+.topo-busca {
+    margin: 0 auto 0 0;
+    display: flex;
+    align-items: center;
+    width: min(320px, 40vw);
+    height: 38px;
+    padding: 0 6px 0 16px;
+    border-radius: 10px;
+    background-color: #cdd6e0;
+}
+
+.topo-busca input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    color: #1d2b3a;
+}
+
+.topo-busca input::placeholder { color: #5f6f82; }
+
+.topo-busca button {
+    border: none;
+    background: transparent;
+    font-size: 17px;
+    color: #1d2b3a;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+/* Resultados da busca geral */
+.busca-vazia { color: #6b7a90; margin: 8px 0 22px; }
+
+.busca-grupo {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.busca-grupo h2 { font-size: 16px; font-weight: 700; color: #15477F; margin-bottom: 10px; }
+
+.busca-item {
+    display: flex;
+    flex-direction: column;
+    padding: 9px 10px;
+    border-radius: 8px;
+    color: #1d2b3a;
+    text-decoration: none;
+}
+
+.busca-item:hover { background-color: #eef2f7; }
+.busca-item small { color: #6b7a90; }
+
+/* Botões da barra de pesquisa iguais em todas as telas */
+.pesquias-botao .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: transparent;
+    border: 1px solid #ccc;
+    color: #333;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.pesquias-botao .action-btn:hover { background-color: #f5f5f5; }
+
+/* Menus do header (sininho e usuário) abrem com uma leve animação */
+.topo-menu[open] .topo-dropdown { animation: dropdown-abrir 0.18s ease-out; }
+
+@keyframes dropdown-abrir {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Botões de ação das tabelas sempre lado a lado */
+.acoes-linha {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.acoes-linha > form { display: none; }
+.acoes-linha .acao-btn { margin: 0 !important; flex: none; }
+td.acao-estoque { white-space: nowrap; width: 1%; }
+
+/* =========================================
+   GRÁFICO DE LUCRO (dashboard)
+========================================= */
+
+.grafico-lucro {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    height: 150px;
+    margin-top: 16px;
+    padding-top: 6px;
+}
+
+.grafico-coluna {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: default;
+}
+
+.grafico-metade {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.grafico-metade.positivo { align-items: flex-end; border-bottom: 1px solid #d5dce5; }
+.grafico-metade.negativo { align-items: flex-start; }
+
+.grafico-metade .barra {
+    width: 60%;
+    max-width: 34px;
+    min-height: 3px;
+    transition: height 0.4s ease;
+}
+
+.grafico-metade.positivo .barra { background-color: #38C172; border-radius: 6px 6px 0 0; }
+.grafico-metade.negativo .barra { background-color: #E3342F; border-radius: 0 0 6px 6px; }
+.grafico-coluna:hover .barra { opacity: 0.8; }
+.grafico-coluna small { margin-top: 6px; font-size: 12px; color: #8a96a8; }
+
+
+/* Filtros de Movimentações: não encostar na tabela nem vazar da largura */
+.barra-filtros {
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+/* Celular: cards do dashboard e cards de configuração não podem passar da
+   largura da tela (itens de grid/flex têm min-width automático). */
+@media (max-width: 768px) {
+    .cards-valor,
+    .cards-grafico-valor,
+    .config-card { min-width: 0; max-width: 100%; box-sizing: border-box; }
+    .cards-grafico { display: flex; flex-direction: column; }
+    .config-grid { grid-template-columns: minmax(0, 1fr) !important; }
+}
+
+
+/* =========================================
+   MENU DE FILTROS (botão "Filtros")
+========================================= */
+
+.filtro-menu { position: relative; }
+.filtro-menu > summary { list-style: none; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+.filtro-menu > summary::-webkit-details-marker { display: none; }
+.filtro-menu .filtro-seta { font-size: 11px; transition: transform 0.2s; }
+.filtro-menu[open] .filtro-seta { transform: rotate(180deg); }
+
+.filtro-ligado { border-color: #1f6fd1 !important; color: #1f6fd1 !important; }
+.filtro-contador {
+    min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+    background: #1f6fd1; color: #fff; font-size: 11px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+}
+
+.filtro-painel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    z-index: 950;
+    width: 300px;
+    max-width: calc(100vw - 32px);
+    padding: 14px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid #e3e8ef;
+    box-shadow: 0 12px 30px rgba(21, 71, 127, 0.16);
+    animation: dropdown-abrir 0.18s ease-out;
+}
+
+.filtro-titulo {
+    margin: 4px 4px 8px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; color: #8a96a8;
+}
+
+.filtro-opcoes { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; }
+.filtro-opcao input, .filtro-chip input { position: absolute; opacity: 0; pointer-events: none; }
+.filtro-opcao span {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 8px; cursor: pointer;
+    color: #1d2b3a; font-size: 14px;
+}
+.filtro-opcao span i { color: #8a96a8; width: 16px; text-align: center; }
+.filtro-opcao:hover span { background: #eef2f7; }
+.filtro-opcao input:checked + span { background: #e6f0fc; color: #1f6fd1; font-weight: 600; }
+.filtro-opcao input:checked + span i { color: #1f6fd1; }
+.filtro-opcao input:focus-visible + span,
+.filtro-chip input:focus-visible + span { outline: 2px solid #1f6fd1; outline-offset: 1px; }
+
+.filtro-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.filtro-chip span {
+    display: inline-block; padding: 5px 12px; border-radius: 999px;
+    border: 1px solid #d5dce5; font-size: 13px; cursor: pointer; color: #4a5a70;
+}
+.filtro-chip input:checked + span { background: #1f6fd1; border-color: #1f6fd1; color: #fff; }
+
+.filtro-rodape {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 10px; border-top: 1px solid #eef2f7;
+}
+.filtro-limpar { color: #6b7a90; font-size: 14px; text-decoration: none; }
+.filtro-limpar:hover { color: #d63031; }
+.filtro-aplicar {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: none; border-radius: 8px; padding: 8px 16px;
+    background: #1f6fd1; color: #fff; font-weight: 600; cursor: pointer;
+}
+.filtro-aplicar:hover { background: #185bb0; }
+
+/* a barra de pesquisa não pode cortar o menu que abre para baixo */
+.barra-pesquisa { overflow: visible; position: relative; z-index: 5; }
+
+
+/* =========================================
+   TABELAS: FOTO DO PRODUTO E SITUAÇÃO
+========================================= */
+
+.produto-celula {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: inherit;
+    text-decoration: none;
+    min-width: 200px;
+}
+
+.produto-celula:hover strong { color: #1f6fd1; }
+.produto-celula > span { display: flex; flex-direction: column; min-width: 0; }
+
+.miniatura-produto {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #e3e8ef;
+    background: #f5f7fa;
+}
+
+.selo-situacao {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.selo-situacao i { font-size: 7px; }
+.selo-situacao.ativo { background: #e3f6ea; color: #1f8a4c; }
+.selo-situacao.inativo { background: #eef0f3; color: #6b7a90; }
+
+tr.linha-inativa td { color: #8a96a8; }
+tr.linha-inativa .miniatura-produto { filter: grayscale(1); opacity: 0.7; }
+
+.acao-btn.reativar { color: #1f8a4c; }
+.acao-btn.reativar:hover { background: #1f8a4c !important; color: #fff !important; }
+
+
+/* =========================================
+   RESPONSIVO — REGRAS GERAIS
+   Valem para todas as telas; cada página só ajusta o que for específico.
+========================================= */
+
+/* Imagens e mídia nunca passam da largura do card */
+.conteudo img,
+.conteudo video { max-width: 100%; }
+
+@media (max-width: 992px) {
+    /* Cabeçalho das telas: título em cima, botões embaixo, quebrando linha */
+    .config-texto,
+    .inventario-texto,
+    .orders-header,
+    .dashboard-texto,
+    header.config-texto {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .grupo-botoes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .config-texto,
+    .inventario-texto,
+    .orders-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .grupo-botoes > *,
+    .grupo-botoes .salvar-btn,
+    .grupo-botoes .excluir-btn {
+        flex: 1 1 auto;
+        text-align: center;
+        justify-content: center;
+    }
+
+    /* Tabelas rolam dentro do próprio card em vez de alargar a página */
+    .conteudo table {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+    }
+
+    .conteudo table td,
+    .conteudo table th { white-space: nowrap; }
+
+    /* Campos em grade viram uma coluna */
+    .inputs-empresa,
+    .sensor-grid,
+    .config-duas-colunas,
+    .empresa-campos,
+    .preferencias { grid-template-columns: minmax(0, 1fr) !important; }
+
+    /* Barra de pesquisa: campo em cima, botões embaixo */
+    .barra-pesquisa {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 10px;
+    }
+    .barra-pesquisa .caixa-pesquisa { width: 100% !important; box-sizing: border-box; }
+    .barra-pesquisa .pesquias-botao { justify-content: flex-end; flex-wrap: wrap; }
+
+    /* O menu de filtros abre alinhado à direita, dentro da tela */
+    .filtro-painel { right: 0; width: min(300px, calc(100vw - 32px)); }
+
+    /* Títulos um pouco menores */
+    .conteudo h1 { font-size: 22px; }
+}
+
+/* Header em telas médias: a busca encolhe e os controles da direita
+   nunca somem (antes eram empurrados para fora da tela). */
+.topo { min-width: 0; }
+.topo-busca { flex: 1 1 320px; max-width: 420px; min-width: 0; width: auto; }
+.topo > :not(.topo-busca) { flex-shrink: 0; }
+
+@media (max-width: 1100px) {
+    .usuario-texto { display: none; }
+}
+
+@media (max-width: 480px) {
+    .tema-toggle button { width: 30px; }
+    .topo-icone { width: 38px; height: 38px; }
+    #btnVoz { display: none; }
+    .topo { gap: 6px; }
+}
+
+/* =========================================
+   CONFIGURAÇÃO > NOTIFICAÇÕES (interruptor só com CSS)
+========================================= */
+.notif-opcao { cursor: pointer; gap: 14px; }
+.notif-opcao > span:first-child { display: flex; flex-direction: column; }
+.notif-opcao small { color: #8a96a8; }
+.notif-check { position: absolute; opacity: 0; pointer-events: none; }
+.notif-switch {
+    position: relative; flex-shrink: 0;
+    width: 42px; height: 24px; border-radius: 999px;
+    background: #cfd6df; transition: background 0.2s;
+}
+.notif-switch::after {
+    content: ""; position: absolute; top: 3px; left: 3px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25);
+    transition: transform 0.2s;
+}
+.notif-check:checked + .notif-switch { background: #1f6fd1; }
+.notif-check:checked + .notif-switch::after { transform: translateX(18px); }
+.notif-check:focus-visible + .notif-switch { outline: 2px solid #1f6fd1; outline-offset: 2px; }
+.notif-margem { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.notif-margem input {
+    width: 72px; padding: 6px 8px; border-radius: 8px;
+    border: 1px solid #d5dce5; text-align: right;
+}
+.empresa-fieldset:disabled .notif-opcao { opacity: 0.6; cursor: not-allowed; }
+body.modo-escuro .notif-switch { background: #3d3d3d; }
+body.modo-escuro .notif-check:checked + .notif-switch { background: #1f6fd1; }
+body.modo-escuro .notif-margem input { background: #2a2a2a; border-color: #444; color: #fff; }
+body.modo-escuro .notif-topo a:hover { background: #333; color: #9cc3f0; }
+
+/* =========================================
+   CARD DE IMAGEM: foto à esquerda, campos à direita
+   (cliente, galpão, produto e fornecedor)
+========================================= */
+.config-card:has(> .campo-imagem) {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    column-gap: 28px;
+    align-content: start;
+}
+
+.config-card:has(> .campo-imagem) > .campo-imagem { display: contents; }
+.config-card:has(> .campo-imagem) > .campo-imagem > h3 { grid-column: 1 / -1; }
+.config-card:has(> .campo-imagem) > .campo-imagem > .foto-bloco {
+    grid-column: 1;
+    grid-row: 2 / span 6;
+    align-self: start;
+}
+.config-card:has(> .campo-imagem) > :not(.campo-imagem) { grid-column: 2; }
+.config-card:has(> .campo-imagem) > .input-resp:first-of-type { margin-top: 0 !important; }
+
+/* Foto do cliente na lista */
+.cliente-foto {
+    width: 50px; height: 50px; flex-shrink: 0;
+    object-fit: cover; border-radius: 12px; border: 1px solid #e3e8ef;
+}
+
+@media (max-width: 600px) {
+    .config-card:has(> .campo-imagem) { grid-template-columns: minmax(0, 1fr); }
+    .config-card:has(> .campo-imagem) > .campo-imagem > .foto-bloco { grid-column: 1; grid-row: auto; }
+    .config-card:has(> .campo-imagem) > :not(.campo-imagem) { grid-column: 1; }
+}

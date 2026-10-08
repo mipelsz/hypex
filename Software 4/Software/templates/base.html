@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Software HYPEX{% endblock %}</title>
+
+    <!-- Importação de bibliotecas externas (Bootstrap Icons e Bootstrap CSS) e folhas de estilo locais -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='notificacoes.css') }}">
+
+    <!-- Bloco dinâmico para inclusão de CSS específico por página -->
+    {% block css %}
+    {% endblock %}
+
+    <!-- Folha de estilo para aplicação do tema escuro -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='modo-escuro.css') }}">
+
+</head>
+
+<!-- Definição das classes dinâmicas do corpo da página (tema e estado do menu) -->
+{% set classes_body = [] %}
+{% if tema == 'escuro' %}{% set _ = classes_body.append('modo-escuro') %}{% endif %}
+{% if sidebar_minimizada %}{% set _ = classes_body.append('sidebar-minimizada') %}{% endif %}
+<body class="{{ classes_body | join(' ') }}">
+
+    <!-- Botão do menu hambúrguer para navegação em dispositivos móveis -->
+    <input type="checkbox" id="btnMenuMobile" class="menu-mobile-check" hidden>
+    <label for="btnMenuMobile" class="btn-menu-mobile" title="Abrir menu" aria-label="Abrir menu">
+        <i class="bi bi-list" aria-hidden="true"></i>
+    </label>
+
+    <!-- Menu de navegação lateral (Sidebar) -->
+    <aside id="menu" class="{{ 'minimizada' if sidebar_minimizada }}" aria-label="Menu principal">
+
+        <!-- Formulário de alternância para minimizar/expandir o menu lateral -->
+        <form method="POST" action="{{ url_for('alternar_menu') }}" id="form-menu">
+            <input type="hidden" name="voltar_para" value="{{ request.full_path if request.query_string else request.path }}">
+            <button id="btn-minimizar" class="btn-minimizar" type="submit"
+                title="{{ 'Expandir menu' if sidebar_minimizada else 'Minimizar menu' }}">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </form>
+
+
+        <!-- Cabeçalho da sidebar com logomarca e nome da empresa -->
+        <div class="perfil">
+
+            <img src="{{ url_for('static', filename='imagem/' + (empresa_imagem | imagem_ou('perfil.png'))) }}"
+                alt="{{ empresa_nome }}">
+
+            <h3>{{ empresa_nome }}</h3>
+        </div>
+
+
+        <!-- Links de navegação entre os módulos do sistema -->
+        <nav aria-label="Menu principal">
+
+            <ul>
+
+                <!-- Módulo Dashboard -->
+                <li class="nav-menu {% if modulo_atual == 'dashboard' %}selected{% endif %}">
+
+                    <a href="/dashboard" aria-label="Dashboard">
+
+                        <i class="bi bi-bar-chart-fill" aria-hidden="true"></i>
+
+                        DASHBOARD
+
+                    </a>
+
+                </li>
+
+
+                <!-- Módulo Estoque -->
+                <li class="nav-menu {% if modulo_atual == 'estoque' %}selected{% endif %}">
+
+                    <a href="/galpao" aria-label="Estoque">
+
+                        <i class="bi bi-box-seam-fill" aria-hidden="true"></i>
+
+                        ESTOQUE
+
+                    </a>
+
+                </li>
+
+
+                <!-- Módulo Fornecedores -->
+                <li class="nav-menu {% if modulo_atual == 'fornecedores' %}selected{% endif %}">
+
+                    <a href="/fornecedores" aria-label="Fornecedores">
+
+                        <i class="bi bi-people-fill" aria-hidden="true"></i>
+
+                        FORNECEDORES
+
+                    </a>
+
+                </li>
+
+
+                <!-- Módulo Pedidos -->
+                <li class="nav-menu {% if modulo_atual == 'pedidos' %}selected{% endif %}">
+
+                    <a href="/pedidos" aria-label="Pedidos">
+
+                        <i class="bi bi-basket2-fill" aria-hidden="true"></i>
+
+                        PEDIDOS
+
+                    </a>
+
+                </li>
+
+
+                <!-- Módulo Clientes -->
+                <li class="nav-menu {% if modulo_atual == 'clientes' %}selected{% endif %}">
+
+                    <a href="/clientes" aria-label="Clientes">
+
+                        <i class="bi bi-person-fill" aria-hidden="true"></i>
+
+                        CLIENTES
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </nav>
+
+        <!-- Rodapé da sidebar com acesso às configurações -->
+        <div class="menu-rodape">
+            <a href="/config" class="menu-config {% if modulo_atual == 'config' %}selected{% endif %}"
+                aria-label="Configuração" title="Configuração">
+                <i class="bi bi-gear-fill" aria-hidden="true"></i>
+                <span>Configuração</span>
+            </a>
+        </div>
+
+    </aside>
+
+    <!-- Área de conteúdo principal da aplicação -->
+    <div class="conteudo">
+
+        <!-- Barra superior do sistema (Header) -->
+        <header class="topo">
+
+            <!-- Formulário da barra de pesquisa global -->
+            <form method="GET" action="{{ url_for('buscar') }}" class="topo-busca" role="search">
+                <input type="search" name="q" value="{{ request.args.get('q', '') if request.endpoint == 'buscar' else '' }}"
+                    placeholder="Pesquisar..." aria-label="Pesquisar no sistema">
+                <button type="submit" title="Pesquisar" aria-label="Pesquisar">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+                </button>
+            </form>
+
+            <!-- Alternador de tema claro e escuro -->
+            <form method="POST" action="{{ url_for('alternar_tema') }}" class="tema-toggle"
+                aria-label="Tema">
+                <input type="hidden" name="voltar_para" value="{{ request.full_path if request.query_string else request.path }}">
+                <button type="submit" name="tema" value="escuro" title="Tema escuro"
+                    class="{{ 'ativo' if tema == 'escuro' }}" aria-pressed="{{ 'true' if tema == 'escuro' else 'false' }}">
+                    <i class="bi bi-moon-fill" aria-hidden="true"></i>
+                </button>
+                <button type="submit" name="tema" value="claro" title="Tema claro"
+                    class="{{ 'ativo' if tema != 'escuro' }}" aria-pressed="{{ 'true' if tema != 'escuro' else 'false' }}">
+                    <i class="bi bi-sun-fill" aria-hidden="true"></i>
+                </button>
+            </form>
+
+            <!-- Botão de acessibilidade para leitura por voz -->
+            <button id="btnVoz" class="topo-icone" type="button" aria-label="Ativar leitura por voz"
+                aria-pressed="false" title="Ativar leitura por voz">
+                <i id="iconeVoz" class="bi bi-volume-mute-fill" aria-hidden="true"></i>
+            </button>
+
+            <!-- Menu suspenso de notificações com contador de alertas -->
+            <details class="topo-menu notificacoes-menu">
+                <summary class="topo-icone" title="Notificações" aria-label="Notificações">
+                    <i class="bi bi-bell-fill" aria-hidden="true"></i>
+                    {% if total_notificacoes %}
+                    <span class="sino-contador">{{ total_notificacoes if total_notificacoes < 100 else '99+' }}</span>
+                    {% endif %}
+                </summary>
+                <div class="topo-dropdown">
+                    <div class="notif-topo">
+                        <h6>Notificações</h6>
+                        <a href="{{ url_for('config') }}#notificacoes" title="Preferências de notificação">
+                            <i class="bi bi-sliders" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                    <!-- Lista dinâmica de notificações ativas de estoque e sistema -->
+                    {% for n in notificacoes_estoque %}
+                    <a href="{{ n.link }}" class="notif-item notif-{{ n.cor }}">
+                        <i class="bi {{ n.icone }}" aria-hidden="true"></i>
+                        <span>
+                            <strong>{{ n.titulo }}</strong> {{ n.texto }}
+                            <small>{{ n.detalhe }}</small>
+                        </span>
+                    </a>
+                    {% else %}
+                    <p class="notif-vazio">Nenhuma notificação.
+                        <a href="{{ url_for('config') }}#notificacoes">Ajustar preferências</a></p>
+                    {% endfor %}
+                    {% if total_notificacoes > notificacoes_estoque | length %}
+                    <a href="/dashboard" class="notif-todas">Ver todas ({{ total_notificacoes }})</a>
+                    {% endif %}
+                </div>
+            </details>
+
+            <!-- Menu de perfil e opções da conta do usuário -->
+            <details class="topo-menu usuario-menu">
+                <summary class="usuario-resumo">
+                    <img src="{{ url_for('static', filename='imagem/' + (empresa_imagem | imagem_ou('perfil.png'))) }}" alt="">
+                    <span class="usuario-texto">
+                        <strong>Olá, {{ usuario_primeiro_nome or 'usuário' }}</strong>
+                        <small>{{ usuario_tipo }}</small>
+                    </span>
+                    <i class="bi bi-chevron-down" aria-hidden="true"></i>
+                </summary>
+                <div class="topo-dropdown">
+                    <a href="/config"><i class="bi bi-gear-fill" aria-hidden="true"></i> Configuração</a>
+                    {% if perfil == 'admin' %}
+                    <a href="{{ url_for('usuarios') }}"><i class="bi bi-people-fill" aria-hidden="true"></i> Usuários</a>
+                    {% endif %}
+                    
+                    <!-- Ação para encerramento de sessão com confirmação em modal -->
+                    <form method="POST" id="form-logout" action="{{ url_for('logout') }}"></form>
+                    {% with id='logout',
+                            form_id='form-logout',
+                            titulo='Sair da conta',
+                            texto='Deseja sair da sua conta?',
+                            icone='bi-box-arrow-right',
+                            rotulo='Sair',
+                            classe='topo-sair',
+                            confirmar='Sair', perigo=True %}
+                    {% include '_confirmar.html' %}
+                    {% endwith %}
+                </div>
+            </details>
+
+        </header>
+
+        <!-- Bloco dinâmico onde o conteúdo de cada página é inserido -->
+        {% block content %}
+        {% endblock %}
+
+    </div>
+
+    <!-- Componente global para exibição de mensagens e alertas flash -->
+    {% include '_notificacoes.html' %}
+
+
+    <!-- Importação de scripts do Bootstrap e scripts JavaScript utilitários -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+    <script src="{{ url_for('static', filename='js/imagem-preview.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/acessibilidade.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
+
+    <!-- Bloco dinâmico para scripts JavaScript específicos de cada página -->
+    {% block javascript %}
+    {% endblock %}
+
+</body>
+
+</html>

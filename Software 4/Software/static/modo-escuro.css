@@ -1,0 +1,587 @@
+/* =========================================================
+   MODO ESCURO
+   Um arquivo só, no lugar das ~220 regras espalhadas pelas telas.
+   O JS (static/js/tema.js) só liga/desliga a classe .modo-escuro no
+   <body>; as cores ficam nas variáveis abaixo.
+========================================================= */
+
+body.modo-escuro {
+    --e-fundo: #121212;
+    --e-card: #1e1e1e;
+    --e-menu: #262626;
+    --e-campo: #2a2a2a;
+    --e-borda: #333333;
+    --e-borda-2: #444444;
+    --e-texto: #ffffff;
+    --e-texto-2: #dddddd;
+    --e-texto-3: #aaaaaa;
+    --e-texto-4: #999999;
+}
+
+/* Transição suave na troca de tema (a classe fica só durante a troca) */
+.trocando-tema,
+.trocando-tema *,
+.trocando-tema *::before,
+.trocando-tema *::after {
+    transition: background-color 0.35s ease, color 0.35s ease,
+        border-color 0.35s ease, box-shadow 0.35s ease !important;
+}
+
+body.modo-escuro {
+    background-color: var(--e-fundo);
+    color: var(--e-texto);
+}
+
+body.modo-escuro .conteudo,
+body.modo-escuro #cliente-conteudo,
+body.modo-escuro .clientes-card.inactive,
+body.modo-escuro #galpao-conteudo,
+body.modo-escuro #config-conteudo {
+    background-color: var(--e-fundo);
+}
+
+body.modo-escuro #menu {
+    background-color: var(--e-menu);
+    border-right: 1px solid var(--e-borda);
+}
+
+body.modo-escuro .perfil,
+body.modo-escuro .cards-valor-header,
+body.modo-escuro .fornecedor-card .fornecedor-texto,
+body.modo-escuro .galpao-card .galpao-texto,
+body.modo-escuro .modo-escolha,
+body.modo-escuro .modal-header {
+    border-bottom-color: var(--e-borda);
+}
+
+body.modo-escuro .perfil h3,
+body.modo-escuro .nav-menu.selected a,
+body.modo-escuro .nav-menu.selected a i,
+body.modo-escuro .dashboard-texto .title,
+body.modo-escuro .valor,
+body.modo-escuro .grafico-texto .icon-text,
+body.modo-escuro .cards-valor-header .alertas-titulo,
+body.modo-escuro .config-texto h1,
+body.modo-escuro .inventario-texto h1,
+body.modo-escuro .orders-header h1,
+body.modo-escuro .config-info h1,
+body.modo-escuro .header-info h1,
+body.modo-escuro .fornecedor-nome,
+body.modo-escuro .clientes h1,
+body.modo-escuro .cliente-nome,
+body.modo-escuro .stat-value,
+body.modo-escuro .produto-info,
+body.modo-escuro .acao-estoque i:hover,
+body.modo-escuro .fornecedor-texto h1,
+body.modo-escuro .galpao h1,
+body.modo-escuro .nome-galpao,
+body.modo-escuro .stats-espaco,
+body.modo-escuro .ordem-id,
+body.modo-escuro .produto-info strong,
+body.modo-escuro .modal-title,
+body.modo-escuro .modal-body strong {
+    color: var(--e-texto);
+}
+
+body.modo-escuro .nav-menu.selected {
+    background-color: #2B6BB9;
+    border-left-color: #8fc0ff;
+}
+
+body.modo-escuro #menu.minimizada .nav-menu.selected {
+    border-left-color: #8fc0ff;
+}
+
+body.modo-escuro .nav-menu a,
+body.modo-escuro .nav-menu a i,
+body.modo-escuro .alertas-texto,
+body.modo-escuro .alertas-text,
+body.modo-escuro .usuario-texto strong,
+body.modo-escuro .topo-dropdown > a,
+body.modo-escuro .modal-body {
+    color: var(--e-texto-2);
+}
+
+body.modo-escuro .nav-menu:not(.selected):hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+body.modo-escuro .opcoes-btn,
+body.modo-escuro .barra-filtros .filtro-acoes .filtro-limpar,
+body.modo-escuro .confirmacao-acoes .btn-secondary {
+    background-color: var(--e-borda);
+    color: var(--e-texto-2);
+}
+
+body.modo-escuro .opcoes-btn:hover {
+    background-color: var(--e-borda-2);
+}
+
+body.modo-escuro .red-opcoes-btn {
+    background-color: #a12b26;
+    color: var(--e-texto);
+}
+
+body.modo-escuro .red-opcoes-btn:hover {
+    background-color: #b83530;
+}
+
+body.modo-escuro .btn-minimizar span {
+    background-color: var(--e-texto-2);
+}
+
+body.modo-escuro #btnTema,
+body.modo-escuro .add-produto-btn,
+body.modo-escuro .alterar-btn {
+    background-color: #2B6BB9;
+    color: var(--e-texto);
+}
+
+body.modo-escuro .cards-valor,
+body.modo-escuro table,
+body.modo-escuro .confirmacao-caixa,
+body.modo-escuro .config-card {
+    background-color: var(--e-card);
+    color: var(--e-texto);
+}
+
+body.modo-escuro .dashboard-texto .subtitle,
+body.modo-escuro .icon-text,
+body.modo-escuro .grafico-texto .tempo,
+body.modo-escuro .grafico-porcentagem-positiva,
+body.modo-escuro .cards-valor-header .alertas-sub,
+body.modo-escuro .config-texto p,
+body.modo-escuro .inventario-texto p,
+body.modo-escuro .orders-header p,
+body.modo-escuro .config-info p,
+body.modo-escuro .header-info p,
+body.modo-escuro label,
+body.modo-escuro .input-resp label,
+body.modo-escuro .barra-filtros label,
+body.modo-escuro .clientes p,
+body.modo-escuro .contact-detail,
+body.modo-escuro .btn-voltar,
+body.modo-escuro .fornecedor-texto p,
+body.modo-escuro .contato-detalhe,
+body.modo-escuro .galpao p,
+body.modo-escuro .galpao-resp,
+body.modo-escuro .detalhe-galpao,
+body.modo-escuro .total-capacidade label {
+    color: var(--e-texto-3);
+}
+
+body.modo-escuro .alertas-tempo,
+body.modo-escuro .alertas-info,
+body.modo-escuro input::placeholder,
+body.modo-escuro textarea::placeholder,
+body.modo-escuro .contato-pessoa,
+body.modo-escuro .contact-detail i,
+body.modo-escuro .stat-label,
+body.modo-escuro .caixa-pesquisa input::placeholder,
+body.modo-escuro .caixa-pesquisa i,
+body.modo-escuro .min-estoque,
+body.modo-escuro .acao-estoque i,
+body.modo-escuro .contato-fornecedor,
+body.modo-escuro .detalhe-galpao i,
+body.modo-escuro .stats-ocupa,
+body.modo-escuro .stats-area,
+body.modo-escuro .input-resp input::placeholder,
+body.modo-escuro .cliente-pedido {
+    color: var(--e-texto-4);
+}
+
+body.modo-escuro .ver-atividade,
+body.modo-escuro .clientes-card .card-detalhes-clientes,
+body.modo-escuro .card-produtos,
+body.modo-escuro .galpao-card .cards-detalhe-galpao,
+body.modo-escuro .modal-footer {
+    border-top-color: var(--e-borda);
+}
+
+mas `.modo-escuro` deixa TODO o texto branco. Nas demais telas o texto branco caía sobre cards que continuavam brancos e ficava ilegível. Este bloco cobre os componentes usados pelas outras páginas. Vem depois das regras claras (e é mais específico) para vencer no cascata. */  .modo-escuro .config-card,
+body.modo-escuro .offcanvas {
+    background-color: var(--e-card);
+    color: var(--e-texto);
+    border-color: var(--e-borda);
+}
+
+body.modo-escuro .sensor-conteudo,
+body.modo-escuro .cad-empilhadeira,
+body.modo-escuro .modal-content {
+    border-color: var(--e-borda);
+    background-color: var(--e-card);
+    color: var(--e-texto);
+}
+
+body.modo-escuro .config-card h3 {
+    border-color: var(--e-borda);
+    color: var(--e-texto);
+    border-bottom-color: var(--e-borda);
+}
+
+body.modo-escuro .config-card h5,
+body.modo-escuro .config-card h6 {
+    color: var(--e-texto);
+    border-color: var(--e-borda);
+}
+
+body.modo-escuro input,
+body.modo-escuro select,
+body.modo-escuro textarea,
+body.modo-escuro .form-control,
+body.modo-escuro .form-select {
+    background-color: var(--e-campo);
+    color: var(--e-texto);
+    border-color: var(--e-borda-2);
+}
+
+body.modo-escuro input:read-only,
+body.modo-escuro .form-control:read-only,
+body.modo-escuro .acao-btn,
+body.modo-escuro .acao-btn.delete {
+    background-color: var(--e-campo);
+    color: var(--e-texto-2);
+}
+
+body.modo-escuro .sensor-lista {
+    background-color: var(--e-card);
+    color: var(--e-texto-2);
+}
+
+body.modo-escuro .inventario-lista {
+    color: var(--e-texto);
+    background-color: var(--e-card);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+body.modo-escuro .lista-inventario {
+    color: var(--e-texto);
+    background-color: var(--e-card);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.modo-escuro th {
+    background-color: var(--e-campo);
+    color: var(--e-texto-2);
+    border-color: var(--e-borda);
+}
+
+body.modo-escuro td {
+    border-color: var(--e-borda);
+    color: var(--e-texto);
+}
+
+body.modo-escuro tr:hover td {
+    background-color: var(--e-menu);
+}
+
+body.modo-escuro .barra-pesquisa {
+    color: var(--e-texto);
+    background-color: var(--e-card);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+body.modo-escuro .caixa-pesquisa {
+    color: var(--e-texto);
+    background-color: var(--e-card);
+    border-color: var(--e-borda-2);
+}
+
+body.modo-escuro .filtro-btn,
+body.modo-escuro .action-btn {
+    background-color: transparent;
+    border-color: var(--e-borda-2);
+    color: var(--e-texto-2);
+}
+
+body.modo-escuro .text-muted,
+body.modo-escuro small,
+body.modo-escuro tbody .text-muted {
+    color: var(--e-texto-4) !important;
+}
+
+body.modo-escuro .total-pedido-box {
+    background-color: var(--e-campo);
+    color: var(--e-texto);
+    border-color: #2B6BB9;
+}
+
+body.modo-escuro .alert-success {
+    background-color: #14371f;
+    color: #b7f0c8;
+    border-color: #1e5230;
+}
+
+body.modo-escuro .alert-danger {
+    background-color: #3d1a1d;
+    color: #f5b5ba;
+    border-color: #5c272c;
+}
+
+body.modo-escuro .campo-imagem .preview-imagem,
+body.modo-escuro .miniatura {
+    border-color: var(--e-borda-2);
+    background-color: var(--e-campo);
+}
+
+body.modo-escuro .aviso-imagem {
+    color: #f87171;
+}
+
+body.modo-escuro .barra-filtros {
+    background-color: var(--e-card);
+}
+
+body.modo-escuro .barra-filtros select,
+body.modo-escuro .input-resp input,
+body.modo-escuro .input-resp select,
+body.modo-escuro .total-capacidade span {
+    background-color: var(--e-campo);
+    border-color: var(--e-borda-2);
+    color: var(--e-texto);
+}
+
+body.modo-escuro .topo,
+body.modo-escuro .fornecedor-card {
+    background-color: var(--e-card);
+    border-color: var(--e-borda);
+}
+
+body.modo-escuro .tema-toggle,
+body.modo-escuro .action-btn:hover,
+body.modo-escuro .filtro-btn:hover,
+body.modo-escuro tbody tr:hover,
+body.modo-escuro .filtro-botao:hover {
+    background-color: var(--e-campo);
+}
+
+body.modo-escuro .topo-icone,
+body.modo-escuro .topo-dropdown {
+    background-color: var(--e-menu);
+    border-color: var(--e-borda);
+    color: var(--e-texto-2);
+}
+
+body.modo-escuro .topo-dropdown h6 {
+    color: #9cc3f0;
+}
+
+body.modo-escuro .topo-dropdown > a:hover,
+body.modo-escuro .topo-sair:hover {
+    background-color: var(--e-borda);
+}
+
+body.modo-escuro .confirmacao-topo,
+body.modo-escuro .confirmacao-acoes {
+    border-color: var(--e-borda);
+}
+
+body.modo-escuro .clientes-card {
+    background-color: var(--e-card);
+    border-color: var(--e-borda);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.modo-escuro .caixa-pesquisa input {
+    background-color: transparent;
+    color: var(--e-texto);
+}
+
+body.modo-escuro .gray-bg-icon {
+    background-color: var(--e-campo);
+    color: var(--e-texto-4);
+}
+
+body.modo-escuro .add-produto-btn:hover,
+body.modo-escuro .btn-estoque:hover {
+    background-color: #387bd8;
+}
+
+body.modo-escuro thead th {
+    color: var(--e-texto-3);
+    border-bottom-color: var(--e-borda);
+}
+
+body.modo-escuro tbody td,
+body.modo-escuro .sensor-lista td {
+    color: var(--e-texto-2);
+    border-bottom-color: var(--e-borda);
+}
+
+body.modo-escuro .status-disponivel,
+body.modo-escuro .status-completado {
+    background-color: #173d25;
+    color: #5bd98a;
+}
+
+body.modo-escuro .status-low,
+body.modo-escuro .status-processando {
+    background-color: #443a16;
+    color: #ffd54a;
+}
+
+body.modo-escuro .status-zero,
+body.modo-escuro .status-cancelado {
+    background-color: #431d1d;
+    color: #ff6b6b;
+}
+
+body.modo-escuro .acao-btn:hover {
+    background-color: #15477F;
+    color: var(--e-texto);
+}
+
+body.modo-escuro .acao-btn.desativar:hover {
+    background-color: #dd9104;
+    color: var(--e-texto);
+}
+
+body.modo-escuro .acao-btn.delete:hover,
+body.modo-escuro .btn-remover {
+    background-color: #d63031;
+    color: var(--e-texto);
+}
+
+body.modo-escuro .inventario-lista a {
+    color: inherit;
+}
+
+body.modo-escuro .inventario-lista a:hover {
+    color: #5fa8ff;
+}
+
+body.modo-escuro .produtos-fornecedor {
+    color: #5aa7ff;
+}
+
+body.modo-escuro .galpao-card {
+    background-color: var(--e-card);
+    border-color: var(--e-borda);
+    color: var(--e-texto);
+}
+
+body.modo-escuro .galpao-card:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+body.modo-escuro .stats-galpao:first-child {
+    border-right-color: var(--e-borda);
+}
+
+body.modo-escuro .filtro-botao {
+    border-color: var(--e-borda-2);
+    color: var(--e-texto-2);
+}
+
+body.modo-escuro .status-ativo {
+    background-color: rgba(56, 193, 114, 0.15);
+    color: #38C172;
+}
+
+body.modo-escuro .status-inativo {
+    background-color: rgba(227, 52, 47, 0.15);
+    color: #E3342F;
+}
+
+body.modo-escuro .status-manutencao {
+    background-color: rgba(230, 126, 34, 0.15);
+    color: #E67E22;
+}
+
+body.modo-escuro .btn-estoque {
+    background-color: #2B6BB9;
+}
+
+body.modo-escuro .total-spent {
+    color: #38C172;
+}
+
+body.modo-escuro .cad-empilhadeira h3 {
+    color: var(--e-texto);
+    border-bottom-color: var(--e-borda);
+}
+
+body.modo-escuro .input-resp select option {
+    background-color: var(--e-campo);
+    color: var(--e-texto);
+}
+
+body.modo-escuro .sensor-lista th {
+    background-color: var(--e-campo);
+    color: var(--e-texto-3);
+}
+
+body.modo-escuro .infos-btn {
+    background: var(--e-campo);
+    border-color: var(--e-borda);
+    color: var(--e-texto-2);
+}
+
+body.modo-escuro .infos-btn:hover {
+    background-color: var(--e-campo);
+    border-color: #2B6BB9;
+    color: #5fa8ff;
+}
+
+body.modo-escuro .img-galpao {
+    opacity: 0.9;
+}
+
+body.modo-escuro .add-sensor-btn {
+    background: linear-gradient(135deg, #2B6BB9 0%, #15477F 100%);
+}
+
+body.modo-escuro .badge.bg-light.text-dark {
+    background-color: var(--e-borda) !important;
+    color: var(--e-texto-2) !important;
+}
+
+body.modo-escuro .status-enviando {
+    background-color: #193344;
+    color: #5fa8e8;
+}
+
+body.modo-escuro .btn-close {
+    filter: invert(1);
+}
+
+/* Busca do header e resultados */
+body.modo-escuro .topo-busca { background-color: var(--e-campo); }
+body.modo-escuro .topo-busca input,
+body.modo-escuro .topo-busca input:focus { background-color: transparent; border: none; color: var(--e-texto); }
+body.modo-escuro .topo-busca button { color: var(--e-texto-2); }
+body.modo-escuro .busca-grupo { background-color: var(--e-card); }
+body.modo-escuro .busca-grupo h2 { color: #9cc3f0; }
+body.modo-escuro .busca-item { color: var(--e-texto); }
+body.modo-escuro .busca-item:hover { background-color: var(--e-campo); }
+body.modo-escuro .pesquias-botao .action-btn { color: var(--e-texto-2); border-color: var(--e-borda-2); }
+body.modo-escuro .pesquias-botao .action-btn:hover { background-color: var(--e-campo); }
+body.modo-escuro .grafico-metade.positivo { border-bottom-color: var(--e-borda); }
+body.modo-escuro .campo-imagem.empresa-foto .preview-imagem { border-color: var(--e-borda); }
+body.modo-escuro .alterar-foto { border-color: var(--e-borda-2); color: #9cc3f0; }
+body.modo-escuro .alterar-foto:hover { background-color: var(--e-campo); }
+body.modo-escuro .preferencias .modo-escolha { border-color: var(--e-borda); }
+body.modo-escuro .tabela-usuarios th { border-color: var(--e-borda); color: var(--e-texto-4); }
+body.modo-escuro .tabela-usuarios td { border-color: var(--e-borda); color: var(--e-texto-2); }
+body.modo-escuro .perfil-form select,
+body.modo-escuro .usuarios-grid select { background: var(--e-campo); border-color: var(--e-borda-2); color: var(--e-texto); }
+body.modo-escuro .mini-btn,
+body.modo-escuro .voltar-link { border-color: var(--e-borda-2); color: #9cc3f0; }
+body.modo-escuro .mini-btn:hover,
+body.modo-escuro .voltar-link:hover { background-color: var(--e-campo); }
+body.modo-escuro .lista-perfis li { color: var(--e-texto-3); }
+body.modo-escuro .equipe-atalho p { color: var(--e-texto-3); }
+
+/* Menu de filtros */
+body.modo-escuro .filtro-painel { background: var(--e-card); border-color: var(--e-borda); }
+body.modo-escuro .filtro-opcao span { color: var(--e-texto-2); }
+body.modo-escuro .filtro-opcao:hover span { background: var(--e-campo); }
+body.modo-escuro .filtro-opcao input:checked + span { background: #193344; color: #9cc3f0; }
+body.modo-escuro .filtro-chip span { border-color: var(--e-borda-2); color: var(--e-texto-3); }
+body.modo-escuro .filtro-rodape { border-color: var(--e-borda); }
+body.modo-escuro .foto-dica { color: var(--e-texto-4); }
+body.modo-escuro .alterar-foto { border-color: var(--e-borda-2); color: #9cc3f0; }
+body.modo-escuro .miniatura-produto { border-color: var(--e-borda); background: var(--e-campo); }
+body.modo-escuro .selo-situacao.ativo { background: #173d25; color: #5bd98a; }
+body.modo-escuro .selo-situacao.inativo { background: var(--e-campo); color: var(--e-texto-4); }
+body.modo-escuro .produto-celula:hover strong { color: #9cc3f0; }

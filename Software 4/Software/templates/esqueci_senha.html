@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Esqueci minha senha</title>
+
+    <!-- Folhas de estilo da página de recuperação de senha, ícones do Bootstrap e fontes globais -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_esquecisenha.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='notificacoes.css') }}">
+
+</head>
+
+<body>
+    <!-- Container centralizado da tela de recuperação de senha -->
+    <div class="login-container">
+
+        <div class="login-card">
+            <!-- Cabeçalho lateral do card com logo e instruções de recuperação -->
+            <div class="card-cad">
+
+                <img src="{{ url_for('static', filename='imagem/logo.png') }}" alt="HypeX" class="logo">
+
+                <h4>
+                    Recuperar senha
+                </h4>
+
+                <p>
+                    Informe seu e-mail para receber as instruções.
+                </p>
+
+                <div class="copyright">
+                    © 2025 HYPE X - Sistema de Estoque.
+                </div>
+
+            </div>
+
+            <!-- Formulário para envio da solicitação de recuperação de senha -->
+            <form method="POST" action="{{ url_for('esqueci_senha') }}">
+
+                <div class="forms">
+
+                    <h2>
+                        ESQUECI MINHA SENHA
+                    </h2>
+
+                    <p class="descricao">
+                        Digite seu e-mail abaixo para recuperar sua senha.
+                    </p>
+
+                    <!-- Campo de entrada para o e-mail cadastrado -->
+                    <div class="campo-email">
+
+                        <label for="email" class="form-label">
+                            Email
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-envelope"></i>
+                            </span>
+
+                            <input type="email" id="email" name="email" class="form-control"
+                                placeholder="Digite seu email" required autocomplete="email">
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Botão de submissão do formulário de recuperação -->
+                    <button type="submit" class="btn-login">
+                        Enviar link
+                    </button>
+
+
+
+                    <!-- Link para retornar à tela principal de login -->
+                    <div class="login-links">
+
+                        <div class="link-senha">
+
+                            <a href="{{ url_for('login') }}" class="esqueci-senha">
+                                Voltar para o login
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- Script para ocultar e remover alertas da tela após 3 segundos -->
+    <script>
+
+        setTimeout(() => {
+
+            const alerts = document.querySelectorAll('.alert');
+
+            alerts.forEach(alert => {
+
+                alert.style.opacity = '0';
+
+                setTimeout(() => {
+                    alert.remove();
+                }, 500);
+
+            });
+
+        }, 3000);
+
+    </script>
+
+    <!-- Componente global para exibição de mensagens e alertas flash -->
+    {% include '_notificacoes.html' %}
+
+</body>
+
+</html>

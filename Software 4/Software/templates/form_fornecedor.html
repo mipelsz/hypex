@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}
+Software HYPEX - Novo Fornecedor
+{% endblock %}
+
+<!-- Folha de estilo para a tela de formulário e cadastro de fornecedor -->
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style_info_galpao.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Conteúdo principal do cadastro de novo fornecedor -->
+<main id="config-conteudo">
+
+    <!-- Cabeçalho com título da página e botão de ação para submissão do formulário -->
+    <header class="config-texto">
+        <div class="config-info">
+            <h1><i class="bi bi-people-fill"></i> NOVO FORNECEDOR</h1>
+            <p>Cadastre um fornecedor para vincular produtos e registrar pedidos de entrada</p>
+        </div>
+
+
+        <!-- Botão associado ao formulário para salvar o cadastro -->
+        <button class="salvar-btn" form="form-fornecedor" type="submit">Salvar</button>
+    </header>
+
+    <!-- Formulário principal para envio dos dados do novo fornecedor -->
+    <form id="form-fornecedor" method="POST" action="{{ url_for('salvar_fornecedor') }}">
+        <section class="config-grid">
+
+            <!-- Card de informações empresariais e fiscais do fornecedor -->
+            <div class="config-card">
+                <h3><i class="bi bi-building"></i> Dados da Empresa</h3>
+
+                <!-- Campo: Razão Social / Nome Fantasia -->
+                <div class="input-resp">
+                    <label>Razão Social / Nome</label>
+                    <input type="text" name="nome" required>
+                </div>
+
+                <!-- Campo: CNPJ do fornecedor -->
+                <div class="input-resp mt-2">
+                    <label>CNPJ</label>
+                    <input type="text" name="cnpj" placeholder="00.000.000/0000-00">
+                </div>
+
+                <!-- Campo: Seleção de status inicial no sistema (Ativo / Inativo) -->
+                <div class="input-resp mt-2">
+                    <label>Situação</label>
+                    <select name="ativo">
+                        <option value="ativo">Ativo</option>
+                        <option value="inativo">Inativo</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Card de dados de contato do representante / fornecedor -->
+            <div class="config-card">
+                <h3><i class="bi bi-person-lines-fill"></i> Contato</h3>
+
+                <!-- Campo: Nome da pessoa de contato -->
+                <div class="input-resp">
+                    <label>Nome do Contato</label>
+                    <input type="text" name="nome_ctt" required>
+                </div>
+
+                <!-- Campo: E-mail de contato -->
+                <div class="input-resp mt-2">
+                    <label>E-mail</label>
+                    <input type="email" name="email">
+                </div>
+
+                <!-- Campo: Telefone / WhatsApp de contato -->
+                <div class="input-resp mt-2">
+                    <label>Telefone</label>
+                    <input type="text" name="telefone" placeholder="(11) 90000-0000">
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Botão de cancelamento para retornar à listagem de fornecedores -->
+        <div class="mt-3">
+            <a href="{{ url_for('fornecedores') }}" class="btn btn-secondary">Voltar</a>
+        </div>
+    </form>
+
+</main>
+{% endblock %}

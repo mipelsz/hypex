@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}
+Software HYPEX - Nova Movimentação
+{% endblock %}
+
+<!-- Folha de estilo para a tela de registro de movimentação de estoque -->
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style_info_galpao.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Conteúdo principal do formulário de movimentação de estoque -->
+<main id="config-conteudo">
+
+    <!-- Cabeçalho com título e botão para submeter o formulário -->
+    <header class="config-texto">
+        <div class="config-info">
+            <h1><i class="bi bi-arrow-left-right"></i> NOVA MOVIMENTAÇÃO</h1>
+            <p>Registre uma entrada, saída, transferência ou ajuste de inventário</p>
+        </div>
+
+
+        <!-- Botão associado ao formulário para efetuar o registro -->
+        <button class="salvar-btn" form="form-movimentacao" type="submit">Registrar</button>
+    </header>
+
+    <!-- Formulário para envio dos dados da movimentação -->
+    <form id="form-movimentacao" method="POST" action="{{ url_for('salvar_movimentacao') }}">
+        <section class="config-grid">
+
+            <!-- Card de seleção do produto, tipo de movimentação e quantidade -->
+            <div class="config-card">
+                <h3><i class="bi bi-box-seam-fill"></i> Produto e Quantidade</h3>
+
+                <!-- Campo: Seleção do produto cadastrado -->
+                <div class="input-resp">
+                    <label>Produto</label>
+                    <select name="produto_id" required>
+                        <option value="">Selecione o produto</option>
+                        {% for produto in produtos %}
+                        <option value="{{ produto.id }}">
+                            {% if produto.sku %}{{ produto.sku }} - {% endif %}{{ produto.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Campos: Tipo de movimentação e quantidade -->
+                <div class="inputs-empresa mt-2">
+                    <div class="input-resp">
+                        <label>Tipo de Movimentação</label>
+                        <select name="tipo" required>
+                            {% for t in tipos %}
+                            <option value="{{ t }}">{{ t.replace('_', ' ') | capitalize }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="input-resp">
+                        <label>Quantidade</label>
+                        <input type="number" name="quantidade" min="1" step="1" value="1" required>
+                    </div>
+                </div>
+
+                <!-- Campo: Observação opcional sobre a movimentação -->
+                <div class="input-resp mt-2">
+                    <label>Observação</label>
+                    <input type="text" name="observacao" placeholder="Opcional...">
+                </div>
+            </div>
+
+            <!-- Card de definição da origem, destino e responsável pela movimentação -->
+            <div class="config-card">
+                <h3><i class="bi bi-geo-alt-fill"></i> Galpões e Responsável</h3>
+
+                <!-- Campo: Galpão de Origem -->
+                <div class="input-resp">
+                    <label>Galpão de Origem</label>
+                    <select name="galpao_id" required>
+                        <option value="">Selecione o galpão</option>
+                        {% for g in galpoes %}
+                        <option value="{{ g.id }}">{{ g.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Campo: Galpão de Destino (necessário em casos de transferência) -->
+                <div class="input-resp mt-2">
+                    <label>Galpão de Destino <small>(obrigatório apenas em transferências)</small></label>
+                    <select name="galpao_destino_id">
+                        <option value="">Não se aplica</option>
+                        {% for g in galpoes %}
+                        <option value="{{ g.id }}">{{ g.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Campo: Funcionário responsável pela movimentação -->
+                <div class="input-resp mt-2">
+                    <label>Responsável</label>
+                    <select name="funcionario_id">
+                        <option value="">Não informar</option>
+                        {% for f in funcionarios %}
+                        <option value="{{ f.id }}">
+                            {{ f.nome }}{% if f.galpao_nome %} - {{ f.galpao_nome }}{% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Botão para cancelar e retornar à lista de movimentações -->
+        <div class="mt-3">
+            <a href="{{ url_for('movimentacoes') }}" class="btn btn-secondary">Voltar</a>
+        </div>
+    </form>
+
+</main>
+{% endblock %}

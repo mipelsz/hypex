@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}
+Software HYPEX - Movimentações
+{% endblock %}
+
+<!-- Folha de estilo para a tabela e interface de movimentações do estoque -->
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style_estoque_do_galpao.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Conteúdo principal do histórico de movimentações do estoque -->
+<main id="inventario-conteudo">
+
+    <!-- Cabeçalho com título da página e botão de ação para registrar movimentação -->
+    <header class="inventario-texto">
+        <div class="inventario-info">
+            <h1><i class="bi bi-arrow-left-right"></i> MOVIMENTAÇÕES</h1>
+            <p>Histórico de entradas, saídas, transferências e ajustes de inventário</p>
+        </div>
+
+        <a href="{{ url_for('nova_movimentacao') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Nova Movimentação
+        </a>
+    </header>
+
+    <!-- Formulário de filtragem por produto, galpão e tipo de movimentação -->
+    <section>
+        <form method="GET" action="{{ url_for('movimentacoes') }}" class="barra-filtros">
+
+            <!-- Filtro por Produto -->
+            <div class="filtro-campo">
+                <label for="filtro-produto">Produto</label>
+                <select name="produto_id" id="filtro-produto">
+                    <option value="">Todos os produtos</option>
+                    {% for produto in produtos %}
+                    <option value="{{ produto.id }}" {% if filtro_produto_id==produto.id %}selected{% endif %}>
+                        {{ produto.nome }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Filtro por Galpão -->
+            <div class="filtro-campo">
+                <label for="filtro-galpao">Galpão</label>
+                <select name="galpao_id" id="filtro-galpao">
+                    <option value="">Todos os galpões</option>
+                    {% for g in galpoes %}
+                    <option value="{{ g.id }}" {% if filtro_galpao_id==g.id %}selected{% endif %}>
+                        {{ g.nome }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Filtro por Tipo de Movimentação (Entrada, Saída, Transferência, Ajuste) -->
+            <div class="filtro-campo">
+                <label for="filtro-tipo">Tipo</label>
+                <select name="tipo" id="filtro-tipo">
+                    <option value="">Todos os tipos</option>
+                    {% for t in tipos %}
+                    <option value="{{ t }}" {% if filtro_tipo==t %}selected{% endif %}>
+                        {{ t.replace('_', ' ') | capitalize }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Botões de submissão do filtro e limpeza dos critérios -->
+            <div class="filtro-acoes">
+                <button class="filtro-btn" type="submit">
+                    <i class="bi bi-funnel-fill"></i> Filtrar
+                </button>
+
+                {% if filtro_produto_id or filtro_galpao_id or filtro_tipo %}
+                <a class="filtro-btn filtro-limpar" href="{{ url_for('movimentacoes') }}">
+                    <i class="bi bi-x-lg"></i> Limpar
+                </a>
+                {% endif %}
+            </div>
+
+        </form>
+    </section>
+
+    <!-- Tabela de listagem do histórico de movimentações -->
+    <section class="inventario-lista">
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Origem</th>
+                    <th>Destino</th>
+                    <th>Responsável</th>
+                    <th>Observação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Iteração sobre os registros de movimentação retornados -->
+                {% for m in movimentacoes %}
+                <tr>
+                    <td>{{ m.data_movimentacao.strftime('%d/%m/%Y %H:%M') if m.data_movimentacao else '—' }}</td>
+                    <td>
+                        {% if m.tipo == 'entrada' %}
+                        <span class="status-estoque status-disponivel">Entrada</span>
+                        {% elif m.tipo == 'saida' %}
+                        <span class="status-estoque status-zero">Saída</span>
+                        {% else %}
+                        <span class="status-estoque status-low">{{ m.tipo.replace('_', ' ') | capitalize }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <strong>{{ m.produto }}</strong>
+                        <span class="fornecedor-nome">{{ m.produto_sku or '' }}</span>
+                    </td>
+                    <td>{{ m.quantidade | quantidade }}</td>
+                    <td>{{ m.galpao or '—' }}</td>
+                    <td>{{ m.galpao_destino or '—' }}</td>
+                    <td>{{ m.funcionario or '—' }}</td>
+                    <td>{{ m.observacao or '—' }}</td>
+                </tr>
+                {% else %}
+                <!-- Mensagem exibida caso nenhuma movimentação seja encontrada -->
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-4">
+                        Nenhuma movimentação registrada.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+</main>
+{% endblock %}

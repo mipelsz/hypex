@@ -1,696 +1,563 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Software HYPEX - Informações do Galpão</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style_info_galpao.css') }}">
-</head>
+{% block title %}
+Software HYPEX - Fornecedores
+{% endblock %}
 
-<body>
+<!-- Folha de estilo para a página de perfil e edição do galpão -->
+{% block css %}
 
-    <aside id="menu">
-        <div class="status-dots">
-            <span class="dot-red"></span>
-            <span class="dot-yellow"></span>
-            <span class="dot-green"></span>
+<link rel="stylesheet" href="{{ url_for('static', filename='style_info_galpao.css') }}">
+
+{% endblock %}
+
+{% block content %}
+
+<!-- Conteúdo principal do formulário de perfil, gestão de funcionários e empilhadeiras do galpão -->
+<main id="config-conteudo">
+    <!-- Cabeçalho com título e grupo de botões de confirmação de ações -->
+    <header class="config-texto">
+        <div class="config-info">
+            <h1><i class="bi-solid bi-house-gear-fill"></i> Informações do Galpão</h1>
+            <p>Gerencie as informações do seu galpão e edite-as conforme necessário</p>
         </div>
 
-        <div class="perfil">
-            <img src="{{ url_for('static', filename='imagem/perfil.png') }}">
-            <h3>Empresa</h3>
-        </div>
 
-        <nav>
-            <ul>
-                <li class="nav-menu">
-                    <a href="/dashboard">
-                        <i class="bi-solid bi-bar-chart-fill"></i>
-                        DASHBOARD
-                    </a>
-                </li>
-                <li class="nav-menu selected">
-                    <a href="/galpao">
-                        <i class="bi-solid bi-box-seam-fill"></i>
-                        ESTOQUE
-                    </a>
-                </li>
-                <li class="nav-menu">
-                    <a href="/fornecedores">
-                        <i class="bi-solid bi-people-fill"></i>
-                        FORNECEDORES
-                    </a>
-                </li>
-                <li class="nav-menu">
-                    <a href="/pedidos">
-                        <i class="bi-solid bi-basket2-fill"></i>
-                        PEDIDOS
-                    </a>
-                </li>
-                <li class="nav-menu">
-                    <a href="/clientes">
-                        <i class="bi-solid bi-person-fill"></i>
-                        CLIENTES
-                    </a>
-                </li>
-            </ul>
-        </nav>
-
-        <div class="menu-opcoes">
-            <a href="/config" class="opcoes-btn selected-opcoes-btn">
-                <i class="bi-solid bi-gear-fill"></i>
-            </a>
-            <button class="opcoes-btn">
-                <i class="bi-solid bi-circle-half"></i>
-            </button>
-            <a href="{{ url_for('logout') }}" class="opcoes-btn red-opcoes-btn" onclick="return confirmarLogout()">
-                <i class="bi bi-door-open-fill"></i>
-            </a>
-        </div>
-    </aside>
-
-    <main id="config-conteudo">
-        <header class="config-texto">
-            <div class="config-info">
-                <h1><i class="bi-solid bi-house-gear-fill"></i> Informações do Galpão</h1>
-                <p>Gerencie as informações do seu galpão e edite-as conforme necessário</p>
-            </div>
-
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            {% for categoria, mensagem in messages %}
-            <div class="alert alert-{{ 'danger' if categoria == 'erro' else 'success' }}">
-                {{ mensagem }}
-            </div>
-            {% endfor %}
-            {% endif %}
+        <!-- Grupo de botões para exclusão e salvamento das alterações do galpão -->
+        <div class="grupo-botoes">
+            <!-- Modal de confirmação para exclusão do galpão (restrito a administradores e gerentes) -->
+            {% if pode_gerenciar %}
+            <form method="POST" id="excluir-galpao" action="{{ url_for('deletar_galpao', galpao_id=galpao.id) }}"></form>
+            {% with id='excluir-galpao', form_id='excluir-galpao',
+                    titulo='Excluir galpão',
+                    texto='Excluir o galpão ' ~ galpao.nome ~ '? Os dados associados serão removidos e a ação não poderá ser desfeita.',
+                    icone='bi-trash3-fill', rotulo='Excluir Galpão',
+                    classe='excluir-btn',
+                    confirmar='Excluir', perigo=True %}
+            {% include '_confirmar.html' %}
             {% endwith %}
-
-            <div class="grupo-botoes">
-                <button type="button" class="excluir-btn" data-bs-toggle="modal"
-                    data-bs-target="#modalDeletarGalpao{{ galpao.id }}">
-                    Excluir Galpão
-                </button>
-                <button type="button" class="salvar-btn" data-bs-toggle="modal"
-                    data-bs-target="#modalSalvarGalpao{{ galpao.id }}">
-                    Salvar Alterações
-                </button>
-            </div>
-        </header>
-
-        <!-- ===== MODAL CONFIRMAR SALVAMENTO ===== -->
-        <div class="modal fade" id="modalSalvarGalpao{{ galpao.id }}" tabindex="-1"
-            aria-labelledby="modalSalvarLabel{{ galpao.id }}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalSalvarLabel{{ galpao.id }}">Confirmar Alterações</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-start">
-                        Deseja salvar as alterações feitas no galpão <strong>{{ galpao.nome }}</strong>?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-success"
-                            onclick="document.getElementById('form-galpao').submit()">
-                            Salvar Galpão
-                        </button>
-                    </div>
-                </div>
-            </div>
+            {% endif %}
+            <!-- Modal de confirmação para salvar as edições do formulário do galpão -->
+            {% with id='salvar-galpao', form_id='form-galpao',
+                    titulo='Salvar alterações',
+                    texto='Salvar as alterações feitas no galpão ' ~ galpao.nome ~ '?',
+                    icone='bi-check-lg', rotulo='Salvar Galpão',
+                    classe='salvar-btn',
+                    confirmar='Salvar', perigo=False %}
+            {% include '_confirmar.html' %}
+            {% endwith %}
         </div>
+    </header>
 
-        <!-- ===== MODAL CONFIRMAR EXCLUSÃO DO GALPÃO ===== -->
-        <div class="modal fade" id="modalDeletarGalpao{{ galpao.id }}" tabindex="-1"
-            aria-labelledby="modalDeletarGalpaoLabel{{ galpao.id }}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalDeletarGalpaoLabel{{ galpao.id }}">Confirmar Exclusão</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Formulário principal para alteração dos dados do galpão, localização e capacidade -->
+    <form id="form-galpao" method="POST" enctype="multipart/form-data"
+        action="{{ url_for('atualizar_galpao', galpao_id=galpao.id) }}">
+
+        <section class="config-grid">
+
+            <!-- Card para upload e alteração da imagem do galpão e nome principal -->
+            <div class="config-card">
+                <!-- Componente reutilizável para upload e visualização da foto do galpão -->
+                {% with campo_id='imagem-galpao', imagem=galpao.imagem,
+                padrao='imagemgalpao.png', alt=galpao.nome,
+                titulo='Imagem do Galpão' %}
+                {% include '_imagem_upload.html' %}
+                {% endwith %}
+
+                <!-- Campo: Nome do Galpão -->
+                <div class="input-resp mt-2">
+                    <label>Nome do Galpão</label>
+                    <input type="text" name="nome" value="{{ galpao.nome }}" placeholder="Nome do Galpão" required>
+                </div>
+            </div>
+
+            <!-- Card de dados do responsável e status operacional do galpão -->
+            <div class="config-card">
+                <h3><i class="bi-solid bi-person-fill-gear"></i> Perfil Administrador do Galpão</h3>
+                <!-- Campo: Nome do responsável -->
+                <div class="input-resp">
+                    <label>Nome do Responsável</label>
+                    <input type="text" name="nome_resp" value="{{ galpao.nome_resp }}">
+                </div>
+                <!-- Campo: E-mail do responsável -->
+                <div class="input-resp">
+                    <label>E-mail de Contato</label>
+                    <input type="email" name="email_resp" value="{{ galpao.email_resp }}">
+                </div>
+                <!-- Campo: Telefone de contato -->
+                <div class="input-resp">
+                    <label>Telefone de Contato</label>
+                    <input type="tel" name="telefone" value="{{ galpao.telefone | telefone if galpao.telefone else '' }}">
+                </div>
+                <!-- Campo: Seleção do status operacional do galpão -->
+                <div class="input-resp">
+                    <label>Status do Galpão</label>
+                    <select class="form-select" name="stats">
+                        <option value="ativo">Operacional</option>
+                        <option value="manutencao">Em Manutenção</option>
+                        <option value="inativo">Inativo</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Card de endereço e configurações de capacidade física da estrutura -->
+            <div class="config-card full-width">
+                <h3><i class="bi-solid bi-geo-alt-fill"></i> Localização e Estrutura</h3>
+                <!-- Campo: CEP com máscara para aceitar apenas dígitos -->
+                <div class="inputs-empresa">
+                    <div class="input-resp">
+                        <label>CEP</label>
+                        <input type="text" name="cep" class="form-control" value="{{ (galpao.cep or '') | replace('-', '') | replace('.', '') }}"
+                            inputmode="numeric" maxlength="8" pattern="[0-9]{8}"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)" required>
                     </div>
-                    <div class="modal-body text-start">
-                        Tem certeza que deseja excluir o galpão <strong>{{ galpao.nome }}</strong>?<br>
-                        Esta ação removerá todos os dados associados e não poderá ser desfeita.
+                </div>
+                <!-- Campos: Endereço, ponto de referência e área total em m² -->
+                <div class="inputs-empresa">
+                    <div class="input-resp">
+                        <label>Endereço</label>
+                        <input type="text" name="endereco" value="{{ galpao.endereco }}">
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <form method="POST" action="{{ url_for('deletar_galpao', galpao_id=galpao.id) }}"
-                            style="display:inline">
-                            <button type="submit" class="btn btn-danger">Excluir Galpão</button>
-                        </form>
+                    <div class="input-resp">
+                        <label>Referência</label>
+                        <input type="text" name="referencia" value="{{ galpao.referencia }}">
+                    </div>
+                    <div class="input-resp">
+                        <label>Área Total (m²)</label>
+                        <input type="number" name="area_total" step="0.01" value="{{ galpao.area_total }}">
+                    </div>
+                </div>
+                <!-- Campos: Métricas de capacidade física e indicador do total calculado -->
+                <div class="inputs-empresa">
+                    <div class="input-resp">
+                        <label>Caixas por Nível</label>
+                        <input type="number" name="caixas_por_nivel" value="{{ galpao.caixas_por_nivel }}">
+                    </div>
+                    <div class="input-resp">
+                        <label>Níveis por Prateleira</label>
+                        <input type="number" name="niveis_por_prateleira" value="{{ galpao['niveis_por_prateleira'] }}">
+                    </div>
+                    <div class="input-resp">
+                        <label>Total de Prateleiras</label>
+                        <input type="number" name="total_prateleiras" value="{{ galpao.total_prateleiras }}">
+                    </div>
+                    <div class="total-capacidade">
+                        <label>Capacidade Total do Galpão</label>
+                        <span id="capacidade-display">{{ galpao.capacidade_total }}</span>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <form id="form-galpao" method="POST" action="{{ url_for('atualizar_galpao', galpao_id=galpao.id) }}">
+        </section>
+    </form>
 
-            <section class="config-grid">
-
-                <!-- Card 1: imagem e nome (somente exibição) -->
-                <div class="config-card">
-                    <h3><i class="bi-solid bi-house-fill"></i> Imagem do Galpão</h3>
-                    <img class="img-galpao" src="{{ url_for('static', filename='imagem/imagemgalpao.png') }}"
-                        alt="galpão">
-                    <button type="button" class="alterar-btn">
-                        <i class="bi-solid bi-pencil-fill"></i>
-                        Alterar Imagem
-                    </button>
-                    <div class="input-resp">
-                        <label>Nome do Galpão</label>
-                        <input disabled type="text" value="{{ galpao.nome }}" placeholder="Nome do Galpão">
-                    </div>
+    <!-- Formulário para cadastro de nova empilhadeira vinculada ao galpão -->
+    <form method="POST" action="{{ url_for('salvar_empilhadeira') }}">
+        <input type="hidden" name="galpao_id" value="{{ galpao.id }}">
+        <div class="cad-empilhadeira full-width sensor-conteudo">
+            <h3><i class="bi-solid bi-car-front-fill"></i> Cadastrar Nova Empilhadeira</h3>
+            <!-- Grid de inputs com especificações da empilhadeira -->
+            <div class="sensor-grid">
+                <div class="input-resp">
+                    <label>Marca da Empilhadeira</label>
+                    <input type="text" name="marca">
                 </div>
-
-                <!-- Card 2: perfil administrador -->
-                <div class="config-card">
-                    <h3><i class="bi-solid bi-person-fill-gear"></i> Perfil Administrador do Galpão</h3>
-                    <div class="input-resp">
-                        <label>Nome do Responsável</label>
-                        <input type="text" name="nome_resp" value="{{ galpao.nome_resp }}">
-                    </div>
-                    <div class="input-resp">
-                        <label>E-mail de Contato</label>
-                        <input type="email" name="email_resp" value="{{ galpao.email_resp }}">
-                    </div>
-                    <div class="input-resp">
-                        <label>Telefone de Contato</label>
-                        <input type="tel" name="telefone" value="{{ galpao.telefone }}">
-                    </div>
-                    <div class="input-resp">
-                        <label>Status do Galpão</label>
-                        <select class="form-select" name="stats">
-                            <option value="ativo">Operacional</option>
-                            <option value="manutencao">Em Manutenção</option>
-                            <option value="inativo">Inativo</option>
-                        </select>
-                    </div>
+                <div class="input-resp">
+                    <label>Modelo da Empilhadeira</label>
+                    <input type="text" name="modelo">
                 </div>
-
-                <!-- Card 3: dados da empresa / localização -->
-                <div class="config-card full-width">
-                    <h3><i class="bi-solid bi-building-fill"></i> Dados da Empresa</h3>
-                    <div class="inputs-empresa">
-                        <div class="input-resp">
-                            <label>Nome do Galpão</label>
-                            <input type="text" name="nome" value="{{ galpao.nome }}">
-                        </div>
-                        <div class="input-resp">
-                            <label>CEP</label>
-                            <input type="text" name="cep" placeholder="000001-000" value="{{ galpao.cep }}">
-                        </div>
-                    </div>
-                    <div class="inputs-empresa">
-                        <div class="input-resp">
-                            <label>Endereço</label>
-                            <input type="text" name="endereco" value="{{ galpao.endereco }}">
-                        </div>
-                        <div class="input-resp">
-                            <label>Referência</label>
-                            <input type="text" name="referencia" value="{{ galpao.referencia }}">
-                        </div>
-                        <div class="input-resp">
-                            <label>Área Total (m²)</label>
-                            <input type="number" name="area_total" step="0.01" value="{{ galpao.area_total }}">
-                        </div>
-                    </div>
-                    <div class="inputs-empresa">
-                        <div class="input-resp">
-                            <label>Caixas por Nível</label>
-                            <input type="number" name="caixas_por_nivel" value="{{ galpao.caixas_por_nivel }}">
-                        </div>
-                        <div class="input-resp">
-                            <label>Níveis por Prateleira</label>
-                            <input type="number" name="niveis_por_prateleira"
-                                value="{{ galpao['niveis_por_prateleira'] }}">
-                        </div>
-                        <div class="input-resp">
-                            <label>Total de Prateleiras</label>
-                            <input type="number" name="total_prateleiras" value="{{ galpao.total_prateleiras }}">
-                        </div>
-                        <div class="total-capacidade">
-                            <label>Capacidade Total do Galpão</label>
-                            <span id="capacidade-display">{{ galpao.capacidade_total }}</span>
-                        </div>
-                    </div>
+                <div class="input-resp">
+                    <label>Ano de Fabricação</label>
+                    <input type="number" name="ano_fabricacao">
                 </div>
-
-            </section>
-        </form>
-        <!-- /form-galpao -->
-
-        <!-- ===== CADASTRAR EMPILHADEIRA ===== -->
-        <form method="POST" action="{{ url_for('salvar_empilhadeira') }}">
-            <input type="hidden" name="galpao_id" value="{{ galpao.id }}">
-            <div class="cad-empilhadeira full-width sensor-conteudo">
-                <h3><i class="bi-solid bi-car-front-fill"></i> Cadastrar Nova Empilhadeira</h3>
-                <div class="sensor-grid">
-                    <div class="input-resp">
-                        <label>Marca da Empilhadeira</label>
-                        <input type="text" name="marca">
-                    </div>
-                    <div class="input-resp">
-                        <label>Modelo da Empilhadeira</label>
-                        <input type="text" name="modelo">
-                    </div>
-                    <div class="input-resp">
-                        <label>Ano de Fabricação</label>
-                        <input type="number" name="ano_fabricacao">
-                    </div>
-                    <div class="input-resp">
-                        <label>Tipo de Combustível</label>
-                        <input type="text" name="tipo_combustivel">
-                    </div>
-                    <div class="input-resp">
-                        <label>Capacidade</label>
-                        <input type="number" name="capacidade">
-                    </div>
-                    <div class="input-resp">
-                        <label>Status</label>
-                        <select name="ativo">
-                            <option value="ativo">Ativa</option>
-                            <option value="inativo">Inativa</option>
-                            <option value="manutencao">Em Manutenção</option>
-                        </select>
-                    </div>
+                <div class="input-resp">
+                    <label>Tipo de Combustível</label>
+                    <input type="text" name="tipo_combustivel">
                 </div>
-                <div class="vin-sensor">
-                    <button type="submit" class="add-sensor-btn">
-                        <i class="bi bi-plus-lg"></i>
-                        Adicionar Empilhadeira
-                    </button>
+                <div class="input-resp">
+                    <label>Capacidade</label>
+                    <input type="number" name="capacidade">
                 </div>
-            </div>
-        </form>
-
-        <!-- ===== CADASTRAR FUNCIONÁRIO ===== -->
-        <form method="POST" action="{{ url_for('salvar_funcionario') }}">
-            <input type="hidden" name="galpao_id" value="{{ galpao.id }}">
-            <div class="config-card full-width sensor-conteudo">
-                <h3><i class="bi-solid bi-person-vcard-fill"></i> Cadastrar Novo Funcionário para este Galpão</h3>
-                <div class="sensor-grid">
-                    <div class="input-resp">
-                        <label>Nome do Funcionário</label>
-                        <input type="text" name="nome" placeholder="Ex: João Silva">
-                    </div>
-                    <div class="input-resp">
-                        <label>Cargo</label>
-                        <select name="cargo">
-                            <option></option>
-                            <option>Gerente</option>
-                            <option>Operador</option>
-                            <option>Supervisor</option>
-                        </select>
-                    </div>
-                    <div class="input-resp">
-                        <label>CPF</label>
-                        <input type="text" name="cpf" placeholder="000.000.000-00">
-                    </div>
-                    <div class="input-resp">
-                        <label>Data de Admissão</label>
-                        <input type="date" name="data_admissao">
-                    </div>
-                    <div class="input-resp">
-                        <label>Data de Nascimento</label>
-                        <input type="date" name="data_nascimento">
-                    </div>
-                    <div class="input-resp">
-                        <label>Email</label>
-                        <input type="text" name="email">
-                    </div>
-                    <div class="input-resp">
-                        <label>Telefone</label>
-                        <input type="tel" name="telefone">
-                    </div>
-                    <div class="input-resp">
-                        <label>Salário</label>
-                        <input type="number" name="salario" placeholder="R$ 0,00" step="0.01">
-                    </div>
-                    <div class="input-resp">
-                        <label>Status do Funcionário</label>
-                        <select name="ativo">
-                            <option value="ativo">Ativo</option>
-                            <option value="inativo">Desligado</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="vin-sensor">
-                    <button type="submit" class="add-sensor-btn">
-                        <i class="bi bi-plus-lg"></i>
-                        Adicionar Funcionário
-                    </button>
-                </div>
-            </div>
-        </form>
-
-        <!-- ===== TABELA FUNCIONÁRIOS ===== -->
-        <section class="config-card full-width ativar-sensor">
-            <h3><i class="bi-solid bi-person-lines-fill"></i> Funcionários</h3>
-            <div class="sensor-lista-container">
-                <table class="sensor-lista">
-                    <thead>
-                        <tr>
-                            <th>Status</th>
-                            <th>Nome Funcionário</th>
-                            <th>Cargo</th>
-                            <th>CPF</th>
-                            <th>Salário</th>
-                            <th>Email</th>
-                            <th>Telefone</th>
-                            <th>Data de Admissão</th>
-                            <th>Data de Nascimento</th>
-                            <th>Empilhadeira</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div class="input-resp">
+                    <label>Operador Responsável</label>
+                    <select name="funcionario_id">
+                        <option value="">Sem operador atribuído</option>
                         {% for funcionario in funcionarios %}
-                        <tr>
-                            <td>
-                                {% if funcionario.ativo == 'ativo' %}
-                                <span class="status-indicador ativo"></span>
-                                {% else %}
-                                <span class="status-indicador inativo"></span>
-                                {% endif %}
-                            </td>
-                            <td><strong>{{ funcionario.nome }}</strong></td>
-                            <td>{{ funcionario.cargo }}</td>
-                            <td>{{ funcionario.cpf }}</td>
-                            <td>
-                                R$ {{ "{:,.2f}".format(funcionario.salario).replace(",", "X").replace(".",
-                                ",").replace("X", ".") }}
-                            </td>
-                            <td>{{ funcionario.email }}</td>
-                            <td>
-                                {% if funcionario.telefone and funcionario.telefone|length >= 9 %}
-                                ({{ funcionario.telefone[0:2] }}) {{ funcionario.telefone[2:7] }}-{{
-                                funcionario.telefone[7:] }}
-                                {% else %}
-                                {{ funcionario.telefone }}
-                                {% endif %}
-                            </td>
-                            <td>{{ funcionario.data_admissao.strftime('%d/%m/%Y') if funcionario.data_admissao else ''
-                                }}</td>
-                            <td>{{ funcionario.data_nascimento.strftime('%d/%m/%Y') if funcionario.data_nascimento else
-                                '' }}</td>
-                            <td>
-                                {% if funcionario.empilhadeira_id %}
-                                {{ funcionario.empilhadeira_id }}
-                                {% else %}
-                                Sem Empilhadeira
-                                {% endif %}
-                            </td>
-                            <td>
-                                <!-- Botão abrir offcanvas de edição -->
-                                <button type="button" class="acao-btn" data-bs-toggle="offcanvas"
-                                    data-bs-target="#offcanvas-func-{{ funcionario.id }}"
-                                    aria-controls="offcanvas-func-{{ funcionario.id }}">
-                                    <i class="bi-solid bi-pen-fill"></i>
-                                </button>
-
-                                <!-- Offcanvas edição funcionário -->
-                                <div class="offcanvas offcanvas-end" tabindex="-1"
-                                    id="offcanvas-func-{{ funcionario.id }}"
-                                    aria-labelledby="label-func-{{ funcionario.id }}">
-                                    <div class="offcanvas-header">
-                                        <h5 class="offcanvas-title" id="label-func-{{ funcionario.id }}">
-                                            Editar Funcionário
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
-                                            aria-label="Fechar"></button>
-                                    </div>
-                                    <div class="offcanvas-body">
-                                        <form method="POST" action="{{ url_for('atualizar_funcionario') }}">
-                                            <input type="hidden" name="id" value="{{ funcionario.id }}">
-                                            <input type="hidden" name="galpao_id" value="{{ galpao.id }}">
-                                            <div class="input-resp mb-3">
-                                                <label>Nome</label>
-                                                <input type="text" class="form-control" name="nome"
-                                                    value="{{ funcionario.nome }}">
-                                            </div>
-                                            <div class="input-resp mb-3">
-                                                <label>CPF</label>
-                                                <input type="text" class="form-control" name="cpf"
-                                                    value="{{ funcionario.cpf }}">
-                                            </div>
-                                            <div class="input-resp mb-3">
-                                                <label>Cargo</label>
-                                                <select class="form-select" name="cargo">
-                                                    <option {% if funcionario.cargo=='Gerente' %}selected{% endif %}>
-                                                        Gerente</option>
-                                                    <option {% if funcionario.cargo=='Operador' %}selected{% endif %}>
-                                                        Operador</option>
-                                                    <option {% if funcionario.cargo=='Supervisor' %}selected{% endif %}>
-                                                        Supervisor</option>
-                                                </select>
-                                            </div>
-                                            <div class="input-resp mb-3">
-                                                <label>E-mail</label>
-                                                <input type="email" class="form-control" name="email"
-                                                    value="{{ funcionario.email }}">
-                                            </div>
-                                            <div class="input-resp mb-3">
-                                                <label>Telefone</label>
-                                                <input type="tel" class="form-control" name="telefone"
-                                                    value="{{ funcionario.telefone }}">
-                                            </div>
-                                            <div class="input-resp mb-3">
-                                                <label>Salário</label>
-                                                <input type="number" class="form-control" name="salario" step="0.01"
-                                                    value="{{ funcionario.salario }}">
-                                            </div>
-                                            <div class="input-resp mb-3">
-                                                <label>Status</label>
-                                                <select class="form-select" name="ativo">
-                                                    <option value="ativo" {% if funcionario.ativo=='ativo' %}selected{%
-                                                        endif %}>Ativo</option>
-                                                    <option value="inativo" {% if funcionario.ativo=='inativo'
-                                                        %}selected{% endif %}>Desligado</option>
-                                                </select>
-                                            </div>
-                                            <button type="submit" class="add-sensor-btn w-100">
-                                                Salvar Alterações
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-
-                                <!-- Botão deletar funcionário -->
-                                <button type="button" class="acao-btn delete" data-bs-toggle="modal"
-                                    data-bs-target="#modalDeletarFuncionario{{ funcionario.id }}">
-                                    <i class="bi-solid bi-trash"></i>
-                                </button>
-
-                                <!-- Modal confirmar exclusão funcionário -->
-                                <div class="modal fade" id="modalDeletarFuncionario{{ funcionario.id }}" tabindex="-1"
-                                    aria-labelledby="modalFuncionarioLabel{{ funcionario.id }}" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="modalFuncionarioLabel{{ funcionario.id }}">
-                                                    Confirmar Exclusão
-                                                </h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body text-start">
-                                                Tem certeza que deseja excluir o funcionário <strong>{{ funcionario.nome
-                                                    }}</strong>?<br>
-                                                Esta ação não poderá ser desfeita.
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Cancelar</button>
-                                                <form method="POST"
-                                                    action="{{ url_for('deletar_funcionario', funcionario_id=funcionario.id) }}"
-                                                    style="display:inline">
-                                                    <input type="hidden" name="galpao_id" value="{{ galpao.id }}">
-                                                    <button type="submit" class="btn btn-danger">Excluir</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
+                        <option value="{{ funcionario.id }}">
+                            {{ funcionario.nome }}{% if funcionario.cargo %} - {{ funcionario.cargo }}{% endif %}
+                        </option>
                         {% endfor %}
-                    </tbody>
-                </table>
+                    </select>
+                </div>
+                <div class="input-resp">
+                    <label>Status</label>
+                    <select name="ativo">
+                        <option value="ativo">Ativa</option>
+                        <option value="inativo">Inativa</option>
+                        <option value="manutencao">Em Manutenção</option>
+                    </select>
+                </div>
             </div>
-        </section>
+            <div class="vin-sensor">
+                <button type="submit" class="add-sensor-btn">
+                    <i class="bi bi-plus-lg"></i>
+                    Adicionar Empilhadeira
+                </button>
+            </div>
+        </div>
+    </form>
 
-        <!-- ===== TABELA EMPILHADEIRAS ===== -->
-        <section class="config-card full-width ativar-sensor mt-4">
-            <h3><i class="bi-solid bi-person-lines-fill"></i> Empilhadeiras</h3>
-            <div class="sensor-lista-container">
-                <table class="sensor-lista">
-                    <thead>
-                        <tr>
-                            <th>Status</th>
-                            <th>Marca Empilhadeira</th>
-                            <th>Modelo</th>
-                            <th>Ano de Fabricação</th>
-                            <th>Tipo de Combustível</th>
-                            <th>Capacidade</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for empilhadeira in empilhadeiras %}
-                        <tr>
-                            <td>
-                                {% if empilhadeira.ativo == 'ativo' %}
-                                <span class="status-indicador ativo"></span>
-                                {% elif empilhadeira.ativo == 'manutencao' %}
-                                <span class="status-indicador manutencao"></span>
-                                {% else %}
-                                <span class="status-indicador inativo"></span>
-                                {% endif %}
-                            </td>
-                            <td><strong>{{ empilhadeira.marca }}</strong></td>
-                            <td>{{ empilhadeira.modelo }}</td>
-                            <td>{{ empilhadeira.ano_fabricacao }}</td>
-                            <td>{{ empilhadeira.tipo_combustivel }}</td>
-                            <td>{{ empilhadeira.capacidade }}</td>
-                            <td>
-                                <!-- Botão abrir offcanvas de edição -->
-                                <button type="button" class="acao-btn" data-bs-toggle="offcanvas"
-                                    data-bs-target="#offcanvas-emp-{{ empilhadeira.id }}"
-                                    aria-controls="offcanvas-emp-{{ empilhadeira.id }}">
-                                    <i class="bi-solid bi-pen-fill"></i>
-                                </button>
+    <!-- Formulário para cadastro de novo funcionário vinculado ao galpão -->
+    <form method="POST" action="{{ url_for('salvar_funcionario') }}">
+        <input type="hidden" name="galpao_id" value="{{ galpao.id }}">
+        <div class="config-card full-width sensor-conteudo">
+            <h3><i class="bi-solid bi-person-vcard-fill"></i> Cadastrar Novo Funcionário para este Galpão</h3>
+            <!-- Grid de inputs com dados pessoais e contratuais do funcionário -->
+            <div class="sensor-grid">
+                <div class="input-resp">
+                    <label>Nome do Funcionário</label>
+                    <input type="text" name="nome" placeholder="Ex: João Silva">
+                </div>
+                <div class="input-resp">
+                    <label>Cargo</label>
+                    <select name="cargo">
+                        <option></option>
+                        <option>Gerente</option>
+                        <option>Operador</option>
+                        <option>Supervisor</option>
+                    </select>
+                </div>
+                <div class="input-resp">
+                    <label>CPF</label>
+                    <input type="text" name="cpf" placeholder="000.000.000-00">
+                </div>
+                <div class="input-resp">
+                    <label>Data de Admissão</label>
+                    <input type="date" name="data_admissao">
+                </div>
+                <div class="input-resp">
+                    <label>Data de Nascimento</label>
+                    <input type="date" name="data_nascimento">
+                </div>
+                <div class="input-resp">
+                    <label>Email</label>
+                    <input type="text" name="email">
+                </div>
+                <div class="input-resp">
+                    <label>Telefone</label>
+                    <input type="tel" name="telefone">
+                </div>
+                <div class="input-resp">
+                    <label>Salário</label>
+                    <input type="number" name="salario" placeholder="R$ 0,00" step="0.01">
+                </div>
+                <div class="input-resp">
+                    <label>Status do Funcionário</label>
+                    <select name="ativo">
+                        <option value="ativo">Ativo</option>
+                        <option value="inativo">Desligado</option>
+                    </select>
+                </div>
+            </div>
+            <div class="vin-sensor">
+                <button type="submit" class="add-sensor-btn">
+                    <i class="bi bi-plus-lg"></i>
+                    Adicionar Funcionário
+                </button>
+            </div>
+        </div>
+    </form>
 
-                                <!-- Offcanvas edição empilhadeira -->
-                                <div class="offcanvas offcanvas-end" tabindex="-1"
-                                    id="offcanvas-emp-{{ empilhadeira.id }}"
-                                    aria-labelledby="label-emp-{{ empilhadeira.id }}">
-                                    <div class="offcanvas-header">
-                                        <h5 class="offcanvas-title" id="label-emp-{{ empilhadeira.id }}">
-                                            Editar Empilhadeira
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
-                                            aria-label="Fechar"></button>
-                                    </div>
-                                    <div class="offcanvas-body">
-                                        <form method="POST"
-                                            action="{{ url_for('atualizar_empilhadeira', empilhadeira_id=empilhadeira.id) }}">
-                                            <input type="hidden" name="galpao_id" value="{{ galpao.id }}">
-                                            <div class="input-resp mb-3">
-                                                <label>Marca</label>
-                                                <input type="text" class="form-control" name="marca"
-                                                    value="{{ empilhadeira.marca }}">
-                                            </div>
-                                            <div class="input-resp mb-3">
-                                                <label>Modelo</label>
-                                                <input type="text" class="form-control" name="modelo"
-                                                    value="{{ empilhadeira.modelo }}">
-                                            </div>
-                                            <div class="input-resp mb-3">
-                                                <label>Ano de Fabricação</label>
-                                                <input type="number" class="form-control" name="ano_fabricacao"
-                                                    value="{{ empilhadeira.ano_fabricacao }}">
-                                            </div>
-                                            <div class="input-resp mb-3">
-                                                <label>Tipo de Combustível</label>
-                                                <input type="text" class="form-control" name="tipo_combustivel"
-                                                    value="{{ empilhadeira.tipo_combustivel }}">
-                                            </div>
-                                            <div class="input-resp mb-3">
-                                                <label>Capacidade</label>
-                                                <input type="number" class="form-control" name="capacidade"
-                                                    value="{{ empilhadeira.capacidade }}">
-                                            </div>
-                                            <div class="input-resp mb-3">
-                                                <label>Status</label>
-                                                <select class="form-select" name="ativo">
-                                                    <option value="ativo" {% if empilhadeira.ativo=='ativo' %}selected{%
-                                                        endif %}>Ativa</option>
-                                                    <option value="inativo" {% if empilhadeira.ativo=='inativo'
-                                                        %}selected{% endif %}>Inativa</option>
-                                                    <option value="manutencao" {% if empilhadeira.ativo=='manutencao'
-                                                        %}selected{% endif %}>Em Manutenção</option>
-                                                </select>
-                                            </div>
-                                            <button type="submit" class="add-sensor-btn w-100">
-                                                Salvar Alterações
-                                            </button>
-                                        </form>
-                                    </div>
+    <!-- Tabela de listagem, edição e exclusão de funcionários do galpão -->
+    <section class="config-card full-width ativar-sensor">
+        <h3><i class="bi-solid bi-person-lines-fill"></i> Funcionários</h3>
+        <div class="sensor-lista-container">
+            <table class="sensor-lista">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Nome Funcionário</th>
+                        <th>Cargo</th>
+                        <th>CPF</th>
+                        <th>Salário</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Data de Admissão</th>
+                        <th>Data de Nascimento</th>
+                        <th>Empilhadeira</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Iteração sobre os funcionários alocados no galpão -->
+                    {% for funcionario in funcionarios %}
+                    <tr>
+                        <!-- Indicador visual de status (Ativo/Desligado) -->
+                        <td>
+                            {% if funcionario.ativo == 'ativo' %}
+                            <span class="status-indicador ativo"></span>
+                            {% else %}
+                            <span class="status-indicador inativo"></span>
+                            {% endif %}
+                        </td>
+                        <td><strong>{{ funcionario.nome }}</strong></td>
+                        <td>{{ funcionario.cargo }}</td>
+                        <td>{{ funcionario.cpf }}</td>
+                        <td>
+                            R$ {{ funcionario.salario | moeda }}
+                        </td>
+                        <td>{{ funcionario.email }}</td>
+                        <td>{{ funcionario.telefone | telefone or '—' }}</td>
+                        <td>{{ funcionario.data_admissao.strftime('%d/%m/%Y') if funcionario.data_admissao else ''
+                            }}</td>
+                        <td>{{ funcionario.data_nascimento.strftime('%d/%m/%Y') if funcionario.data_nascimento else
+                            '' }}</td>
+                        <td>
+                            {% if funcionario.empilhadeira %}
+                            {{ funcionario.empilhadeira }}
+                            {% else %}
+                            <span class="text-muted">Sem Empilhadeira</span>
+                            {% endif %}
+                        </td>
+                        <!-- Botão de edição e menu offcanvas do funcionário -->
+                        <td>
+                            <button type="button" class="acao-btn" data-bs-toggle="offcanvas"
+                                data-bs-target="#offcanvas-func-{{ funcionario.id }}"
+                                aria-controls="offcanvas-func-{{ funcionario.id }}">
+                                <i class="bi-solid bi-pen-fill"></i>
+                            </button>
+
+                            <!-- Painel lateral (offcanvas) para edição do funcionário -->
+                            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas-func-{{ funcionario.id }}"
+                                aria-labelledby="label-func-{{ funcionario.id }}">
+                                <div class="offcanvas-header">
+                                    <h5 class="offcanvas-title" id="label-func-{{ funcionario.id }}">
+                                        Editar Funcionário
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+                                        aria-label="Fechar"></button>
                                 </div>
-
-                                <!-- Botão deletar empilhadeira -->
-                                <button type="button" class="acao-btn delete" data-bs-toggle="modal"
-                                    data-bs-target="#modalDeletar{{ empilhadeira.id }}">
-                                    <i class="bi-solid bi-trash"></i>
-                                </button>
-
-                                <!-- Modal confirmar exclusão empilhadeira -->
-                                <div class="modal fade" id="modalDeletar{{ empilhadeira.id }}" tabindex="-1"
-                                    aria-labelledby="modalLabel{{ empilhadeira.id }}" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="modalLabel{{ empilhadeira.id }}">Confirmar
-                                                    Exclusão</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body text-start">
-                                                Tem certeza que deseja excluir a empilhadeira <strong>{{
-                                                    empilhadeira.modelo }}</strong>?<br>
-                                                Esta ação não poderá ser desfeita.
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Cancelar</button>
-                                                <form method="POST"
-                                                    action="{{ url_for('deletar_empilhadeira', empilhadeira_id=empilhadeira.id) }}"
-                                                    style="display:inline">
-                                                    <input type="hidden" name="galpao_id" value="{{ galpao.id }}">
-                                                    <button type="submit" class="btn btn-danger">Excluir</button>
-                                                </form>
-                                            </div>
+                                <div class="offcanvas-body">
+                                    <form method="POST" action="{{ url_for('atualizar_funcionario') }}">
+                                        <input type="hidden" name="id" value="{{ funcionario.id }}">
+                                        <input type="hidden" name="galpao_id" value="{{ galpao.id }}">
+                                        <div class="input-resp mb-3">
+                                            <label>Nome</label>
+                                            <input type="text" class="form-control" name="nome"
+                                                value="{{ funcionario.nome }}">
                                         </div>
-                                    </div>
+                                        <div class="input-resp mb-3">
+                                            <label>CPF</label>
+                                            <input type="text" class="form-control" name="cpf"
+                                                value="{{ funcionario.cpf }}">
+                                        </div>
+                                        <div class="input-resp mb-3">
+                                            <label>Cargo</label>
+                                            <select class="form-select" name="cargo">
+                                                <option {% if funcionario.cargo=='Gerente' %}selected{% endif %}>
+                                                    Gerente</option>
+                                                <option {% if funcionario.cargo=='Operador' %}selected{% endif %}>
+                                                    Operador</option>
+                                                <option {% if funcionario.cargo=='Supervisor' %}selected{% endif %}>
+                                                    Supervisor</option>
+                                            </select>
+                                        </div>
+                                        <div class="input-resp mb-3">
+                                            <label>E-mail</label>
+                                            <input type="email" class="form-control" name="email"
+                                                value="{{ funcionario.email }}">
+                                        </div>
+                                        <div class="input-resp mb-3">
+                                            <label>Telefone</label>
+                                            <input type="tel" class="form-control" name="telefone"
+                                                value="{{ funcionario.telefone | telefone if funcionario.telefone else '' }}">
+                                        </div>
+                                        <div class="input-resp mb-3">
+                                            <label>Salário</label>
+                                            <input type="number" class="form-control" name="salario" step="0.01"
+                                                value="{{ funcionario.salario }}">
+                                        </div>
+                                        <div class="input-resp mb-3">
+                                            <label>Status</label>
+                                            <select class="form-select" name="ativo">
+                                                <option value="ativo" {% if funcionario.ativo=='ativo' %}selected{%
+                                                    endif %}>Ativo</option>
+                                                <option value="inativo" {% if funcionario.ativo=='inativo' %}selected{%
+                                                    endif %}>Desligado</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="add-sensor-btn w-100">
+                                            Salvar Alterações
+                                        </button>
+                                    </form>
                                 </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                            </div>
 
-    </main>
+                            <!-- Botão e modal de confirmação de exclusão do funcionário -->
+                            {% if pode_gerenciar %}
+                            <form method="POST" id="excluir-funcionario-{{ funcionario.id }}" action="{{ url_for('deletar_funcionario', funcionario_id=funcionario.id) }}">
+                                <input type="hidden" name="galpao_id" value="{{ galpao.id }}">
+                            </form>
+                            {% with id='excluir-funcionario-' ~ funcionario.id ~ '', form_id='excluir-funcionario-' ~ funcionario.id ~ '',
+                                    titulo='Excluir funcionário',
+                                    texto='Excluir o funcionário ' ~ funcionario.nome ~ '? Esta ação não poderá ser desfeita.',
+                                    icone='bi-trash3-fill', rotulo='',
+                                    classe='acao-btn delete',
+                                    confirmar='Excluir', perigo=True %}
+                            {% include '_confirmar.html' %}
+                            {% endwith %}
+                            {% endif %}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"></script>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
 
-    <script>
-        const campos = ['caixas_por_nivel', 'niveis_por_prateleira', 'total_prateleiras'];
-        campos.forEach(function (nome) {
-            const el = document.querySelector('[name="' + nome + '"]');
-            if (el) el.addEventListener('input', recalcularCapacidade);
-        });
+    <!-- Tabela de listagem, edição e exclusão de empilhadeiras do galpão -->
+    <section class="config-card full-width ativar-sensor mt-4">
+        <h3><i class="bi-solid bi-person-lines-fill"></i> Empilhadeiras</h3>
+        <div class="sensor-lista-container">
+            <table class="sensor-lista">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Marca Empilhadeira</th>
+                        <th>Modelo</th>
+                        <th>Ano de Fabricação</th>
+                        <th>Tipo de Combustível</th>
+                        <th>Capacidade</th>
+                        <th>Operador</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Iteração sobre as empilhadeiras cadastradas no galpão -->
+                    {% for empilhadeira in empilhadeiras %}
+                    <tr>
+                        <!-- Indicador visual do status operacional da empilhadeira -->
+                        <td>
+                            {% if empilhadeira.ativo == 'ativo' %}
+                            <span class="status-indicador ativo"></span>
+                            {% elif empilhadeira.ativo == 'manutencao' %}
+                            <span class="status-indicador manutencao"></span>
+                            {% else %}
+                            <span class="status-indicador inativo"></span>
+                            {% endif %}
+                        </td>
+                        <td><strong>{{ empilhadeira.marca }}</strong></td>
+                        <td>{{ empilhadeira.modelo }}</td>
+                        <td>{{ empilhadeira.ano_fabricacao }}</td>
+                        <td>{{ empilhadeira.tipo_combustivel }}</td>
+                        <td>{{ empilhadeira.capacidade }}</td>
+                        <td>
+                            {% if empilhadeira.funcionario_nome %}
+                            {{ empilhadeira.funcionario_nome }}
+                            {% else %}
+                            <span class="text-muted">Sem operador</span>
+                            {% endif %}
+                        </td>
+                        <!-- Botão de edição e menu offcanvas da empilhadeira -->
+                        <td>
+                            <button type="button" class="acao-btn" data-bs-toggle="offcanvas"
+                                data-bs-target="#offcanvas-emp-{{ empilhadeira.id }}"
+                                aria-controls="offcanvas-emp-{{ empilhadeira.id }}">
+                                <i class="bi-solid bi-pen-fill"></i>
+                            </button>
 
-        function recalcularCapacidade() {
-            const caixas = parseInt(document.querySelector('[name="caixas_por_nivel"]').value) || 0;
-            const niveis = parseInt(document.querySelector('[name="niveis_por_prateleira"]').value) || 0;
-            const prateleiras = parseInt(document.querySelector('[name="total_prateleiras"]').value) || 0;
-            document.getElementById('capacidade-display').textContent = caixas * niveis * prateleiras;
-        }
+                            <!-- Painel lateral (offcanvas) para edição da empilhadeira -->
+                            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas-emp-{{ empilhadeira.id }}"
+                                aria-labelledby="label-emp-{{ empilhadeira.id }}">
+                                <div class="offcanvas-header">
+                                    <h5 class="offcanvas-title" id="label-emp-{{ empilhadeira.id }}">
+                                        Editar Empilhadeira
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+                                        aria-label="Fechar"></button>
+                                </div>
+                                <div class="offcanvas-body">
+                                    <form method="POST"
+                                        action="{{ url_for('atualizar_empilhadeira', empilhadeira_id=empilhadeira.id) }}">
+                                        <input type="hidden" name="galpao_id" value="{{ galpao.id }}">
+                                        <div class="input-resp mb-3">
+                                            <label>Marca</label>
+                                            <input type="text" class="form-control" name="marca"
+                                                value="{{ empilhadeira.marca }}">
+                                        </div>
+                                        <div class="input-resp mb-3">
+                                            <label>Modelo</label>
+                                            <input type="text" class="form-control" name="modelo"
+                                                value="{{ empilhadeira.modelo }}">
+                                        </div>
+                                        <div class="input-resp mb-3">
+                                            <label>Ano de Fabricação</label>
+                                            <input type="number" class="form-control" name="ano_fabricacao"
+                                                value="{{ empilhadeira.ano_fabricacao }}">
+                                        </div>
+                                        <div class="input-resp mb-3">
+                                            <label>Tipo de Combustível</label>
+                                            <input type="text" class="form-control" name="tipo_combustivel"
+                                                value="{{ empilhadeira.tipo_combustivel }}">
+                                        </div>
+                                        <div class="input-resp mb-3">
+                                            <label>Capacidade</label>
+                                            <input type="number" class="form-control" name="capacidade"
+                                                value="{{ empilhadeira.capacidade }}">
+                                        </div>
+                                        <div class="input-resp mb-3">
+                                            <label>Operador Responsável</label>
+                                            <select class="form-select" name="funcionario_id">
+                                                <option value="">Sem operador atribuído</option>
+                                                {% for funcionario in funcionarios %}
+                                                <option value="{{ funcionario.id }}" {% if
+                                                    empilhadeira.funcionario_id==funcionario.id %}selected{% endif %}>
+                                                    {{ funcionario.nome }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="input-resp mb-3">
+                                            <label>Status</label>
+                                            <select class="form-select" name="ativo">
+                                                <option value="ativo" {% if empilhadeira.ativo=='ativo' %}selected{%
+                                                    endif %}>Ativa</option>
+                                                <option value="inativo" {% if empilhadeira.ativo=='inativo' %}selected{%
+                                                    endif %}>Inativa</option>
+                                                <option value="manutencao" {% if empilhadeira.ativo=='manutencao'
+                                                    %}selected{% endif %}>Em Manutenção</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="add-sensor-btn w-100">
+                                            Salvar Alterações
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
 
-        function confirmarLogout() {
-            return confirm('Deseja realmente sair?');
-        }
-    </script>
+                            <!-- Botão e modal de confirmação de exclusão da empilhadeira -->
+                            {% if pode_gerenciar %}
+                            <form method="POST" id="excluir-empilhadeira-{{ empilhadeira.id }}" action="{{ url_for('deletar_empilhadeira', empilhadeira_id=empilhadeira.id) }}">
+                                <input type="hidden" name="galpao_id" value="{{ galpao.id }}">
+                            </form>
+                            {% with id='excluir-empilhadeira-' ~ empilhadeira.id ~ '', form_id='excluir-empilhadeira-' ~ empilhadeira.id ~ '',
+                                    titulo='Excluir empilhadeira',
+                                    texto='Excluir a empilhadeira ' ~ empilhadeira.modelo ~ '? Esta ação não poderá ser desfeita.',
+                                    icone='bi-trash3-fill', rotulo='',
+                                    classe='acao-btn delete',
+                                    confirmar='Excluir', perigo=True %}
+                            {% include '_confirmar.html' %}
+                            {% endwith %}
+                            {% endif %}
 
-</body>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
 
-</html>
+</main>
+{% endblock %}

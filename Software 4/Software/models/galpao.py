@@ -1,8 +1,10 @@
 from core.database import Database
+from core.empresa import empresa_atual
 
 
 class Galpao:
 
+    # Inicializa os dados do galpão.
     def __init__(self, nome, stats, email_resp, nome_resp, endereco, referencia, cidade, estado, area_total, telefone, cep,
                  total_prateleiras, niveis_por_prateleira, caixas_por_nivel, capacidade_total):
         self.nome = nome
@@ -21,16 +23,17 @@ class Galpao:
         self.caixas_por_nivel = caixas_por_nivel
         self.capacidade_total = capacidade_total
 
+    # Cadastra um novo galpão.
     def insert(self):
         conn = Database.connect()
         cursor = conn.cursor()
 
         cursor.execute("""
             INSERT INTO galpao 
-            (nome, stats, email_resp, nome_resp, endereco, referencia, cidade, estado, area_total, telefone, cep, total_prateleiras, niveis_por_prateleira, caixas_por_nivel, capacidade_total)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            (empresa_id, nome, stats, email_resp, nome_resp, endereco, referencia, cidade, estado, area_total, telefone, cep, total_prateleiras, niveis_por_prateleira, caixas_por_nivel, capacidade_total)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
-            self.nome, self.stats, self.email_resp, self.nome_resp,
+            empresa_atual(), self.nome, self.stats, self.email_resp, self.nome_resp,
             self.endereco, self.referencia, self.cidade, self.estado,
             self.area_total, self.telefone, self.cep, self.total_prateleiras,
             self.niveis_por_prateleira, self.caixas_por_nivel, self.capacidade_total
@@ -38,6 +41,7 @@ class Galpao:
         conn.commit()
         conn.close()
 
+    # Lista todos os galpões da empresa.
     @staticmethod
     def find_all():
         conn = Database.connect()
@@ -62,9 +66,10 @@ class Galpao:
             LEFT JOIN estoque e
                 ON e.galpao_id = g.id
 
+            WHERE g.empresa_id = %s
             GROUP BY g.id
             ORDER BY g.nome
-        """)
+        """, (empresa_atual(),))
 
         result = cursor.fetchall()
 
@@ -73,16 +78,19 @@ class Galpao:
 
         return result
 
+    # Busca um galpão pelo ID.
     @staticmethod
     def find_by_id(id):
         conn = Database.connect()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM galpao WHERE id = %s", (id,))
+        cursor.execute("SELECT * FROM galpao WHERE id = %s AND empresa_id = %s",
+                       (id, empresa_atual()))
         galpao = cursor.fetchone()
         cursor.close() 
         conn.close()
         return galpao
 
+    # Atualiza os dados do galpão.
     @staticmethod
     def update(galpao_id, dados):
         conn = Database.connect()
@@ -103,26 +111,28 @@ class Galpao:
                     niveis_por_prateleira = %s,
                     total_prateleiras     = %s,
                     capacidade_total      = %s
-                WHERE id = %s
+                WHERE id = %s AND empresa_id = %s
             """, (
                 dados["nome_resp"], dados["email_resp"], dados["telefone"],
                 dados["stats"],    dados["nome"],        dados["cep"],
                 dados["endereco"], dados["referencia"],  dados["area_total"],
                 dados["caixas_por_nivel"], dados["niveis_por_prateleira"],
                 dados["total_prateleiras"], dados["capacidade_total"],
-                galpao_id
+                galpao_id, empresa_atual()
             ))
             conn.commit()
         finally:
             cursor.close()
             conn.close()
 
+    # Exclui um galpão.
     @staticmethod
     def delete(galpao_id):
         conn = Database.connect()
         cursor = conn.cursor()
         try:
-            cursor.execute("DELETE FROM galpao WHERE id = %s", (galpao_id,))
+            cursor.execute("DELETE FROM galpao WHERE id = %s AND empresa_id = %s",
+                           (galpao_id, empresa_atual()))
             conn.commit()
         finally:
             cursor.close()
